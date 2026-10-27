@@ -1,14 +1,8 @@
 # Formatos de los archivos de datos
 
 Este documento define los campos y su orden en cada archivo de `data/`. Es la
-referencia de todos los DAO de `dao.archivo` y de la lista de verificación del
+referencia de todos los DAO de ` dao.file` y de la lista de verificación del
 Pull Request. Si cambia un formato, se actualiza aquí en el mismo PR.
-
-> **Importante.** Los campos siguen las columnas de las tablas del modelo v5
-> (`modelo_v5_oracle_ddl.sql`), pero este documento se escribió sin el script
-> a la vista. Antes de cerrar el paso 1B, Álvaro debe compararlo con el DDL y
-> corregir los nombres u orden que difieran. Las columnas marcadas con **(*)**
-> son supuestos que hay que confirmar.
 
 ## Reglas generales
 
@@ -39,20 +33,20 @@ Pull Request. Si cambia un formato, se actualiza aquí en el mismo PR.
 | `util.FileUtil.readFields(ruta)` | Igual, pero cada línea ya separada en `String[]`. |
 | `util.FileUtil.append(ruta, linea)` | Guardar: agrega una línea al final. |
 | `util.FileUtil.rewrite(ruta, lineas)` | Actualizar o eliminar: se reescribe todo el archivo. |
-| `util.FileUtil.join(campos...)` | Para el `toTexto()` de las entidades. |
+| `util.FileUtil.join(campos...)` | Para el `toLine()` de las entidades. |
 | `util.FileUtil.split(linea)` | Para el constructor "desde línea" de las entidades. |
 | `util.FileUtil.nextId(ruta, col)` | Siguiente identificador libre. |
 | `exception.PersistenceException` | Error de lectura o escritura (no verificada). |
 
-Ejemplo de `toTexto()` y constructor desde línea:
+Ejemplo de `toLine()` y constructor desde línea:
 
 ```java
-public String toText() {
+public String toLine() {
     return FileUtil.join("PROVEEDOR", id, companyName, nit, phone, status,
             registrationDate, deliveryDays);
 }
 
-public Provider(String line) {
+public Supplier(String line) {
     String[] f = FileUtil.split(line);
     this.id = Integer.parseInt(f[1]);
     this.companyName = f[2];
@@ -65,8 +59,8 @@ public Provider(String line) {
 - **Contraseña de todos los usuarios de prueba:** `Test1234*`
 - Se guarda como hash **SHA-256 en hexadecimal minúsculas**
   (`7546df0d5385f6a05d11c5a0388a5736466f31d5ab210fe486f377bd648459a5`).
-  `UsuarioServicio` debe calcular el mismo hash al validar el login.
-  Si el equipo elige otro algoritmo, hay que regenerar `usuarios.csv`.
+  `UserService` debe calcular el mismo hash al validar el login.
+  Si el equipo elige otro algoritmo, hay que regenerar `users.csv`.
 - Usuarios: `admin@example.com` (ADMIN), `carlos.perez@example.com` y
   `maria.gomez@example.com` (CLIENTE), `proveedor@example.com` (SOCIO del
   proveedor 1), `taller@example.com` (SOCIO del taller 3) e
@@ -80,21 +74,21 @@ public Provider(String line) {
 
 ## Ubicación
 
-### `departamentos.csv`
+### `departments.csv`
 `id|nombre`
 
 ```
 1|Cesar
 ```
 
-### `municipios.csv`
+### `municipalities.csv`
 `id|id_departamento|nombre`
 
 ```
 1|1|Valledupar
 ```
 
-### `barrios.csv`
+### `neighborhoods.csv`
 `id|id_municipio|nombre`
 
 ```
@@ -103,18 +97,18 @@ public Provider(String line) {
 
 ## Usuarios
 
-### `usuarios.csv`
+### `users.csv`
 `id|nombre|correo|clave_hash|rol|estado|fecha_registro|id_socio`
 
 - `rol`: `CLIENTE`, `ADMIN` o `SOCIO`.
-- `id_socio`: identificador en `socios.csv` si el rol es `SOCIO`; `0` en los demás.
+- `id_socio`: identificador en `partners.csv` si el rol es `SOCIO`; `0` en los demás.
 - El correo no se puede repetir.
 
 ```
 2|Carlos Pérez|carlos.perez@example.com|7546df0d...|CLIENTE|ACTIVO|2026-10-26|0
 ```
 
-### `direcciones_usuario.csv`
+### `user_addresses.csv`
 `id|id_usuario|id_barrio|direccion|principal`
 
 - `principal`: `SI` o `NO`. Un usuario tiene como máximo una dirección principal.
@@ -125,7 +119,7 @@ public Provider(String line) {
 
 ## Socios
 
-### `socios.csv` (herencia: Socio → Proveedor / Taller)
+### `partners.csv` (herencia: Socio → Proveedor / Taller)
 Campos comunes: `tipo|id|nombre_compania|nit|telefono|estado|fecha_registro`
 
 | Tipo | Campos propios (después de los comunes) |
@@ -138,14 +132,14 @@ PROVEEDOR|1|AutoMax Repuestos|900123456-1|3001112233|ACTIVO|2026-10-26|2
 TALLER|3|Taller El Rápido|900555444-7|3004445566|ACTIVO|2026-10-26|Frenos|4
 ```
 
-### `servicios.csv` (servicios que ofrece un taller)
+### `services.csv` (servicios que ofrece un taller)
 `id|id_taller|nombre|descripcion|estado`
 
 ```
 1|3|Cambio de pastillas de freno|Reemplazo de pastillas delanteras o traseras|ACTIVO
 ```
 
-### `tarifas.csv`
+### `fees.csv`
 `id|id_servicio|valor|fecha_inicio|estado` **(\*)**
 
 - Un servicio puede tener varias tarifas; la vigente es la `ACTIVO`.
@@ -154,7 +148,7 @@ TALLER|3|Taller El Rápido|900555444-7|3004445566|ACTIVO|2026-10-26|Frenos|4
 1|1|60000|2026-10-26|ACTIVO
 ```
 
-### `afiliaciones.csv` (proveedor afiliado a un taller)
+### `affiliations.csv` (proveedor afiliado a un taller)
 `id|id_proveedor|id_taller|fecha_inicio|estado` **(\*)**
 
 ```
@@ -163,21 +157,21 @@ TALLER|3|Taller El Rápido|900555444-7|3004445566|ACTIVO|2026-10-26|Frenos|4
 
 ## Catálogo
 
-### `marcas.csv`
+### `brands.csv`
 `id|nombre`
 
 ```
 4|Michelin
 ```
 
-### `categorias.csv`
+### `categories.csv`
 `id|nombre`
 
 ```
 1|Frenos
 ```
 
-### `componentes.csv` (herencia: Componente → Llanta / Rin / Motor / Transmisión)
+### `components.csv` (herencia: Componente → Llanta / Rin / Motor / Transmisión)
 Campos comunes: `tipo|id|nombre|referencia|id_marca|id_categoria|calidad|estado`
 
 - `calidad`: `ORIGINAL` o `GENERICO`.
@@ -199,7 +193,7 @@ MOTOR|12|Motor 1.6L 16V reacondicionado|MT-16-16V|8|2|ORIGINAL|ACTIVO|1600|4|GAS
 TRANSMISION|14|Caja automática 6 velocidades|TR-A6-001|6|5|ORIGINAL|ACTIVO|AUTOMATICA|6
 ```
 
-### `vehiculos.csv` (herencia: Vehículo → Coche / Motocicleta)
+### `vehicles.csv` (herencia: Vehículo → Coche / Motocicleta)
 Campos comunes: `tipo|id|marca|modelo|anio|estado`
 
 | Tipo | Campos propios (después de los comunes) |
@@ -212,7 +206,7 @@ COCHE|1|Chevrolet|Spark GT|2018|ACTIVO|5|HATCHBACK
 MOTOCICLETA|4|Yamaha|FZ 150|2021|ACTIVO|150|NAKED
 ```
 
-### `compatibilidad.csv` (qué componente sirve en qué vehículo)
+### `compatibility.csv` (qué componente sirve en qué vehículo)
 `id_componente|id_vehiculo`
 
 - No tiene identificador propio. La pareja no se puede repetir.
@@ -223,10 +217,10 @@ MOTOCICLETA|4|Yamaha|FZ 150|2021|ACTIVO|150|NAKED
 
 ## Inventario
 
-### `inventario.csv` (oferta de un proveedor para un componente)
+### `inventory.csv` (oferta de un proveedor para un componente)
 `id|id_proveedor|id_componente|precio|stock|valor_envio|garantia_meses|condicion|estado`
 
-- `id_proveedor` es el identificador de un `PROVEEDOR` en `socios.csv`.
+- `id_proveedor` es el identificador de un `PROVEEDOR` en `partners.csv`.
 - `condicion`: `NUEVO`, `USADO` o `REACONDICIONADO`.
 - Un proveedor no repite el mismo componente.
 - Costo total de una oferta = `precio + valor_envio`.
@@ -240,12 +234,12 @@ MOTOCICLETA|4|Yamaha|FZ 150|2021|ACTIVO|150|NAKED
 Los archivos existen vacíos. El formato es una propuesta para que Jahdiel
 la confirme **(\*)**.
 
-### `transacciones.csv`
+### `transactions.csv`
 `id|id_usuario|fecha|estado|total`
 
 - `estado`: `PENDIENTE`, `PAGADA` o `CANCELADA`.
 
-### `detalles_transaccion.csv`
+### `transaction_details.csv`
 `id|id_transaccion|id_inventario|cantidad|precio_unitario`
 
 - `precio_unitario` es el precio de la oferta en el momento de la compra.

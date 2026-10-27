@@ -1,4 +1,4 @@
-package autopartes.util;
+package autoparts.util;
 
 /**
  * Rutas de todos los archivos planos de la carpeta {@code data/}.
@@ -11,6 +11,9 @@ package autopartes.util;
  * <p>Los nombres de los archivos siguen la convención del proyecto: plural,
  * minúsculas y extensión {@code .csv}. El formato de cada uno está en
  * {@code docs/formatos-archivos.md}.</p>
+ * 
+ * @author alvaro
+ * 
  */
 public final class FlatFiles {
 
@@ -18,13 +21,13 @@ public final class FlatFiles {
     public static final String DATA_DIR = "data";
 
     // Ubicación geográfica
-    public static final String DEPARTMENTS = DATA_DIR + "/departaments.csv";
+    public static final String DEPARTMENTS = DATA_DIR + "/departments.csv";
     public static final String MUNICIPALITIES = DATA_DIR + "/municipalities.csv";
     public static final String NEIGHBORHOODS = DATA_DIR + "/neighborhoods.csv";
 
     // Usuarios
     public static final String USERS = DATA_DIR + "/users.csv";
-    public static final String USER_ADDRESSES = DATA_DIR + "/addresses_user.csv";
+    public static final String USER_ADDRESSES = DATA_DIR + "/user_addresses.csv";
 
     // Socios (proveedores y talleres)
     public static final String PARTNERS = DATA_DIR + "/partners.csv";
@@ -42,7 +45,7 @@ public final class FlatFiles {
     // Inventario y transacciones
     public static final String INVENTORY = DATA_DIR + "/inventory.csv";
     public static final String TRANSACTIONS = DATA_DIR + "/transactions.csv";
-    public static final String TRANSACTION_DETAILS = DATA_DIR + "/details_transaction.csv";
+    public static final String TRANSACTION_DETAILS = DATA_DIR + "/transaction_details.csv";
 
     /** Clase de constantes: no se instancia. */
     private FlatFiles() {
