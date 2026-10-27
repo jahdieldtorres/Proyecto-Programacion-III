@@ -1,10 +1,11 @@
+package autoparts.util;
 
 /**
- *
+ * Clase que manipula el formateo de líneas de registros dentro de archivos planos; Lee, Agrega, Reescribe, Añade y Separa
+ * con respecto a campos de las líneas de registros.
+ * 
  * @author alvaro
  */
-
-package autoparts.util;
 
 import autopartes.exception.PersistenceException;
 
