@@ -1,9 +1,3 @@
-
-/**
- *
- * @author alvaro
- */
-
 package autoparts.util;
 
 /**
@@ -17,6 +11,9 @@ package autoparts.util;
  * <p>Los nombres de los archivos siguen la convención del proyecto: plural,
  * minúsculas y extensión {@code .csv}. El formato de cada uno está en
  * {@code docs/formatos-archivos.md}.</p>
+ * 
+ * @author alvaro
+ * 
  */
 public final class FlatFiles {
 
