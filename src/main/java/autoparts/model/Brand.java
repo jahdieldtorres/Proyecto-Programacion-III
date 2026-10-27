@@ -9,6 +9,15 @@ public class Brand {
     private int id;
     private String name;
 
+    public Brand(){}
+    
+    
+    /**
+     * Crea la clase de marca parametrizada con un nuombre e identificador propios.
+     *
+     * @param id        Identificador único de marca
+     * @param name      Nombre de la marca
+     */
     public Brand(int id, String name) {
         this.id = id;
         this.name = name;
