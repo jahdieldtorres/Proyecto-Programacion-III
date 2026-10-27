@@ -1,13 +1,6 @@
 package autoparts.util;
 
-/**
- * Clase que manipula el formateo de líneas de registros dentro de archivos planos; Lee, Agrega, Reescribe, Añade y Separa
- * con respecto a campos de las líneas de registros.
- * 
- * @author alvaro
- */
-
-import autopartes.exception.PersistenceException;
+import autoparts.exception.PersistenceException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -18,7 +11,15 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Lee y escribe archivos planos: un registro por línea, campos separados por "|", UTF-8. */
+/** 
+ * 
+ * Clase que manipula el formateo de líneas de registros dentro de archivos planos.
+ * Lee y escribe archivos planos: un registro por línea, campos separados por "|", UTF-8. Agrega, Reescribe, Añade y Separa
+ * con respecto a campos de las líneas de registros.
+ * 
+ * @author alvaro
+ */
+
 public final class FileUtil {
 
     /** Separador de campos. */
@@ -94,7 +95,7 @@ public final class FileUtil {
         return max + 1;
     }
 
-    /** Une campos en una línea (para toText()). Null se guarda vacío; "|" o saltos de línea no se permiten.
+    /** Une campos en una línea (para toLine()). Null se guarda vacío; "|" o saltos de línea no se permiten.
      * @param fields        Campos del registro
      * @return              Línea de registro
      */
