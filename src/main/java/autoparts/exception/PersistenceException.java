@@ -1,19 +1,16 @@
-
-/**
- *
- * @author alvaro
- */
-
 package autoparts.exception;
 
 /**
  * Excepción que envuelve los errores de lectura o escritura de los archivos
  * planos (por ejemplo, un {@link java.io.IOException}) para que las capas
  * superiores no dependan de detalles de entrada/salida.
- *
+ * 
  * <p>Es una excepción no verificada (hereda de {@link RuntimeException}) para
  * no obligar a declarar {@code throws} en cada método de las capas dao y
  * servicio. La capa de vista debe capturarla y mostrar un mensaje claro.</p>
+ * 
+ * @author alvaro
+ * 
  */
 public class PersistenceException extends RuntimeException {
 
