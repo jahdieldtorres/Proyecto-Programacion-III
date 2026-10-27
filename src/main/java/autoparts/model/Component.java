@@ -1,7 +1,8 @@
 package autoparts.model;
 
 /**
- *
+ * Clase abstracta que contiene los atributos de componentes y autopartes para vehículos automotrices.
+ * 
  * @author ALVARO
  */
 public abstract class Component {
