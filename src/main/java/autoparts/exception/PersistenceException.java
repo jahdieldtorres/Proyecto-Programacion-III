@@ -1,4 +1,10 @@
-package autopartes.exception;
+
+/**
+ *
+ * @author alvaro
+ */
+
+package autoparts.exception;
 
 /**
  * Excepción que envuelve los errores de lectura o escritura de los archivos
