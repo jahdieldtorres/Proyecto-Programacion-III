@@ -9,7 +9,7 @@ package autoparts.exception;
  * no obligar a declarar {@code throws} en cada método de las capas dao y
  * servicio. La capa de vista debe capturarla y mostrar un mensaje claro.</p>
  * 
- * @author alvaro
+ * @author alvaro 
  * 
  */
 public class PersistenceException extends RuntimeException {
