@@ -4,8 +4,9 @@ import autoparts.model.Brand;
 import java.util.List;
 
 /**
+ * Interfaz que define las operaciones de acceso a datos para las marcas.
  * 
- * @author ALVARO
+ * @author 
  */
 public interface BrandDAO {
     
@@ -20,7 +21,7 @@ public interface BrandDAO {
      * @param id El identificador de la marca
      * @return El objeto Brand encontrado, o null en caso contrario
      */
-    Brand findById(Long id);
+    Brand findById(int id);
     
     /**
      * Guarda un nuevo registro de marca.
@@ -38,6 +39,6 @@ public interface BrandDAO {
      * Elimina un registro de marca por su identificador único.
      * @param id El identificador de la marca a eliminar
      */
-    void delete(Long id);
+    void delete(int id);
     
 }
