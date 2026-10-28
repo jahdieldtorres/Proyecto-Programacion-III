@@ -4,7 +4,12 @@ import autoparts.util.FileUtil;
 
 import java.time.LocalDate;
 
-
+/**
+ * Proveedor de repuestos. Además de los datos comunes del socio, guarda los
+ * días que tarda en entregar un pedido.
+ *
+ * @author Héctor Guevara
+ */
 public class Supplier extends Partner {
 
     private int deliveryDays;
@@ -26,7 +31,11 @@ public class Supplier extends Partner {
         this.deliveryDays = deliveryDays;
     }
 
-
+    /**
+     * Crea un proveedor desde una línea de {@code partners.csv}.
+     *
+     * @param line línea con los campos separados por "|"
+     */
     public Supplier(String line) {
         this(FileUtil.split(line));
     }

@@ -7,17 +7,32 @@ import autoparts.model.Status;
 import java.util.List;
 import java.util.Optional;
 
-
+/**
+ * Reglas de negocio de las tarifas de los servicios de los talleres. Un
+ * servicio tiene como máximo una tarifa vigente ({@code ACTIVO}): al registrar
+ * una tarifa activa nueva, la anterior pasa a {@code INACTIVO}.
+ *
+ * @author Héctor Guevara
+ */
 public class FeeService {
 
     private final FeeDAO feeDAO;
 
-   
+    /**
+     * Crea el servicio con su DAO.
+     *
+     * @param feeDAO acceso a datos de las tarifas
+     */
     public FeeService(FeeDAO feeDAO) {
         this.feeDAO = feeDAO;
     }
 
-
+    /**
+     * Registra una tarifa nueva. Si queda activa, desactiva la que estaba vigente.
+     *
+     * @param fee tarifa a registrar
+     * @throws IllegalArgumentException si algún dato no es válido
+     */
     public void register(Fee fee) {
         validate(fee);
         fee.setId(feeDAO.nextId());
@@ -27,6 +42,12 @@ public class FeeService {
         feeDAO.save(fee);
     }
 
+    /**
+     * Actualiza una tarifa. Si queda activa, desactiva la otra vigente del servicio.
+     *
+     * @param fee tarifa con los datos nuevos
+     * @throws IllegalArgumentException si la tarifa no existe o algún dato no es válido
+     */
     public void update(Fee fee) {
         validate(fee);
         if (feeDAO.findById(fee.getId()).isEmpty()) {
@@ -38,6 +59,12 @@ public class FeeService {
         feeDAO.update(fee);
     }
 
+    /**
+     * Elimina una tarifa con borrado lógico: pasa a estado {@code INACTIVO}.
+     *
+     * @param id identificador de la tarifa
+     * @throws IllegalArgumentException si la tarifa no existe
+     */
     public void delete(int id) {
         Fee fee = feeDAO.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("La tarifa no existe."));
@@ -45,24 +72,43 @@ public class FeeService {
         feeDAO.update(fee);
     }
 
-
+    /**
+     * Busca una tarifa por su identificador.
+     *
+     * @param id identificador de la tarifa
+     * @return la tarifa, o vacío si no existe
+     */
     public Optional<Fee> findById(int id) {
         return feeDAO.findById(id);
     }
 
-
+    /**
+     * Devuelve todas las tarifas de un servicio, vigentes o no.
+     *
+     * @param serviceId identificador del servicio
+     * @return lista de tarifas del servicio
+     */
     public List<Fee> findByService(int serviceId) {
         return feeDAO.findByService(serviceId);
     }
 
- 
+    /**
+     * Devuelve la tarifa vigente de un servicio.
+     *
+     * @param serviceId identificador del servicio
+     * @return la tarifa {@code ACTIVO}, o vacío si no tiene
+     */
     public Optional<Fee> findCurrentByService(int serviceId) {
         return feeDAO.findByService(serviceId).stream()
                 .filter(f -> f.getStatus() == Status.ACTIVO)
                 .findFirst();
     }
 
-
+    /**
+     * Devuelve todas las tarifas.
+     *
+     * @return lista de tarifas
+     */
     public List<Fee> findAll() {
         return feeDAO.findAll();
     }

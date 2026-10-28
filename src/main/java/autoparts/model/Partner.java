@@ -4,15 +4,23 @@ import autoparts.util.FileUtil;
 
 import java.time.LocalDate;
 
-
+/**
+ * Socio de ORIGEN: una empresa que participa en el portal, ya sea como
+ * proveedor de repuestos ({@link Supplier}) o como taller ({@link Workshop}).
+ * Los campos comunes se guardan en {@code partners.csv}; cada subclase agrega
+ * los suyos y define su propia línea con {@link #toLine()}.
+ *
+ * @author Héctor Guevara
+ */
 public abstract class Partner {
 
-
+    /** Valor del campo tipo para un proveedor en {@code partners.csv}. */
     public static final String TYPE_SUPPLIER = "PROVEEDOR";
 
+    /** Valor del campo tipo para un taller en {@code partners.csv}. */
     public static final String TYPE_WORKSHOP = "TALLER";
 
-
+    /** Cantidad de campos comunes (tipo, id, nombre, nit, teléfono, estado, fecha). */
     protected static final int COMMON_FIELDS = 7;
 
     private int id;
@@ -42,7 +50,11 @@ public abstract class Partner {
         this.registrationDate = registrationDate;
     }
 
-
+    /**
+     * Lee los campos comunes desde los campos ya separados de una línea.
+     *
+     * @param fields campos de la línea de {@code partners.csv}
+     */
     protected Partner(String[] fields) {
         this.id = Integer.parseInt(fields[1].trim());
         this.companyName = fields[2];
@@ -52,10 +64,21 @@ public abstract class Partner {
         this.registrationDate = LocalDate.parse(fields[6].trim());
     }
 
-
+    /**
+     * Devuelve la línea de este socio para {@code partners.csv}: el tipo
+     * primero, luego los campos comunes y al final los propios del subtipo.
+     *
+     * @return línea con los campos separados por "|"
+     */
     public abstract String toLine();
 
- 
+    /**
+     * Arma el comienzo de la línea (campos comunes) para que lo complete cada subclase.
+     *
+     * @param type valor del campo tipo
+     * @param own  campos propios del subtipo
+     * @return línea completa con los campos separados por "|"
+     */
     protected String lineWith(String type, Object... own) {
         Object[] all = new Object[COMMON_FIELDS + own.length];
         all[0] = type;

@@ -4,7 +4,12 @@ import autoparts.util.FileUtil;
 
 import java.time.LocalDate;
 
-
+/**
+ * Taller mecánico. Además de los datos comunes del socio, guarda su
+ * especialidad y el número de bahías de trabajo.
+ *
+ * @author Héctor Guevara
+ */
 public class Workshop extends Partner {
 
     private String specialty;
@@ -30,7 +35,11 @@ public class Workshop extends Partner {
         this.bayCount = bayCount;
     }
 
-
+    /**
+     * Crea un taller desde una línea de {@code partners.csv}.
+     *
+     * @param line línea con los campos separados por "|"
+     */
     public Workshop(String line) {
         this(FileUtil.split(line));
     }

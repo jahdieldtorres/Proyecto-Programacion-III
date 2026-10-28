@@ -4,7 +4,13 @@ import autoparts.util.FileUtil;
 
 import java.time.LocalDate;
 
-
+/**
+ * Tarifa de un servicio que ofrece un taller. Un servicio puede tener varias
+ * tarifas a lo largo del tiempo; la vigente es la que está {@code ACTIVO}.
+ * Se guarda en {@code fees.csv}.
+ *
+ * @author Héctor Guevara
+ */
 public class Fee {
 
     private int id;
@@ -30,7 +36,11 @@ public class Fee {
         this.status = status;
     }
 
-
+    /**
+     * Crea una tarifa desde una línea de {@code fees.csv}.
+     *
+     * @param line línea con los campos separados por "|"
+     */
     public Fee(String line) {
         String[] f = FileUtil.split(line);
         if (f.length != 5) {
@@ -43,6 +53,11 @@ public class Fee {
         this.status = Status.valueOf(f[4].trim());
     }
 
+    /**
+     * Devuelve la línea de esta tarifa para {@code fees.csv}.
+     *
+     * @return línea con los campos separados por "|"
+     */
     public String toLine() {
         return FileUtil.join(id, serviceId, amount, startDate, status);
     }

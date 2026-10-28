@@ -4,6 +4,11 @@ import autoparts.util.FileUtil;
 
 import java.time.LocalDate;
 
+/**
+ * Afiliación de un proveedor a un taller. Se guarda en {@code affiliations.csv}.
+ *
+ * @author Héctor Guevara
+ */
 public class Affiliation {
 
     private int id;
@@ -13,6 +18,7 @@ public class Affiliation {
     private Status status;
 
     /**
+     * Crea una afiliación.
      *
      * @param id         identificador de la afiliación
      * @param supplierId identificador del proveedor (en {@code partners.csv})
@@ -28,6 +34,11 @@ public class Affiliation {
         this.status = status;
     }
 
+    /**
+     * Crea una afiliación desde una línea de {@code affiliations.csv}.
+     *
+     * @param line línea con los campos separados por "|"
+     */
     public Affiliation(String line) {
         String[] f = FileUtil.split(line);
         if (f.length != 5) {
@@ -40,6 +51,11 @@ public class Affiliation {
         this.status = Status.valueOf(f[4].trim());
     }
 
+    /**
+     * Devuelve la línea de esta afiliación para {@code affiliations.csv}.
+     *
+     * @return línea con los campos separados por "|"
+     */
     public String toLine() {
         return FileUtil.join(id, supplierId, workshopId, startDate, status);
     }

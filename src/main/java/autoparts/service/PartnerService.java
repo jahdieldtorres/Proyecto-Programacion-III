@@ -9,16 +9,31 @@ import autoparts.model.Workshop;
 import java.util.List;
 import java.util.Optional;
 
-
+/**
+ * Reglas de negocio de los socios (proveedores y talleres): validación de los
+ * datos, NIT único y borrado lógico. Solo depende de la interfaz {@link PartnerDAO}.
+ *
+ * @author Héctor Guevara
+ */
 public class PartnerService {
 
     private final PartnerDAO partnerDAO;
 
-
+    /**
+     * Crea el servicio con su DAO.
+     *
+     * @param partnerDAO acceso a datos de los socios
+     */
     public PartnerService(PartnerDAO partnerDAO) {
         this.partnerDAO = partnerDAO;
     }
 
+    /**
+     * Registra un socio nuevo. Le asigna el siguiente identificador libre.
+     *
+     * @param partner socio a registrar
+     * @throws IllegalArgumentException si algún dato no es válido o el NIT ya existe
+     */
     public void register(Partner partner) {
         validate(partner);
         if (partnerDAO.findByTaxId(partner.getTaxId()).isPresent()) {
@@ -28,7 +43,13 @@ public class PartnerService {
         partnerDAO.save(partner);
     }
 
- 
+    /**
+     * Actualiza los datos de un socio. No se puede cambiar su tipo.
+     *
+     * @param partner socio con los datos nuevos
+     * @throws IllegalArgumentException si el socio no existe, cambia de tipo,
+     *                                  o algún dato no es válido
+     */
     public void update(Partner partner) {
         validate(partner);
         Partner existing = partnerDAO.findById(partner.getId())
@@ -43,7 +64,12 @@ public class PartnerService {
         partnerDAO.update(partner);
     }
 
-
+    /**
+     * Elimina un socio con borrado lógico: pasa a estado {@code INACTIVO}.
+     *
+     * @param id identificador del socio
+     * @throws IllegalArgumentException si el socio no existe
+     */
     public void delete(int id) {
         Partner partner = partnerDAO.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("El socio no existe."));
@@ -51,21 +77,40 @@ public class PartnerService {
         partnerDAO.update(partner);
     }
 
-
+    /**
+     * Busca un socio por su identificador.
+     *
+     * @param id identificador del socio
+     * @return el socio, o vacío si no existe
+     */
     public Optional<Partner> findById(int id) {
         return partnerDAO.findById(id);
     }
 
+    /**
+     * Busca un socio por su NIT.
+     *
+     * @param taxId NIT del socio
+     * @return el socio, o vacío si no existe
+     */
     public Optional<Partner> findByTaxId(String taxId) {
         return partnerDAO.findByTaxId(taxId);
     }
 
-
+    /**
+     * Devuelve todos los socios.
+     *
+     * @return lista de socios
+     */
     public List<Partner> findAll() {
         return partnerDAO.findAll();
     }
 
-
+    /**
+     * Devuelve todos los proveedores.
+     *
+     * @return lista de proveedores
+     */
     public List<Supplier> findAllSuppliers() {
         return partnerDAO.findAll().stream()
                 .filter(Supplier.class::isInstance)
@@ -73,7 +118,11 @@ public class PartnerService {
                 .toList();
     }
 
-
+    /**
+     * Devuelve todos los talleres.
+     *
+     * @return lista de talleres
+     */
     public List<Workshop> findAllWorkshops() {
         return partnerDAO.findAll().stream()
                 .filter(Workshop.class::isInstance)
