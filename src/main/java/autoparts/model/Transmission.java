@@ -5,15 +5,12 @@ import autoparts.util.FileUtil;
 /**
  * Representa el componente de transmisión de un vehículo, detallando su tipo y número de velocidades.
  * 
- * @author 
+ * @author ALVARO
  */
 public class Transmission extends Component {
 
     private TransmissionType transmissionType;
     private int numberOfSpeeds;
-
-    public Transmission() {
-    }
 
     /**
      * Crea una nueva instancia de Transmission con los valores especificados.
