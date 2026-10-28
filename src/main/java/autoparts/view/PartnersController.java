@@ -77,8 +77,8 @@ public class PartnersController {
         try {
             List<? extends Partner> partners;
             partners = switch (cmbFilter.getValue()) {
-                case SUPPLIERS -> AppServices.partners().findBySuppliers();
-                case WORKSHOPS -> AppServices.partners().findByWorkshops();
+                case SUPPLIERS -> AppServices.partners().findAllSuppliers();
+                case WORKSHOPS -> AppServices.partners().findAllWorkshops();
                 default -> AppServices.partners().findAll();
             };
             tblPartners.getItems().setAll(partners);

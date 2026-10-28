@@ -108,7 +108,7 @@ public class AffiliationsController {
      */
     private void loadPartnerNames() {
         partnerNames.clear();
-        for (Partner partner : AppServices.partners().findAll()) {
+g        for (Partner partner : AppServices.partners().findAll()) {
             partnerNames.put(partner.getId(), partner.getCompanyName());
         }
     }
