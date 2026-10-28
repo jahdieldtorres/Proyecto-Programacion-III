@@ -5,7 +5,7 @@ import autoparts.util.FileUtil;
 /**
  * Representa la categoría a la que pertenece un componente o autoparte.
  * 
- * @author 
+ * @author ALVARO
  */
 public class Category {
 
