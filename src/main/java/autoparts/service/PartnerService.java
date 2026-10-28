@@ -1,128 +1,122 @@
-
 package autoparts.service;
 
-import autoparts.dao.PartnerRepository;
+import autoparts.dao.PartnerDAO;
 import autoparts.model.Partner;
+import autoparts.model.PartnerStatus;
 import autoparts.model.Supplier;
 import autoparts.model.Workshop;
 
 import java.util.List;
 import java.util.Optional;
 
+
+ 
 public class PartnerService {
 
-    private final PartnerRepository repository;
+    private final PartnerDAO partnerDAO;
 
-    public PartnerService(PartnerRepository repository) {
-        if (repository == null) {
-            throw new IllegalArgumentException("Partner repository is required.");
-        }
-        this.repository = repository;
+
+    public PartnerService(PartnerDAO partnerDAO) {
+        this.partnerDAO = partnerDAO;
     }
 
     public void register(Partner partner) {
         validate(partner);
-
-        if (repository.findById(partner.getPartnerId()).isPresent()) {
-            throw new IllegalArgumentException("Partner ID already exists.");
+        if (partnerDAO.findByTaxId(partner.getTaxId()).isPresent()) {
+            throw new IllegalArgumentException("Ya existe un socio con ese NIT.");
         }
-        if (repository.findByTaxId(partner.getTaxId()).isPresent()) {
-            throw new IllegalArgumentException("Tax ID already exists.");
-        }
-
-        repository.save(partner);
+        partner.setId(partnerDAO.nextId());
+        partnerDAO.save(partner);
     }
 
-    public Optional<Partner> findById(int id) {
-        return repository.findById(id);
-    }
-
-    public Optional<Partner> findByTaxId(String taxId) {
-        return repository.findByTaxId(taxId);
-    }
-
-    public List<Partner> findAll() {
-        return repository.findAll();
-    }
-
-    public List<Supplier> findAllSuppliers() {
-        return repository.findAllSuppliers();
-    }
-
-    public List<Workshop> findAllWorkshops() {
-        return repository.findAllWorkshops();
-    }
 
     public void update(Partner partner) {
         validate(partner);
-
-        Partner existing = repository.findById(partner.getPartnerId())
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Partner does not exist."));
-
+        Partner existing = partnerDAO.findById(partner.getId())
+                .orElseThrow(() -> new IllegalArgumentException("El socio no existe."));
         if (!existing.getClass().equals(partner.getClass())) {
-            throw new IllegalArgumentException("Cannot change partner type.");
+            throw new IllegalArgumentException("No se puede cambiar el tipo de socio.");
         }
-
-        Optional<Partner> duplicate = repository.findByTaxId(partner.getTaxId());
-        if (duplicate.isPresent()
-                && duplicate.get().getPartnerId() != partner.getPartnerId()) {
-            throw new IllegalArgumentException("Tax ID belongs to another partner.");
+        Optional<Partner> sameTaxId = partnerDAO.findByTaxId(partner.getTaxId());
+        if (sameTaxId.isPresent() && sameTaxId.get().getId() != partner.getId()) {
+            throw new IllegalArgumentException("Ese NIT pertenece a otro socio.");
         }
-
-        if (!repository.update(partner)) {
-            throw new IllegalStateException("Could not update partner.");
-        }
+        partnerDAO.update(partner);
     }
 
     public void delete(int id) {
-        if (!repository.delete(id)) {
-            throw new IllegalArgumentException("Partner does not exist.");
-        }
+        Partner partner = partnerDAO.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("El socio no existe."));
+        partner.setStatus(PartnerStatus.INACTIVO);
+        partnerDAO.update(partner);
+    }
+
+
+    public Optional<Partner> findById(int id) {
+        return partnerDAO.findById(id);
+    }
+
+
+    public Optional<Partner> findByTaxId(String taxId) {
+        return partnerDAO.findByTaxId(taxId);
+    }
+
+    public List<Partner> findAll() {
+        return partnerDAO.findAll();
+    }
+
+
+    public List<Supplier> findAllSuppliers() {
+        return partnerDAO.findAll().stream()
+                .filter(Supplier.class::isInstance)
+                .map(Supplier.class::cast)
+                .toList();
+    }
+
+  
+    public List<Workshop> findAllWorkshops() {
+        return partnerDAO.findAll().stream()
+                .filter(Workshop.class::isInstance)
+                .map(Workshop.class::cast)
+                .toList();
     }
 
     private void validate(Partner partner) {
         if (partner == null) {
-            throw new IllegalArgumentException("Partner is required.");
+            throw new IllegalArgumentException("El socio es obligatorio.");
         }
-        if (partner.getPartnerId() <= 0) {
-            throw new IllegalArgumentException("Partner ID must be positive.");
-        }
-        if (partner.getAddressId() <= 0) {
-            throw new IllegalArgumentException("Address ID must be positive.");
-        }
-
-        requireText(partner.getCompanyName(), "Company name");
-        requireText(partner.getTaxId(), "Tax ID");
-        requireText(partner.getEmail(), "Email");
-        requireText(partner.getPhone(), "Phone");
-
+        partner.setCompanyName(cleanText(partner.getCompanyName(), "El nombre de la compañía"));
+        partner.setTaxId(cleanText(partner.getTaxId(), "El NIT"));
+        partner.setPhone(cleanText(partner.getPhone(), "El teléfono"));
         if (partner.getStatus() == null) {
-            throw new IllegalArgumentException("Partner status is required.");
+            throw new IllegalArgumentException("El estado es obligatorio.");
         }
-
+        if (partner.getRegistrationDate() == null) {
+            throw new IllegalArgumentException("La fecha de registro es obligatoria.");
+        }
         switch (partner) {
             case Supplier supplier -> {
-                if (supplier.getDeliveryTime() == null
-                        || supplier.getDeliveryTime().isNegative()) {
-                    throw new IllegalArgumentException(
-                            "Delivery time cannot be negative or null.");
+                if (supplier.getDeliveryDays() < 0) {
+                    throw new IllegalArgumentException("Los días de entrega no pueden ser negativos.");
                 }
             }
             case Workshop workshop -> {
-                requireText(workshop.getSpecialtyDescription(), "Specialty");
-                if (workshop.getAvailableSpaces() < 0) {
-                    throw new IllegalArgumentException(
-                            "Available spaces cannot be negative.");
+                workshop.setSpecialty(cleanText(workshop.getSpecialty(), "La especialidad"));
+                if (workshop.getBayCount() < 0) {
+                    throw new IllegalArgumentException("El número de bahías no puede ser negativo.");
                 }
             }
-            default -> throw new IllegalArgumentException("Unsupported partner type.");
+            default -> throw new IllegalArgumentException("Tipo de socio no soportado.");
         }
     }
 
-    private void requireText(String value, String field) {
-        if (value == null || value.trim().isEmpty()) {
-            throw new IllegalArgumentException(field + " is required.");
+    private String cleanText(String value, String field) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException(field + " es obligatorio.");
         }
+        if (value.contains("|") || value.contains("\n") || value.contains("\r")) {
+            throw new IllegalArgumentException(field + " no puede contener '|' ni saltos de línea.");
+        }
+        return value.trim();
     }
 }
