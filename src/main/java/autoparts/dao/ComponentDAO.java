@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Interfaz que define las operaciones de acceso a datos para los componentes y autopartes.
  * 
- * @author 
+ * @author ALVARO
  */
 public interface ComponentDAO {
     
