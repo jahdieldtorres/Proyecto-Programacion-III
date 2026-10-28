@@ -22,7 +22,12 @@ public class AppServices {
         return USER_SERVICE;
     }
 
+<<<<<<< Updated upstream
     public static ComponentService components() {
         return COMPONENT_SERVICE;
+=======
+    public static Object partners() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+>>>>>>> Stashed changes
     }
 }
