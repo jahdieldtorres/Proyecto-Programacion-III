@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * Implementación basada en archivos planos para el acceso a datos de componentes.
  * 
- * @author 
+ * @author ALVARO
  */
 public class ComponentFileDAO implements ComponentDAO {
 
