@@ -7,14 +7,10 @@ import autoparts.util.FileUtil;
  * @author ALVARO
  */
 public class Rim extends Component {
-    private double width;
-    private double profile;
-    private double diameter;
-    private String load;
-    private String material;
-
-    public Rim() {
-    }
+    private int diameterInches;
+    private double widthInches;
+    private String pcd;
+    private RimMaterial material;
 
     /**
      * Crea la clase de componentes con un nombre descriptivo e identificador
@@ -28,18 +24,16 @@ public class Rim extends Component {
      * @param category categoría del componente
      * @param origin origen del componente
      * @param status estado cualitativo del componente
-     * @param width ancho del rin
-     * @param profile perfil del rin
-     * @param diameter tamaño de diametro del rin
-     * @param load carga del rin
+     * @param diameterInches tamaño de diametro del rin en pulgadas
+     * @param widthInches ancho del rin en pulgadas
+     * @param pcd patrón de pernos del rin
      * @param material material del rin
      */
-    public Rim(ComponentType type, int id, String name, String reference, Brand brand, Category category, String origin, String status, double width, double profile, double diameter, String load, String material) {
+    public Rim(ComponentType type, int id, String name, String reference, Brand brand, Category category, String origin, String status, int diameterInches, double widthInches, String pcd, RimMaterial material) {
         super(type, id, name, reference, brand, category, origin, status);
-        this.width = width;
-        this.profile = profile;
-        this.diameter = diameter;
-        this.load = load;
+        this.diameterInches = diameterInches;
+        this.widthInches = widthInches;
+        this.pcd = pcd;
         this.material = material;
     }
 
@@ -50,46 +44,38 @@ public class Rim extends Component {
     @Override
     public String toLine() {
         return FileUtil.join(getType().getFileValue(), getId(), getName(), getReference(), getBrand().getId(),
-                getCategory().getId(), getOrigin(), getStatus(), width, profile, diameter, load, material);
+                getCategory().getId(), getOrigin(), getStatus(), diameterInches, widthInches, pcd, material.getFileValue());
     }
 
-    public double getWidth() {
-        return width;
+    public int getDiameterInches() {
+        return diameterInches;
     }
 
-    public void setWidth(double width) {
-        this.width = width;
+    public void setDiameterInches(int diameterInches) {
+        this.diameterInches = diameterInches;
     }
 
-    public double getProfile() {
-        return profile;
+    public double getWidthInches() {
+        return widthInches;
     }
 
-    public void setProfile(double profile) {
-        this.profile = profile;
+    public void setWidthInches(double widthInches) {
+        this.widthInches = widthInches;
     }
 
-    public double getDiameter() {
-        return diameter;
+    public String getPcd() {
+        return pcd;
     }
 
-    public void setDiameter(double diameter) {
-        this.diameter = diameter;
+    public void setPcd(String pcd) {
+        this.pcd = pcd;
     }
 
-    public String getLoad() {
-        return load;
-    }
-
-    public void setLoad(String load) {
-        this.load = load;
-    }
-
-    public String getMaterial() {
+    public RimMaterial getMaterial() {
         return material;
     }
 
-    public void setMaterial(String material) {
+    public void setMaterial(RimMaterial material) {
         this.material = material;
     }
 }
