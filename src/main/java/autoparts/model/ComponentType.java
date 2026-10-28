@@ -4,7 +4,7 @@ package autoparts.model;
  * Tipo de componente. Cada constante guarda el texto que se escribe en
  * el primer campo de components.csv.
  *
- * @author alvaro
+ * @author ALVARO
  */
 public enum ComponentType {
 
