@@ -4,8 +4,9 @@ import autoparts.model.Component;
 import java.util.List;
 
 /**
- *
- * @author ALVARO
+ * Interfaz que define las operaciones de acceso a datos para los componentes y autopartes.
+ * 
+ * @author 
  */
 public interface ComponentDAO {
     
@@ -20,7 +21,7 @@ public interface ComponentDAO {
      * @param id El identificador del componente
      * @return El objeto Component encontrado, o null en caso contrario
      */
-    Component findById(Long id);
+    Component findById(int id);
     
     /**
      * Guarda un nuevo registro de componente.
@@ -38,6 +39,6 @@ public interface ComponentDAO {
      * Elimina un registro de componente por su identificador único.
      * @param id El identificador del componente a eliminar
      */
-    void delete(Long id);
+    void delete(int id);
     
 }
