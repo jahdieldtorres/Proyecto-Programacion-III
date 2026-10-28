@@ -5,12 +5,12 @@ import autoparts.util.FileUtil;
 /**
  * Clase abstracta que representa un vehículo en el sistema.
  * 
- * @author ALVARO
+ * @author 
  */
 public abstract class Vehicle {
 
     private VehicleType type;
-    private String id;
+    private int id;
     private Brand brand;
     private String modelName;
     private int yearRelease;
@@ -26,7 +26,7 @@ public abstract class Vehicle {
      * @param yearRelease año de lanzamiento del vehículo
      * @param status estado cualitativo del vehículo
      */
-    public Vehicle(VehicleType type, String id, Brand brand, String modelName, int yearRelease, String status) {
+    public Vehicle(VehicleType type, int id, Brand brand, String modelName, int yearRelease, String status) {
         this.type = type;
         this.id = id;
         this.brand = brand;
@@ -51,11 +51,11 @@ public abstract class Vehicle {
         this.type = type;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
