@@ -42,11 +42,26 @@ docs/                                Documentación del proyecto
 
 **Regla de capas:** la vista solo llama a servicios; los servicios solo llaman a interfaces DAO; nadie lee ni escribe archivos fuera de `dao.file`. Los servicios reciben el DAO por constructor.
 
-### Agregar una pantalla al menú
+### Crear una pantalla (plantilla)
 
-1. Crear `NombreVista.fxml` en `src/main/resources/autoparts/view/` con su `NombreVistaController` en `autoparts.view`.
-2. Las vistas del menú ya están conectadas por nombre en `DashboardController`: `Catalog.fxml`, `Comparator.fxml`, `Partners.fxml` y `MyAccount.fxml`. Mientras el archivo no exista, se muestra "Sección en construcción".
-3. Los estilos nuevos van en `styles.css`, en la sección de su módulo.
+Todas las pantallas de listado parten de la misma plantilla, para que se vean iguales:
+`ListTemplate.fxml` + `ListTemplateController` (título, buscador, filtro, tabla y mensajes).
+
+1. Copiar `src/main/resources/autoparts/view/ListTemplate.fxml` con el nombre de la pantalla. Las del menú ya están conectadas por nombre en `DashboardController`: `Catalog.fxml`, `Comparator.fxml`, `Partners.fxml` y `MyAccount.fxml` (mientras no existan, se muestra "Sección en construcción").
+2. Copiar `ListTemplateController.java` como `NombreController` y cambiar en el `.fxml` el `fx:controller`.
+3. Seguir los comentarios `REEMPLAZAR:`: la clase del modelo en la tabla, las columnas, las opciones del filtro y la llamada al servicio.
+4. Si el servicio es nuevo, agregarlo en `AppServices` con su FileDAO, por ejemplo:
+   `private static final ComponentService COMPONENT_SERVICE = new ComponentService(new ComponentFileDAO(), ...);` y su método `components()`.
+5. Borrar lo marcado como "Solo para la plantilla" (`ExampleItem`, `exampleData`, `filter`).
+
+**Reglas de diseño**
+- Partir siempre de la plantilla; no empezar una pantalla de cero.
+- Usar solo clases de `styles.css` (`page-title`, `primary-button`, `secondary-text`, `highlight-row`...). Nada de `style="..."` en el `.fxml` ni colores escritos a mano.
+- Si hace falta un estilo nuevo, va al final de `styles.css`, en una sección con el nombre del módulo.
+- El controlador solo llama a servicios (vía `AppServices`); nunca a un DAO ni a `FileUtil`.
+- Los errores se muestran en `lblMessage` (capturando `InvalidDataException` y `PersistenceException`), no en ventanas emergentes.
+
+Si usan IA para hacer su pantalla, el prompt está en `docs/prompt-pantallas.md`.
 
 ## Convenciones
 
