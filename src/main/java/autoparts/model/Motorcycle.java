@@ -24,8 +24,8 @@ public class Motorcycle extends Vehicle {
      * @param cylinders el número de cilindros de la motocicleta
      * @param type el tipo específico de la motocicleta
      */
-    public Motorcycle(VehicleType vehicleType, String id, Brand brand, String modelName, int yearRelease, String status, int cylinders, MotorcycleType type) {
-        super(vehicleType.MOTOCICLETA, id, brand, modelName, yearRelease, status);
+    public Motorcycle(VehicleType vehicleType, int id, Brand brand, String modelName, int yearRelease, String status, int cylinders, MotorcycleType type) {
+        super(VehicleType.MOTOCICLETA, id, brand, modelName, yearRelease, status);
         this.cylinders = cylinders;
         this.type = type;
     }
