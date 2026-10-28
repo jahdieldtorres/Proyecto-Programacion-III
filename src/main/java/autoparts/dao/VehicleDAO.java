@@ -4,7 +4,8 @@ import autoparts.model.Vehicle;
 import java.util.List;
 
 /**
- *
+ * Interfaz que define las operaciones de acceso a datos para los vehículos.
+ * 
  * @author ALVARO
  */
 public interface VehicleDAO {
@@ -20,7 +21,7 @@ public interface VehicleDAO {
      * @param id El identificador del vehículo
      * @return El objeto Vehicle encontrado, o null en caso contrario
      */
-    Vehicle findById(Long id);
+    Vehicle findById(int id);
     
     /**
      * Guarda un nuevo registro de vehículo.
@@ -38,6 +39,6 @@ public interface VehicleDAO {
      * Elimina un registro de vehículo por su identificador único.
      * @param id El identificador del vehículo a eliminar
      */
-    void delete(Long id);
+    void delete(int id);
     
 }
