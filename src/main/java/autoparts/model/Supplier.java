@@ -1,24 +1,48 @@
-
 package autoparts.model;
 
-import java.time.Duration;
+import autoparts.util.FileUtil;
 
+import java.time.LocalDate;
+
+ 
 public class Supplier extends Partner {
 
-    private Duration deliveryTime;
+    private int deliveryDays;
 
-    public Supplier(int partnerId, String companyName, String taxId,
-            String email, String phone, int addressId,
-            PartnerStatus status, Duration deliveryTime) {
-        super(partnerId, companyName, taxId, email, phone, addressId, status);
-        this.deliveryTime = deliveryTime;
+    /**
+     * Crea un proveedor.
+     *
+     * @param id               identificador del socio
+     * @param companyName      nombre de la compañía
+     * @param taxId            NIT de la compañía
+     * @param phone            teléfono de contacto
+     * @param status           estado del socio
+     * @param registrationDate fecha de registro
+     * @param deliveryDays     días de entrega
+     */
+    public Supplier(int id, String companyName, String taxId, String phone,
+            PartnerStatus status, LocalDate registrationDate, int deliveryDays) {
+        super(id, companyName, taxId, phone, status, registrationDate);
+        this.deliveryDays = deliveryDays;
     }
 
-    public Duration getDeliveryTime() {
-        return deliveryTime;
+    public Supplier(String line) {
+        this(FileUtil.split(line));
     }
 
-    public void setDeliveryTime(Duration deliveryTime) {
-        this.deliveryTime = deliveryTime;
+    private Supplier(String[] fields) {
+        super(fields);
+        if (fields.length != COMMON_FIELDS + 1) {
+            throw new IllegalArgumentException("Un proveedor tiene " + (COMMON_FIELDS + 1) + " campos.");
+        }
+        this.deliveryDays = Integer.parseInt(fields[7].trim());
     }
+
+    @Override
+    public String toLine() {
+        return lineWith(TYPE_SUPPLIER, deliveryDays);
+    }
+
+    public int getDeliveryDays() { return deliveryDays; }
+    public void setDeliveryDays(int deliveryDays) { this.deliveryDays = deliveryDays; }
 }

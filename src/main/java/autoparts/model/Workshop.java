@@ -1,33 +1,62 @@
-
 package autoparts.model;
+
+import autoparts.util.FileUtil;
+
+import java.time.LocalDate;
+
 
 public class Workshop extends Partner {
 
-    private String specialtyDescription;
-    private int availableSpaces;
+    private String specialty;
+    private int bayCount;
 
-    public Workshop(int partnerId, String companyName, String taxId,
-            String email, String phone, int addressId,
-            PartnerStatus status, String specialtyDescription,
-            int availableSpaces) {
-        super(partnerId, companyName, taxId, email, phone, addressId, status);
-        this.specialtyDescription = specialtyDescription;
-        this.availableSpaces = availableSpaces;
+    /**
+     * Crea un taller.
+     *
+     * @param id               identificador del socio
+     * @param companyName      nombre de la compañía
+     * @param taxId            NIT de la compañía
+     * @param phone            teléfono de contacto
+     * @param status           estado del socio
+     * @param registrationDate fecha de registro
+     * @param specialty        especialidad del taller
+     * @param bayCount         número de bahías
+     */
+    public Workshop(int id, String companyName, String taxId, String phone,
+            PartnerStatus status, LocalDate registrationDate,
+            String specialty, int bayCount) {
+
+        super(id, companyName, taxId, phone, status, registrationDate);
+        this.specialty = specialty;
+        this.bayCount = bayCount;
     }
 
-    public String getSpecialtyDescription() {
-        return specialtyDescription;
+    /**
+     * Crea un taller desde una línea de {@code partners.csv}.
+     *
+     * @param line línea con los campos separados por "|"
+     */
+    public Workshop(String line) {
+        this(FileUtil.split(line));
     }
 
-    public void setSpecialtyDescription(String specialtyDescription) {
-        this.specialtyDescription = specialtyDescription;
+    private Workshop(String[] fields) {
+        super(fields);
+        if (fields.length != COMMON_FIELDS + 2) {
+            throw new IllegalArgumentException("Un taller tiene " + (COMMON_FIELDS + 2) + " campos.");
+        }
+        this.specialty = fields[7];
+        this.bayCount = Integer.parseInt(fields[8].trim());
     }
 
-    public int getAvailableSpaces() {
-        return availableSpaces;
+    @Override
+    public String toLine() {
+        return lineWith(TYPE_WORKSHOP, specialty, bayCount);
     }
 
-    public void setAvailableSpaces(int availableSpaces) {
-        this.availableSpaces = availableSpaces;
-    }
+    public String getSpecialty() { return specialty; }
+    public void setSpecialty(String specialty) { this.specialty = specialty; }
+    public int getBayCount() { return bayCount; }
+    public void setBayCount(int bayCount) { this.bayCount = bayCount; }
+
 }
