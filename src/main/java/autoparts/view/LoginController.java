@@ -1,5 +1,8 @@
 package autoparts.view;
 
+import autoparts.AppServices;
+import autoparts.exception.InvalidDataException;
+import autoparts.exception.PersistenceException;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -8,8 +11,8 @@ import javafx.scene.control.TextField;
 /**
  * Controlador de la pantalla de inicio de sesión (Login.fxml).
  *
- * PENDIENTE (rama feature/user-management): validar el usuario con UserService.
- * Por ahora solo revisa que los campos no estén vacíos.
+ * Envía el correo y la contraseña a UserService y muestra el mensaje de error
+ * si las credenciales no son válidas.
  *
  * @author Jahdiel Torres
  */
@@ -24,15 +27,18 @@ public class LoginController {
 
     @FXML
     private void login() {
-        if (txtEmail.getText().isBlank() || txtPassword.getText().isBlank()) {
-            lblMessage.setText("Ingresa tu correo y tu contraseña.");
-            return;
+        try {
+            AppServices.users().login(txtEmail.getText(), txtPassword.getText());
+            Navigator.goTo(Navigator.DASHBOARD);
+        } catch (InvalidDataException e) {
+            lblMessage.setText(e.getMessage());
+        } catch (PersistenceException e) {
+            lblMessage.setText("No se pudieron leer los usuarios. Intenta de nuevo.");
         }
-        Navigator.goTo(Navigator.DASHBOARD);
     }
 
     @FXML
     private void createAccount() {
-        lblMessage.setText("El registro de usuarios aún está en construcción.");
+        Navigator.goTo(Navigator.REGISTER);
     }
 }

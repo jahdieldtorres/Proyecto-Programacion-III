@@ -28,6 +28,8 @@
 
             <Region VBox.vgrow="ALWAYS"/>
             <Separator styleClass="menu-separator"/>
+            <Label fx:id="lblUser" styleClass="sidebar-user" wrapText="true"/>
+            <Label fx:id="lblRole" styleClass="sidebar-subtitle"/>
             <Button text="Cerrar sesión" onAction="#logout" styleClass="menu-button" maxWidth="Infinity"/>
         </VBox>
     </left>
