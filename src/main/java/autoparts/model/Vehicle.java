@@ -5,7 +5,7 @@ import autoparts.util.FileUtil;
 /**
  * Clase abstracta que representa un vehículo en el sistema.
  * 
- * @author 
+ * @author ALVARO
  */
 public abstract class Vehicle {
 
