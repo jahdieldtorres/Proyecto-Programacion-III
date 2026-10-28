@@ -1,9 +1,11 @@
 package autoparts.model;
 
+import autoparts.util.FileUtil;
+
 /**
  * Clase que describe las marcas propietarias de las autopartes y los automóviles disponibles.
  * 
- * @author alvaro
+ * @author ALVARO
  */
 public class Brand {
     private int id;
@@ -11,16 +13,23 @@ public class Brand {
 
     public Brand(){}
     
-    
     /**
-     * Crea la clase de marca parametrizada con un nuombre e identificador propios.
+     * Crea la clase de marca parametrizada con un nombre e identificador propios.
      *
-     * @param id        Identificador único de marca
-     * @param name      Nombre de la marca
+     * @param id Identificador único de marca
+     * @param name Nombre de la marca
      */
     public Brand(int id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    /**
+     * Convierte el objeto en una línea de registro.
+     * @return Devuelve la línea para guardar en brands.csv.
+     */
+    public String toLine() {
+        return FileUtil.join(id, name);
     }
     
     public int getId() {
