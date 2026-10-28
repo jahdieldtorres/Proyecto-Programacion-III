@@ -18,6 +18,7 @@ public class Navigator {
 
     public static final String LOGIN = "Login.fxml";
     public static final String DASHBOARD = "Dashboard.fxml";
+    public static final String REGISTER = "Register.fxml";
 
     private static Stage window;
 

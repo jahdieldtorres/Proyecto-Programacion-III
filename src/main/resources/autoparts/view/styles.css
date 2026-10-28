@@ -53,6 +53,11 @@
     -fx-font-size: 13px;
 }
 
+.success-message {
+    -fx-text-fill: #1E7B4A;
+    -fx-font-size: 13px;
+}
+
 .section-title {
     -fx-font-size: 22px;
     -fx-font-weight: bold;
@@ -145,6 +150,12 @@
     -fx-text-fill: white;
     -fx-font-size: 26px;
     -fx-font-weight: bold;
+    -fx-padding: 0 0 0 10;
+}
+
+.sidebar-user {
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
     -fx-padding: 0 0 0 10;
 }
 
