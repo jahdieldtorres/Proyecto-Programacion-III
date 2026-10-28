@@ -18,7 +18,6 @@ public class Tire extends Component {
     /**
      * Crea una nueva instancia de Tire con los valores especificados.
      *
-     * @param type tipo del componente
      * @param id identificador de producto componente
      * @param name nombre descriptivo del componente
      * @param reference referencia de fabricante
@@ -32,8 +31,8 @@ public class Tire extends Component {
      * @param loadIndex índice de carga de la llanta
      * @param speedIndex índice de velocidad de la llanta
      */
-    public Tire(ComponentType type, int id, String name, String reference, Brand brand, Category category, String origin, String status, int widthMm, int profile, int diameterInches, int loadIndex, String speedIndex) {
-        super(type, id, name, reference, brand, category, origin, status);
+    public Tire(int id, String name, String reference, Brand brand, Category category, String origin, String status, int widthMm, int profile, int diameterInches, int loadIndex, String speedIndex) {
+        super(ComponentType.TIRE, id, name, reference, brand, category, origin, status);
         this.widthMm = widthMm;
         this.profile = profile;
         this.diameterInches = diameterInches;
