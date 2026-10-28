@@ -1,8 +1,6 @@
 package autoparts.model;
 
-import autoparts.exception.PersistenceException;
 import autoparts.util.FileUtil;
-import java.util.Map;
 
 /**
  * Clase que contiene los atributos de componentes y autopartes para vehículos automotrices.
@@ -17,7 +15,7 @@ public class Component {
     private String reference;
     private Brand brand;
     private Category category;
-    private String quality;
+    private String origin;
     private String status;
 
     
@@ -38,43 +36,18 @@ public class Component {
      * @param reference referencia de fabricante
      * @param brand marca del componente
      * @param category categoría del componente
-     * @param quality calidad del componente
+     * @param origin origen del componente
      * @param status estado cualitativo del componente
      */
-    public Component(ComponentType type, int id, String name, String reference, Brand brand, Category category, String quality, String status) {
+    public Component(ComponentType type, int id, String name, String reference, Brand brand, Category category, String origin, String status) {
         this.type = type;
         this.id = id;
         this.name = name;
         this.reference = reference;
         this.brand = brand;
         this.category = category;
-        this.quality = quality;
+        this.origin = origin;
         this.status = status;
-    }
-    
-    /**
-     * Crea el componente a partir de una línea de components.csv. Los campos
-     * comunes son:
-     * tipo|id|nombre|referencia|id_marca|id_categoria|calidad|estado.
-     *
-     * @param line línea del archivo
-     * @param brands marcas disponibles, por identificador
-     * @param categories categorías disponibles, por identificador
-     */
-    public Component(String line, Map<Integer, Brand> brands, Map<Integer, Category> categories) {
-        String[] f = FileUtil.split(line);
-        this.type = ComponentType.fromFileValue(f[0]);
-        this.id = Integer.parseInt(f[1]);
-        this.name = f[2];
-        this.reference = f[3];
-        this.brand = brands.get(Integer.parseInt(f[4]));
-        this.category = categories.get(Integer.parseInt(f[5]));
-        this.quality = f[6];
-        this.status = f[7];
-        if (brand == null || category == null) {
-            throw new PersistenceException("El componente " + id
-                    + " apunta a una marca o categoría que no existe.");
-        }
     }
 
     /**
@@ -83,7 +56,7 @@ public class Component {
      */
     public String toLine() {
         return FileUtil.join(type.getFileValue(), id, name, reference, brand.getId(),
-                category.getId(), quality, status);
+                category.getId(), origin, status);
     }
 
     public ComponentType getType() {
@@ -134,12 +107,12 @@ public class Component {
         this.category = category;
     }
 
-    public String getQuality() {
-        return quality;
+    public String getOrigin() {
+        return origin;
     }
 
-    public void setQuality(String quality) {
-        this.quality = quality;
+    public void setOrigin(String origin) {
+        this.origin = origin;
     }
 
     public String getStatus() {
