@@ -23,19 +23,14 @@ public class Workshop extends Partner {
      * @param bayCount         número de bahías
      */
     public Workshop(int id, String companyName, String taxId, String phone,
-            PartnerStatus status, LocalDate registrationDate,
+            Status status, LocalDate registrationDate,
             String specialty, int bayCount) {
-
         super(id, companyName, taxId, phone, status, registrationDate);
         this.specialty = specialty;
         this.bayCount = bayCount;
     }
 
-    /**
-     * Crea un taller desde una línea de {@code partners.csv}.
-     *
-     * @param line línea con los campos separados por "|"
-     */
+
     public Workshop(String line) {
         this(FileUtil.split(line));
     }
@@ -58,5 +53,4 @@ public class Workshop extends Partner {
     public void setSpecialty(String specialty) { this.specialty = specialty; }
     public int getBayCount() { return bayCount; }
     public void setBayCount(int bayCount) { this.bayCount = bayCount; }
-
 }

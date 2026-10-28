@@ -4,7 +4,7 @@ import autoparts.util.FileUtil;
 
 import java.time.LocalDate;
 
- 
+
 public class Supplier extends Partner {
 
     private int deliveryDays;
@@ -21,10 +21,11 @@ public class Supplier extends Partner {
      * @param deliveryDays     días de entrega
      */
     public Supplier(int id, String companyName, String taxId, String phone,
-            PartnerStatus status, LocalDate registrationDate, int deliveryDays) {
+            Status status, LocalDate registrationDate, int deliveryDays) {
         super(id, companyName, taxId, phone, status, registrationDate);
         this.deliveryDays = deliveryDays;
     }
+
 
     public Supplier(String line) {
         this(FileUtil.split(line));

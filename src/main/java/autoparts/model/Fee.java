@@ -11,7 +11,7 @@ public class Fee {
     private int serviceId;
     private int amount;
     private LocalDate startDate;
-    private PartnerStatus status;
+    private Status status;
 
     /**
      * Crea una tarifa.
@@ -22,20 +22,15 @@ public class Fee {
      * @param startDate fecha desde la que rige
      * @param status    estado de la tarifa
      */
-    public Fee(int id, int serviceId, int amount, LocalDate startDate, PartnerStatus status) {
+    public Fee(int id, int serviceId, int amount, LocalDate startDate, Status status) {
         this.id = id;
-
         this.serviceId = serviceId;
         this.amount = amount;
         this.startDate = startDate;
         this.status = status;
     }
 
-    /**
-     * Crea una tarifa desde una línea de {@code fees.csv}.
-     *
-     * @param line línea con los campos separados por "|"
-     */
+
     public Fee(String line) {
         String[] f = FileUtil.split(line);
         if (f.length != 5) {
@@ -45,18 +40,12 @@ public class Fee {
         this.serviceId = Integer.parseInt(f[1].trim());
         this.amount = Integer.parseInt(f[2].trim());
         this.startDate = LocalDate.parse(f[3].trim());
-        this.status = PartnerStatus.valueOf(f[4].trim());
+        this.status = Status.valueOf(f[4].trim());
     }
 
-    /**
-     * Devuelve la línea de esta tarifa para {@code fees.csv}.
-     *
-     * @return línea con los campos separados por "|"
-     */
     public String toLine() {
         return FileUtil.join(id, serviceId, amount, startDate, status);
     }
-
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -66,6 +55,6 @@ public class Fee {
     public void setAmount(int amount) { this.amount = amount; }
     public LocalDate getStartDate() { return startDate; }
     public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
-    public PartnerStatus getStatus() { return status; }
-    public void setStatus(PartnerStatus status) { this.status = status; }
+    public Status getStatus() { return status; }
+    public void setStatus(Status status) { this.status = status; }
 }
