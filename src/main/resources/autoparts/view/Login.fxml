@@ -7,6 +7,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
@@ -18,7 +20,9 @@
     <!-- Panel izquierdo: marca -->
     <StackPane HBox.hgrow="ALWAYS" styleClass="login-brand">
         <VBox alignment="CENTER" spacing="14" maxWidth="460">
-            <Label text="ORIGEN" styleClass="logo-large"/>
+            <ImageView fitWidth="240" preserveRatio="true" smooth="true">
+                <image><Image url="@images/logo.png"/></image>
+            </ImageView>
             <Label text="Portal inteligente de repuestos" styleClass="brand-title"/>
             <Label text="Compara precios, disponibilidad y procedencia de los almacenes de repuestos de tu ciudad."
                    wrapText="true" styleClass="secondary-text" textAlignment="CENTER"/>
