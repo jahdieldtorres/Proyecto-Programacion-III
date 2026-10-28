@@ -9,14 +9,11 @@ import autoparts.util.FileUtil;
  */
 public class Tire extends Component {
 
-    private double width;
-    private double profile;
-    private double diameter;
-    private double load;
-    private double velocityIndex;
-
-    public Tire() {
-    }
+    private int widthMm;
+    private int profile;
+    private int diameterInches;
+    private int loadIndex;
+    private String speedIndex;
 
     /**
      * Crea una nueva instancia de Tire con los valores especificados.
@@ -29,19 +26,19 @@ public class Tire extends Component {
      * @param category categoría del componente
      * @param origin origen del componente
      * @param status estado cualitativo del componente
-     * @param width ancho de la llanta
+     * @param widthMm ancho de la llanta en milímetros
      * @param profile perfil de la llanta
-     * @param diameter diámetro de la llanta
-     * @param load carga de la llanta
-     * @param velocityIndex índice de velocidad de la llanta
+     * @param diameterInches diámetro de la llanta en pulgadas
+     * @param loadIndex índice de carga de la llanta
+     * @param speedIndex índice de velocidad de la llanta
      */
-    public Tire(ComponentType type, int id, String name, String reference, Brand brand, Category category, String origin, String status, double width, double profile, double diameter, double load, double velocityIndex) {
+    public Tire(ComponentType type, int id, String name, String reference, Brand brand, Category category, String origin, String status, int widthMm, int profile, int diameterInches, int loadIndex, String speedIndex) {
         super(type, id, name, reference, brand, category, origin, status);
-        this.width = width;
+        this.widthMm = widthMm;
         this.profile = profile;
-        this.diameter = diameter;
-        this.load = load;
-        this.velocityIndex = velocityIndex;
+        this.diameterInches = diameterInches;
+        this.loadIndex = loadIndex;
+        this.speedIndex = speedIndex;
     }
 
     /**
@@ -51,46 +48,46 @@ public class Tire extends Component {
     @Override
     public String toLine() {
         return FileUtil.join(getType().getFileValue(), getId(), getName(), getReference(), getBrand().getId(),
-                getCategory().getId(), getOrigin(), getStatus(), width, profile, diameter, load, velocityIndex);
+                getCategory().getId(), getOrigin(), getStatus(), widthMm, profile, diameterInches, loadIndex, speedIndex);
     }
 
-    public double getWidth() {
-        return width;
+    public int getWidthMm() {
+        return widthMm;
     }
 
-    public void setWidth(double width) {
-        this.width = width;
+    public void setWidthMm(int widthMm) {
+        this.widthMm = widthMm;
     }
 
-    public double getProfile() {
+    public int getProfile() {
         return profile;
     }
 
-    public void setProfile(double profile) {
+    public void setProfile(int profile) {
         this.profile = profile;
     }
 
-    public double getDiameter() {
-        return diameter;
+    public int getDiameterInches() {
+        return diameterInches;
     }
 
-    public void setDiameter(double diameter) {
-        this.diameter = diameter;
+    public void setDiameterInches(int diameterInches) {
+        this.diameterInches = diameterInches;
     }
 
-    public double getLoad() {
-        return load;
+    public int getLoadIndex() {
+        return loadIndex;
     }
 
-    public void setLoad(double load) {
-        this.load = load;
+    public void setLoadIndex(int loadIndex) {
+        this.loadIndex = loadIndex;
     }
 
-    public double getVelocityIndex() {
-        return velocityIndex;
+    public String getSpeedIndex() {
+        return speedIndex;
     }
 
-    public void setVelocityIndex(double velocityIndex) {
-        this.velocityIndex = velocityIndex;
+    public void setSpeedIndex(String speedIndex) {
+        this.speedIndex = speedIndex;
     }
 }
