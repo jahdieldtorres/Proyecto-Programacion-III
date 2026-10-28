@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="autoparts.view.ComparatorController" spacing="18">
+
+    <Label text="Comparador de ofertas" styleClass="section-title"/>
+
+    <!-- Búsqueda y criterio -->
+    <VBox spacing="12" styleClass="card">
+        <padding><Insets top="18" right="20" bottom="18" left="20"/></padding>
+
+        <HBox spacing="10">
+            <TextField fx:id="txtSearch" promptText="Buscar componente por nombre o referencia..."
+                       HBox.hgrow="ALWAYS" onAction="#search" styleClass="search-field"/>
+            <Button text="Buscar" onAction="#search" styleClass="secondary-button"/>
+        </HBox>
+
+        <HBox spacing="14" alignment="BOTTOM_LEFT">
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="Componente" styleClass="field-label"/>
+                <ComboBox fx:id="cmbComponent" maxWidth="Infinity"/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Criterio" styleClass="field-label"/>
+                <ComboBox fx:id="cmbCriterion" prefWidth="200"/>
+            </VBox>
+            <Button text="Comparar" onAction="#compare" styleClass="primary-button"/>
+        </HBox>
+
+        <Label fx:id="lblMessage" styleClass="error-message" wrapText="true"/>
+        <Label fx:id="lblSummary" styleClass="secondary-text" wrapText="true"/>
+    </VBox>
+
+    <!-- Tabla de ofertas: la primera fila es la mejor -->
+    <VBox spacing="10" VBox.vgrow="ALWAYS" styleClass="card">
+        <padding><Insets top="18" right="20" bottom="18" left="20"/></padding>
+        <TableView fx:id="tblOffers" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colSupplier" text="Proveedor" prefWidth="200"/>
+                <TableColumn fx:id="colPrice" text="Precio" prefWidth="100"/>
+                <TableColumn fx:id="colShipping" text="Envío" prefWidth="90"/>
+                <TableColumn fx:id="colTotal" text="Costo total" prefWidth="110"/>
+                <TableColumn fx:id="colWarranty" text="Garantía" prefWidth="90"/>
+                <TableColumn fx:id="colDelivery" text="Entrega" prefWidth="80"/>
+                <TableColumn fx:id="colCondition" text="Condición" prefWidth="120"/>
+                <TableColumn fx:id="colStock" text="Stock" prefWidth="60"/>
+            </columns>
+            <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
+        </TableView>
+    </VBox>
+</VBox>
