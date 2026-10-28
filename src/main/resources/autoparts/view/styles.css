@@ -222,7 +222,92 @@
     -fx-text-fill: -color-dark-blue;
 }
 
+/* ---------- Pantallas de listado (plantilla) ----------
+ * Usadas por ListTemplate.fxml y todas las pantallas copiadas de ella
+ * (catálogo, socios, comparador...).
+ */
+.page-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.toolbar {
+    -fx-alignment: center-left;
+}
+
+.combo-box {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 10;
+    -fx-padding: 4 6;
+}
+
+.table-view {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 12;
+    -fx-padding: 4;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: -color-light-blue;
+    -fx-background-radius: 10 10 0 0;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-padding: 8 4;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: -color-dark-blue;
+    -fx-font-weight: bold;
+    -fx-alignment: center-left;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: white;
+    -fx-cell-size: 38px;
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: #F6F9FC;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: -color-blue;
+}
+
+.table-view .table-row-cell:selected .text {
+    -fx-fill: white;
+}
+
+.table-view .table-cell {
+    -fx-padding: 0 10;
+    -fx-alignment: center-left;
+}
+
+/* Fila resaltada, por ejemplo la mejor oferta del comparador */
+.table-view .table-row-cell.highlight-row {
+    -fx-background-color: #E3F6EC;
+}
+
+.table-view .table-row-cell.highlight-row .text {
+    -fx-font-weight: bold;
+    -fx-fill: #1E7B4A;
+}
+
+.table-view .table-row-cell.highlight-row:selected {
+    -fx-background-color: -color-blue;
+}
+
+.table-view .table-row-cell.highlight-row:selected .text {
+    -fx-fill: white;
+}
+
 /* ---------- Módulos ----------
- * Catálogo, comparador, socios y usuarios: agreguen sus estilos debajo,
- * cada uno en su propia sección.
+ * Si su pantalla necesita un estilo que no está arriba, agréguenlo
+ * debajo, en una sección con el nombre de su módulo.
  */
