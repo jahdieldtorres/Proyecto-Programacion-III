@@ -2,7 +2,7 @@ package autoparts.service;
 
 import autoparts.dao.PartnerDAO;
 import autoparts.model.Partner;
-import autoparts.model.PartnerStatus;
+import autoparts.model.Status;
 import autoparts.model.Supplier;
 import autoparts.model.Workshop;
 
@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 
 
- 
 public class PartnerService {
 
     private final PartnerDAO partnerDAO;
@@ -29,7 +28,7 @@ public class PartnerService {
         partnerDAO.save(partner);
     }
 
-
+ 
     public void update(Partner partner) {
         validate(partner);
         Partner existing = partnerDAO.findById(partner.getId())
@@ -44,10 +43,11 @@ public class PartnerService {
         partnerDAO.update(partner);
     }
 
+
     public void delete(int id) {
         Partner partner = partnerDAO.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("El socio no existe."));
-        partner.setStatus(PartnerStatus.INACTIVO);
+        partner.setStatus(Status.INACTIVO);
         partnerDAO.update(partner);
     }
 
@@ -56,10 +56,10 @@ public class PartnerService {
         return partnerDAO.findById(id);
     }
 
-
     public Optional<Partner> findByTaxId(String taxId) {
         return partnerDAO.findByTaxId(taxId);
     }
+
 
     public List<Partner> findAll() {
         return partnerDAO.findAll();
@@ -73,7 +73,7 @@ public class PartnerService {
                 .toList();
     }
 
-  
+
     public List<Workshop> findAllWorkshops() {
         return partnerDAO.findAll().stream()
                 .filter(Workshop.class::isInstance)
@@ -94,19 +94,17 @@ public class PartnerService {
         if (partner.getRegistrationDate() == null) {
             throw new IllegalArgumentException("La fecha de registro es obligatoria.");
         }
-        switch (partner) {
-            case Supplier supplier -> {
-                if (supplier.getDeliveryDays() < 0) {
-                    throw new IllegalArgumentException("Los días de entrega no pueden ser negativos.");
-                }
+        if (partner instanceof Supplier supplier) {
+            if (supplier.getDeliveryDays() < 0) {
+                throw new IllegalArgumentException("Los días de entrega no pueden ser negativos.");
             }
-            case Workshop workshop -> {
-                workshop.setSpecialty(cleanText(workshop.getSpecialty(), "La especialidad"));
-                if (workshop.getBayCount() < 0) {
-                    throw new IllegalArgumentException("El número de bahías no puede ser negativo.");
-                }
+        } else if (partner instanceof Workshop workshop) {
+            workshop.setSpecialty(cleanText(workshop.getSpecialty(), "La especialidad"));
+            if (workshop.getBayCount() < 0) {
+                throw new IllegalArgumentException("El número de bahías no puede ser negativo.");
             }
-            default -> throw new IllegalArgumentException("Tipo de socio no soportado.");
+        } else {
+            throw new IllegalArgumentException("Tipo de socio no soportado.");
         }
     }
 
