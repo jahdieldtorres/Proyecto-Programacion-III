@@ -16,7 +16,6 @@ public class Rim extends Component {
      * Crea la clase de componentes con un nombre descriptivo e identificador
      * único de postulamiento.
      *
-     * @param type tipo del componente
      * @param id identificador de producto componente
      * @param name nombre descriptivo del componente
      * @param reference referencia de fabricante
@@ -29,8 +28,8 @@ public class Rim extends Component {
      * @param pcd patrón de pernos del rin
      * @param material material del rin
      */
-    public Rim(ComponentType type, int id, String name, String reference, Brand brand, Category category, String origin, String status, int diameterInches, double widthInches, String pcd, RimMaterial material) {
-        super(type, id, name, reference, brand, category, origin, status);
+    public Rim(int id, String name, String reference, Brand brand, Category category, String origin, String status, int diameterInches, double widthInches, String pcd, RimMaterial material) {
+        super(ComponentType.RIM, id, name, reference, brand, category, origin, status);
         this.diameterInches = diameterInches;
         this.widthInches = widthInches;
         this.pcd = pcd;
