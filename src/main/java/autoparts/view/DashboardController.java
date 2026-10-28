@@ -1,5 +1,7 @@
 package autoparts.view;
 
+import autoparts.model.User;
+import autoparts.service.Session;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -36,6 +38,10 @@ public class DashboardController {
     private Button btnPartners;
     @FXML
     private Button btnMyAccount;
+    @FXML
+    private Label lblUser;
+    @FXML
+    private Label lblRole;
 
     private Button activeButton;
 
@@ -44,7 +50,24 @@ public class DashboardController {
      */
     @FXML
     private void initialize() {
+        showUser();
         goToHome();
+    }
+
+    /**
+     * Muestra quién inició sesión y oculta las opciones que su rol no puede usar.
+     */
+    private void showUser() {
+        User user = Session.getUser();
+        if (user == null) {
+            return;
+        }
+        lblUser.setText(user.getName());
+        lblRole.setText(user.getRole());
+        if (User.ROLE_CLIENT.equals(user.getRole())) {
+            btnPartners.setVisible(false);
+            btnPartners.setManaged(false);
+        }
     }
 
     @FXML
@@ -74,6 +97,7 @@ public class DashboardController {
 
     @FXML
     private void logout() {
+        Session.close();
         Navigator.goTo(Navigator.LOGIN);
     }
 
