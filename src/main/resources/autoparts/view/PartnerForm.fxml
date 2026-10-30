@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Formulario para crear o editar un socio (proveedor o taller).
+    Copia de FormTemplate.fxml: título, campos, lblMessage, Guardar y Cancelar.
+    Los campos de proveedor y de taller se muestran según el tipo elegido.
+    Sin estilos en línea: todos los estilos están en styles.css.
+-->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="autoparts.view.PartnerFormController" spacing="14" prefWidth="460"
+      styleClass="app-background">
+    <padding><Insets top="24" right="28" bottom="24" left="28"/></padding>
+
+    <!-- Título -->
+    <Label fx:id="lblTitle" text="Nuevo socio" styleClass="page-title"/>
+
+    <!-- Campos comunes -->
+    <VBox spacing="4">
+        <Label text="Tipo" styleClass="field-label"/>
+        <ComboBox fx:id="cmbType" onAction="#onTypeChanged" maxWidth="Infinity"/>
+    </VBox>
+    <VBox spacing="4">
+        <Label text="Nombre de la compañía" styleClass="field-label"/>
+        <TextField fx:id="txtName" promptText="Ej.: AutoMax Repuestos"/>
+    </VBox>
+    <VBox spacing="4">
+        <Label text="NIT" styleClass="field-label"/>
+        <TextField fx:id="txtTaxId" promptText="Ej.: 900123456-1"/>
+    </VBox>
+    <VBox spacing="4">
+        <Label text="Teléfono" styleClass="field-label"/>
+        <TextField fx:id="txtPhone" promptText="Ej.: 3001112233"/>
+    </VBox>
+
+    <!-- Solo proveedor -->
+    <VBox fx:id="boxSupplier" spacing="4">
+        <Label text="Días de entrega" styleClass="field-label"/>
+        <TextField fx:id="txtDeliveryDays" promptText="Ej.: 3"/>
+    </VBox>
+
+    <!-- Solo taller -->
+    <VBox fx:id="boxWorkshop" spacing="14">
+        <VBox spacing="4">
+            <Label text="Especialidad" styleClass="field-label"/>
+            <TextField fx:id="txtSpecialty" promptText="Ej.: Frenos"/>
+        </VBox>
+        <VBox spacing="4">
+            <Label text="Bahías" styleClass="field-label"/>
+            <TextField fx:id="txtBayCount" promptText="Ej.: 4"/>
+        </VBox>
+    </VBox>
+
+    <!-- Mensaje de error -->
+    <Label fx:id="lblMessage" styleClass="error-message" wrapText="true"/>
+
+    <!-- Botones -->
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Cancelar" onAction="#cancel" styleClass="secondary-button"/>
+        <Button fx:id="btnSave" text="Guardar" onAction="#save" styleClass="primary-button"/>
+    </HBox>
+</VBox>
