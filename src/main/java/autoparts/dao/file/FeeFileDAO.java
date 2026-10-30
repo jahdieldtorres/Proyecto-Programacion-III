@@ -10,8 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
-
+/**
+ * Implementación de {@link FeeDAO} con archivos planos: guarda las tarifas en
+ * {@code fees.csv}, una línea por tarifa. Es la única clase que toca ese archivo.
+ *
+ * Cuando se pase a base de datos, esta clase se reemplaza por otra que
+ * implemente la misma interfaz y los servicios no cambian.
+ *
+ * @author Héctor Guevara
+ */
 public class FeeFileDAO implements FeeDAO {
 
     private static final String PATH = FlatFiles.FEES;
