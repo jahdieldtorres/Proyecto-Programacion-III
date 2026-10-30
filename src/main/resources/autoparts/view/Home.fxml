@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="autoparts.view.HomeController" spacing="22">
+
+    <!-- Encabezado con buscador -->
+    <VBox spacing="12" styleClass="card, hero">
+        <padding><Insets top="32" right="36" bottom="32" left="36"/></padding>
+        <TextFlow>
+            <Text text="El repuesto que necesitas,&#10;" styleClass="hero-title"/>
+            <Text text="al mejor precio" styleClass="hero-title, hero-title-accent"/>
+            <Text text=" y cerca de ti." styleClass="hero-title"/>
+        </TextFlow>
+        <Label text="Compara en un solo lugar lo que ofrecen los almacenes de repuestos de tu ciudad: precio, disponibilidad y procedencia."
+               wrapText="true" styleClass="secondary-text" maxWidth="640"/>
+        <HBox spacing="10" maxWidth="720">
+            <padding><Insets top="8"/></padding>
+            <TextField fx:id="txtSearch" promptText="Buscar repuestos, marcas o referencias..."
+                       HBox.hgrow="ALWAYS" onAction="#search" styleClass="search-field"/>
+            <Button text="Buscar" onAction="#search" styleClass="primary-button"/>
+        </HBox>
+        <Label fx:id="lblMessage" styleClass="secondary-text"/>
+    </VBox>
+
+    <!-- Contadores -->
+    <HBox spacing="18">
+        <VBox spacing="4" HBox.hgrow="ALWAYS" styleClass="card, counter">
+            <Label fx:id="lblParts" styleClass="counter-number"/>
+            <Label text="repuestos en catálogo" styleClass="secondary-text"/>
+        </VBox>
+        <VBox spacing="4" HBox.hgrow="ALWAYS" styleClass="card, counter">
+            <Label fx:id="lblStores" styleClass="counter-number"/>
+            <Label text="locales verificados" styleClass="secondary-text"/>
+        </VBox>
+        <VBox spacing="4" HBox.hgrow="ALWAYS" styleClass="card, counter">
+            <Label fx:id="lblWorkshops" styleClass="counter-number"/>
+            <Label text="talleres aliados" styleClass="secondary-text"/>
+        </VBox>
+    </HBox>
+
+    <Region VBox.vgrow="ALWAYS"/>
+</VBox>

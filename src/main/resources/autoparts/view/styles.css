@@ -1,0 +1,313 @@
+/*
+ * Estilos globales de ORIGEN - Portal de Repuestos.
+ * Todas las vistas usan estas clases; si necesitan un estilo nuevo, agréguenlo aquí
+ * en la sección de su módulo para no duplicar colores.
+ */
+
+/* ---------- Colores (basados en los mockups) ---------- */
+.root {
+    -color-dark-blue: #0C2B4B;
+    -color-blue: #0B5CAD;
+    -color-light-blue: #E3EEF9;
+    -color-background: #EEF3F8;
+    -color-card: #FFFFFF;
+    -color-text: #14213D;
+    -color-muted-text: #5B6B7F;
+    -color-border: #D6E0EA;
+    -color-error: #C0392B;
+
+    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    -fx-font-size: 14px;
+    -fx-background-color: -color-background;
+}
+
+.label {
+    -fx-text-fill: -color-text;
+}
+
+/* ---------- Generales ---------- */
+.app-background {
+    -fx-background-color: -color-background;
+}
+
+.card {
+    -fx-background-color: -color-card;
+    -fx-background-radius: 16;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 16;
+    -fx-effect: dropshadow(gaussian, rgba(12, 43, 75, 0.08), 18, 0, 0, 4);
+}
+
+.secondary-text {
+    -fx-text-fill: -color-muted-text;
+    -fx-font-size: 14px;
+}
+
+.field-label {
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.error-message {
+    -fx-text-fill: -color-error;
+    -fx-font-size: 13px;
+}
+
+.success-message {
+    -fx-text-fill: #1E7B4A;
+    -fx-font-size: 13px;
+}
+
+.section-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+/* ---------- Campos y botones ---------- */
+.text-field, .password-field {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 10;
+    -fx-padding: 10 12;
+}
+
+.text-field:focused, .password-field:focused {
+    -fx-border-color: -color-blue;
+}
+
+.primary-button {
+    -fx-background-color: linear-gradient(to right, #0B4A8F, #0B6FD1);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-padding: 11 22;
+    -fx-cursor: hand;
+}
+
+.primary-button:hover {
+    -fx-background-color: -color-dark-blue;
+}
+
+.secondary-button {
+    -fx-background-color: white;
+    -fx-text-fill: -color-dark-blue;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 11 22;
+    -fx-cursor: hand;
+}
+
+.secondary-button:hover {
+    -fx-background-color: -color-light-blue;
+}
+
+.hyperlink {
+    -fx-text-fill: -color-blue;
+    -fx-border-color: transparent;
+}
+
+/* ---------- Login ---------- */
+.login-background {
+    -fx-background-color: linear-gradient(to bottom right, #F4F8FC, #DCE8F4);
+}
+
+.login-brand {
+    -fx-padding: 40;
+}
+
+.logo-large {
+    -fx-font-size: 64px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-dark-blue;
+}
+
+.brand-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.card-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+.chip {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-padding: 10 14;
+    -fx-text-fill: -color-dark-blue;
+    -fx-effect: dropshadow(gaussian, rgba(12, 43, 75, 0.08), 10, 0, 0, 2);
+}
+
+/* ---------- Menú lateral ---------- */
+.sidebar {
+    -fx-background-color: -color-dark-blue;
+}
+
+.sidebar-logo {
+    -fx-text-fill: white;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 0 10;
+}
+
+.sidebar-user {
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-padding: 0 0 0 10;
+}
+
+.sidebar-subtitle {
+    -fx-text-fill: #9FB6CF;
+    -fx-font-size: 12px;
+    -fx-padding: 0 0 0 10;
+}
+
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #DCE6F2;
+    -fx-font-size: 15px;
+    -fx-alignment: center-left;
+    -fx-padding: 12 16;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+}
+
+.menu-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+}
+
+.menu-active {
+    -fx-background-color: -color-blue;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.menu-active:hover {
+    -fx-background-color: -color-blue;
+}
+
+.menu-separator .line {
+    -fx-border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ---------- Inicio ---------- */
+.hero {
+    -fx-background-color: linear-gradient(to right, #FFFFFF, #E3EEF9);
+}
+
+.hero-title {
+    -fx-font-size: 38px;
+    -fx-font-weight: bold;
+    -fx-fill: -color-text;
+}
+
+.hero-title-accent {
+    -fx-fill: -color-blue;
+}
+
+.search-field {
+    -fx-font-size: 15px;
+}
+
+.counter {
+    -fx-padding: 20 24;
+}
+
+.counter-number {
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-dark-blue;
+}
+
+/* ---------- Pantallas de listado (plantilla) ----------
+ * Usadas por ListTemplate.fxml y todas las pantallas copiadas de ella
+ * (catálogo, socios, comparador...).
+ */
+.page-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.toolbar {
+    -fx-alignment: center-left;
+}
+
+.combo-box {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 10;
+    -fx-padding: 4 6;
+}
+
+.table-view {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 12;
+    -fx-padding: 4;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: -color-light-blue;
+    -fx-background-radius: 10 10 0 0;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-padding: 8 4;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: -color-dark-blue;
+    -fx-font-weight: bold;
+    -fx-alignment: center-left;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: white;
+    -fx-cell-size: 38px;
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: #F6F9FC;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: -color-blue;
+}
+
+.table-view .table-row-cell:selected .text {
+    -fx-fill: white;
+}
+
+.table-view .table-cell {
+    -fx-padding: 0 10;
+    -fx-alignment: center-left;
+}
+
+/* Fila resaltada, por ejemplo la mejor oferta del comparador */
+.table-view .table-row-cell.highlight-row {
+    -fx-background-color: #E3F6EC;
+}
+
+.table-view .table-row-cell.highlight-row .text {
+    -fx-font-weight: bold;
+    -fx-fill: #1E7B4A;
+}
+
+.table-view .table-row-cell.highlight-row:selected {
+    -fx-background-color: -color-blue;
+}
+
+.table-view .table-row-cell.highlight-row:selected .text {
+    -fx-fill: white;
+}
+
+/* ---------- Módulos ----------
+ * Si su pantalla necesita un estilo que no está arriba, agréguenlo
+ * debajo, en una sección con el nombre de su módulo.
+ */

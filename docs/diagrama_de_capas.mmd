@@ -1,0 +1,81 @@
+flowchart TB
+
+    subgraph VIEW["CAPA DE PRESENTACIÓN · autoparts.view"]
+        MAIN["Main / JavaFX Application"]
+        NAV["Navigator"]
+        LOGIN["LoginController<br/>RegisterController"]
+        DASH["DashboardController<br/>HomeController"]
+        MODULES["Controladores funcionales<br/>CatalogController · PartnersController<br/>ComparatorController"]
+        PLANV["Planeados<br/>Inventory · Vehicles · Sales"]
+
+        MAIN --> NAV
+        NAV --> LOGIN
+        NAV --> DASH
+        DASH --> MODULES
+    end
+
+    APP["AppServices<br/>crea cada servicio con su DAO"]
+
+    subgraph SERVICE["CAPA DE LÓGICA DE NEGOCIO · autoparts.service"]
+        SESSION["Session"]
+        USERS["UserService"]
+        CATALOG["ComponentService"]
+        PARTNERS["PartnerService · FeeService<br/>AffiliationService"]
+        OPERATIONS["ComparatorService"]
+        PLANS["Planeados<br/>VehicleService · InventoryService<br/>TransactionService · PaymentService"]
+    end
+
+    subgraph DAO["CAPA DE ACCESO A DATOS · autoparts.dao"]
+        CONTRACTS["Interfaces DAO<br/>UserDAO · ComponentDAO · BrandDAO · CategoryDAO<br/>VehicleDAO · CompatibilityDAO · PartnerDAO<br/>FeeDAO · AffiliationDAO · InventoryDAO"]
+    end
+
+    subgraph IMPL["IMPLEMENTACIONES · autoparts.dao.file"]
+        FILE["Implementaciones FileDAO<br/>usan FileUtil y FlatFiles"]
+        STORAGE[("Archivos .csv<br/>campos separados por |")]
+        FILE --> STORAGE
+    end
+
+    subgraph FUTURE["IMPLEMENTACIÓN FUTURA · autoparts.dao.oracle"]
+        ORACLE["Implementaciones OracleDAO"]
+        DB[("Base de datos Oracle · modelo v5")]
+        ORACLE --> DB
+    end
+
+    subgraph MODEL["CAPA DE MODELO · autoparts.model"]
+        ENTITIES["Entidades de negocio<br/>User · Partner → Supplier / Workshop · Fee · Affiliation<br/>Brand · Category · Component → Tire / Rim / Engine / Transmission<br/>Vehicle → Car / Motorcycle · Inventory"]
+        DTO["Objetos auxiliares<br/>Offer · ComparisonCriterion"]
+    end
+
+    MODULES --> APP
+    LOGIN --> APP
+    APP --> USERS
+    APP --> CATALOG
+    APP --> PARTNERS
+    APP --> OPERATIONS
+
+    USERS --> SESSION
+
+    USERS --> CONTRACTS
+    CATALOG --> CONTRACTS
+    PARTNERS --> CONTRACTS
+    OPERATIONS --> CONTRACTS
+
+    CONTRACTS -. implementada por .-> FILE
+    CONTRACTS -. implementada por .-> ORACLE
+
+    FILE --> ENTITIES
+    ORACLE --> ENTITIES
+    SERVICE --> ENTITIES
+    SERVICE --> DTO
+
+    classDef presentation fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    classDef business fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef persistence fill:#fef3c7,stroke:#d97706,color:#78350f
+    classDef model fill:#f3e8ff,stroke:#9333ea,color:#581c87
+    classDef future fill:#f3f4f6,stroke:#6b7280,color:#374151,stroke-dasharray: 4 3
+
+    class MAIN,NAV,LOGIN,DASH,MODULES presentation
+    class APP,SESSION,USERS,CATALOG,PARTNERS,OPERATIONS business
+    class CONTRACTS,FILE,STORAGE persistence
+    class ENTITIES,DTO model
+    class ORACLE,DB,PLANV,PLANS future

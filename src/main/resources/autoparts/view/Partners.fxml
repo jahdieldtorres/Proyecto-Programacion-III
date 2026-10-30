@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="autoparts.view.PartnersController" spacing="18">
+
+    <!-- Encabezado y filtro por tipo -->
+    <HBox spacing="14" alignment="CENTER_LEFT">
+        <Label text="Socios" styleClass="section-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label text="Tipo" styleClass="field-label"/>
+        <ComboBox fx:id="cmbFilter" onAction="#load"/>
+    </HBox>
+
+    <!-- Tabla de socios -->
+    <VBox spacing="10" VBox.vgrow="ALWAYS" styleClass="card">
+        <padding><Insets top="18" right="20" bottom="18" left="20"/></padding>
+        <TableView fx:id="tblPartners" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="colName" text="Compañía" prefWidth="220"/>
+                <TableColumn fx:id="colType" text="Tipo" prefWidth="90"/>
+                <TableColumn fx:id="colTaxId" text="NIT" prefWidth="120"/>
+                <TableColumn fx:id="colPhone" text="Teléfono" prefWidth="110"/>
+                <TableColumn fx:id="colDetail" text="Detalle" prefWidth="200"/>
+                <TableColumn fx:id="colStatus" text="Estado" prefWidth="90"/>
+            </columns>
+            <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
+        </TableView>
+        <HBox spacing="12" alignment="CENTER_LEFT">
+            <Label fx:id="lblCount" styleClass="secondary-text"/>
+            <Label fx:id="lblMessage" styleClass="error-message" wrapText="true"/>
+        </HBox>
+    </VBox>
+</VBox>
