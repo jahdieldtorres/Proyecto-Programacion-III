@@ -12,9 +12,9 @@ import javafx.scene.layout.VBox;
 /**
  * Controlador de la ventana principal (Dashboard.fxml): menú lateral y contenido.
  *
- * Cada módulo agrega su pantalla creando el archivo FXML con el nombre de abajo
- * (Catalog.fxml, Comparator.fxml, Partners.fxml, MyAccount.fxml). Mientras no exista,
- * se muestra "Sección en construcción".
+ * Cada módulo se conecta por el nombre de su archivo FXML (constantes de abajo).
+ * Mientras el archivo no exista, se muestra "Sección en construcción". El menú
+ * se ajusta al rol de quien inició sesión.
  *
  * @author Jahdiel Torres
  */
@@ -23,8 +23,16 @@ public class DashboardController {
     public static final String HOME = "Home.fxml";
     public static final String CATALOG = "Catalog.fxml";
     public static final String COMPARATOR = "Comparator.fxml";
+    public static final String VEHICLES = "Vehicles.fxml";
     public static final String PARTNERS = "Partners.fxml";
+    public static final String INVENTORY = "Inventory.fxml";
+    public static final String FEES = "Fees.fxml";
+    public static final String AFFILIATIONS = "Affiliations.fxml";
+    public static final String USERS = "Users.fxml";
     public static final String MY_ACCOUNT = "MyAccount.fxml";
+
+    /** Ventana principal abierta, para que otras pantallas puedan pedirle cambiar de sección. */
+    private static DashboardController current;
 
     @FXML
     private StackPane content;
@@ -35,7 +43,17 @@ public class DashboardController {
     @FXML
     private Button btnComparator;
     @FXML
+    private Button btnVehicles;
+    @FXML
     private Button btnPartners;
+    @FXML
+    private Button btnInventory;
+    @FXML
+    private Button btnFees;
+    @FXML
+    private Button btnAffiliations;
+    @FXML
+    private Button btnUsers;
     @FXML
     private Button btnMyAccount;
     @FXML
@@ -50,12 +68,26 @@ public class DashboardController {
      */
     @FXML
     private void initialize() {
+        current = this;
         showUser();
         goToHome();
     }
 
     /**
-     * Muestra quién inició sesión y oculta las opciones que su rol no puede usar.
+     * Abre el catálogo con un texto ya buscado. Lo usa el buscador de Inicio.
+     *
+     * @param text lo que el usuario escribió
+     */
+    public static void openCatalogWith(String text) {
+        CatalogController.setPendingSearch(text);
+        if (current != null) {
+            current.goToCatalog();
+        }
+    }
+
+    /**
+     * Muestra quién inició sesión y oculta las opciones que su rol no puede usar:
+     * el cliente no ve la gestión de socios, y solo el administrador ve Usuarios.
      */
     private void showUser() {
         User user = Session.getUser();
@@ -64,9 +96,19 @@ public class DashboardController {
         }
         lblUser.setText(user.getName());
         lblRole.setText(user.getRole());
-        if (User.ROLE_CLIENT.equals(user.getRole())) {
-            btnPartners.setVisible(false);
-            btnPartners.setManaged(false);
+        boolean client = Session.hasRole(User.ROLE_CLIENT);
+        hide(client, btnPartners, btnInventory, btnFees, btnAffiliations);
+        hide(!Session.isAdmin(), btnUsers);
+    }
+
+    /**
+     * Oculta los botones indicados si la condición se cumple. setManaged(false)
+     * hace que el espacio del botón también desaparezca.
+     */
+    private void hide(boolean condition, Button... buttons) {
+        for (Button button : buttons) {
+            button.setVisible(!condition);
+            button.setManaged(!condition);
         }
     }
 
@@ -86,8 +128,33 @@ public class DashboardController {
     }
 
     @FXML
+    private void goToVehicles() {
+        show(VEHICLES, btnVehicles);
+    }
+
+    @FXML
     private void goToPartners() {
         show(PARTNERS, btnPartners);
+    }
+
+    @FXML
+    private void goToInventory() {
+        show(INVENTORY, btnInventory);
+    }
+
+    @FXML
+    private void goToFees() {
+        show(FEES, btnFees);
+    }
+
+    @FXML
+    private void goToAffiliations() {
+        show(AFFILIATIONS, btnAffiliations);
+    }
+
+    @FXML
+    private void goToUsers() {
+        show(USERS, btnUsers);
     }
 
     @FXML
@@ -98,6 +165,7 @@ public class DashboardController {
     @FXML
     private void logout() {
         Session.close();
+        current = null;
         Navigator.goTo(Navigator.LOGIN);
     }
 

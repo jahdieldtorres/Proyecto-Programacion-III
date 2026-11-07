@@ -27,4 +27,20 @@ public class Session {
     public static void close() {
         currentUser = null;
     }
+
+    /**
+     * Indica si el usuario de la sesión tiene el rol indicado.
+     *
+     * @param role uno de User.ROLE_CLIENT, User.ROLE_PARTNER o User.ROLE_ADMIN
+     */
+    public static boolean hasRole(String role) {
+        return currentUser != null && currentUser.getRole().equals(role);
+    }
+
+    /**
+     * Atajo para preguntar si quien inició sesión es administrador.
+     */
+    public static boolean isAdmin() {
+        return hasRole(User.ROLE_ADMIN);
+    }
 }
