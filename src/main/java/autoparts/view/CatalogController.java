@@ -26,6 +26,9 @@ public class CatalogController {
 
     private static final String ALL = "Todas";
 
+    /** Texto que se escribió en el buscador de Inicio; se usa una sola vez al abrir. */
+    private static String pendingSearch = "";
+
     @FXML
     private TableView<Component> tblComponents;
     @FXML
@@ -62,7 +65,19 @@ public class CatalogController {
 
         tblComponents.setPlaceholder(new Label("No hay componentes que coincidan con la búsqueda."));
         loadCategories();
+        txtSearch.setText(pendingSearch);
+        pendingSearch = "";
         search();
+    }
+
+    /**
+     * Guarda un texto para buscarlo apenas se abra el catálogo. Lo usa la
+     * pantalla de Inicio antes de pedirle al Dashboard que muestre el catálogo.
+     *
+     * @param text lo que el usuario escribió en el buscador de Inicio
+     */
+    public static void setPendingSearch(String text) {
+        pendingSearch = text == null ? "" : text.trim();
     }
 
     /**

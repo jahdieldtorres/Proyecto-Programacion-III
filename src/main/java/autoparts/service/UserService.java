@@ -5,9 +5,12 @@ import autoparts.exception.InvalidDataException;
 import autoparts.model.User;
 import autoparts.util.PasswordHasher;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Reglas de negocio de los usuarios: iniciar sesión y registrarse.
+ * Reglas de negocio de los usuarios: iniciar sesión, registrarse, cambiar los
+ * datos propios y, para el administrador, gestionar roles y estados.
  *
  * Recibe el DAO por constructor y depende solo de la interfaz UserDAO.
  *
@@ -56,6 +59,111 @@ public class UserService {
         if (!email.contains("@") || !email.contains(".")) {
             throw new InvalidDataException("El correo no es válido.");
         }
+        validateNewPassword(password, confirmation);
+        if (userDAO.findByEmail(email.trim()) != null) {
+            throw new InvalidDataException("Ya existe una cuenta con ese correo.");
+        }
+        User user = new User(0, name.trim(), email.trim(), PasswordHasher.hash(password),
+                User.ROLE_CLIENT, User.STATUS_ACTIVE, LocalDate.now(), 0);
+        userDAO.save(user);
+    }
+
+    /**
+     * Cambia la contraseña del usuario después de comprobar la actual.
+     *
+     * @throws InvalidDataException si la actual no es correcta o la nueva no es válida
+     */
+    public void changePassword(User user, String current, String newPassword, String confirmation) {
+        if (isBlank(current) || isBlank(newPassword) || isBlank(confirmation)) {
+            throw new InvalidDataException("Completa los tres campos.");
+        }
+        if (!PasswordHasher.hash(current).equals(user.getPasswordHash())) {
+            throw new InvalidDataException("La contraseña actual no es correcta.");
+        }
+        if (current.equals(newPassword)) {
+            throw new InvalidDataException("La nueva contraseña debe ser distinta de la actual.");
+        }
+        validateNewPassword(newPassword, confirmation);
+        user.setPasswordHash(PasswordHasher.hash(newPassword));
+        userDAO.update(user);
+    }
+
+    /**
+     * Cambia el nombre que se muestra del usuario.
+     *
+     * @throws InvalidDataException si el nombre está vacío
+     */
+    public void updateName(User user, String name) {
+        if (isBlank(name)) {
+            throw new InvalidDataException("El nombre no puede estar vacío.");
+        }
+        user.setName(name.trim());
+        userDAO.update(user);
+    }
+
+    /**
+     * Devuelve los usuarios cuyo nombre o correo contienen el texto (todos si
+     * está vacío) y que tienen el rol indicado (todos si el rol es null).
+     */
+    public List<User> search(String text, String role) {
+        String query = text == null ? "" : text.trim().toLowerCase();
+        List<User> result = new ArrayList<>();
+        for (User user : userDAO.findAll()) {
+            boolean matchesText = user.getName().toLowerCase().contains(query)
+                    || user.getEmail().toLowerCase().contains(query);
+            boolean matchesRole = role == null || role.equals(user.getRole());
+            if (matchesText && matchesRole) {
+                result.add(user);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Cambia el rol de un usuario. Solo lo usa el administrador.
+     *
+     * @throws InvalidDataException si el usuario no existe, el rol no es válido
+     *                              o el administrador intenta cambiar su propio rol
+     */
+    public void changeRole(int userId, String role) {
+        if (!User.ROLE_CLIENT.equals(role) && !User.ROLE_PARTNER.equals(role)
+                && !User.ROLE_ADMIN.equals(role)) {
+            throw new InvalidDataException("Elige un rol válido.");
+        }
+        User user = findExisting(userId);
+        checkNotCurrentUser(user, "No puedes cambiar tu propio rol.");
+        user.setRole(role);
+        userDAO.update(user);
+    }
+
+    /**
+     * Activa o desactiva un usuario (borrado lógico). Solo lo usa el administrador.
+     *
+     * @throws InvalidDataException si el usuario no existe o es el mismo administrador
+     */
+    public void setActive(int userId, boolean active) {
+        User user = findExisting(userId);
+        checkNotCurrentUser(user, "No puedes desactivar tu propia cuenta.");
+        user.setStatus(active ? User.STATUS_ACTIVE : User.STATUS_INACTIVE);
+        userDAO.update(user);
+    }
+
+    private User findExisting(int userId) {
+        User user = userDAO.findById(userId);
+        if (user == null) {
+            throw new InvalidDataException("El usuario no existe.");
+        }
+        return user;
+    }
+
+    private void checkNotCurrentUser(User user, String message) {
+        User current = Session.getUser();
+        if (current != null && current.getId() == user.getId()) {
+            throw new InvalidDataException(message);
+        }
+    }
+
+    private void validateNewPassword(String password, String confirmation) {
         if (password.length() < MIN_PASSWORD_LENGTH) {
             throw new InvalidDataException("La contraseña debe tener al menos "
                     + MIN_PASSWORD_LENGTH + " caracteres.");
@@ -63,12 +171,6 @@ public class UserService {
         if (!password.equals(confirmation)) {
             throw new InvalidDataException("Las contraseñas no coinciden.");
         }
-        if (userDAO.findByEmail(email.trim()) != null) {
-            throw new InvalidDataException("Ya existe una cuenta con ese correo.");
-        }
-        User user = new User(0, name.trim(), email.trim(), PasswordHasher.hash(password),
-                User.ROLE_CLIENT, User.STATUS_ACTIVE, LocalDate.now(), 0);
-        userDAO.save(user);
     }
 
     private boolean isBlank(String text) {

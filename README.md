@@ -63,6 +63,24 @@ Todas las pantallas de listado parten de la misma plantilla, para que se vean ig
 
 Si usan IA para hacer su pantalla, el prompt está en `docs/prompt-pantallas.md`.
 
+### Crear un formulario (plantilla)
+
+1. Copiar `FormTemplate.fxml` y `FormTemplateController.java` con el nombre del formulario (por ejemplo `ComponentForm.fxml` y `ComponentFormController`) y cambiar `fx:controller`.
+2. Cambiar los campos siguiendo los comentarios `REEMPLAZAR:`. El método público que recibe los datos (por ejemplo `setComponent`) recibe `null` para crear y un objeto para editar.
+3. Abrirlo desde la pantalla de lista y recargar la tabla al cerrarse:
+
+```java
+Navigator.openForm("ComponentForm.fxml", "Editar componente",
+        (ComponentFormController form) -> form.setComponent(selected));
+search();
+```
+
+4. En el formulario, Guardar llama al servicio dentro de un `try`; si llega `InvalidDataException` el mensaje se muestra en `lblMessage` y el formulario sigue abierto. Si todo sale bien se cierra con `Navigator.closeForm(btnSave)`.
+
+### Menú y roles
+
+Las secciones del menú se conectan por nombre en `DashboardController`: `Vehicles.fxml`, `Inventory.fxml`, `Fees.fxml`, `Affiliations.fxml`, `Users.fxml` y `MyAccount.fxml`, además de las que ya existían. El cliente no ve Socios, Inventario, Tarifas ni Afiliaciones, y solo el administrador ve Usuarios. Para preguntar el rol en cualquier pantalla: `Session.isAdmin()` o `Session.hasRole(User.ROLE_PARTNER)`.
+
 ## Convenciones
 
 **Idioma:** el código (paquetes, clases, métodos, atributos, `fx:id`, clases CSS y nombres de archivos de datos) va en **inglés**. Los textos que ve el usuario, los comentarios Javadoc, la documentación y la descripción de los commits van en **español**.

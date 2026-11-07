@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    PLANTILLA DE FORMULARIO. Para crear un formulario nuevo:
+    1. Copiar este archivo con el nombre del formulario (por ejemplo ComponentForm.fxml).
+    2. Copiar FormTemplateController.java con el nombre nuevo y cambiar fx:controller.
+    3. Cambiar los campos (cada campo va en un VBox con su Label "field-label").
+    4. Abrirlo desde la pantalla de lista con Navigator.openForm(...).
+    Sin estilos en línea: todos los estilos están en styles.css.
+-->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="autoparts.view.FormTemplateController" spacing="14" prefWidth="460"
+      styleClass="app-background">
+    <padding><Insets top="24" right="28" bottom="24" left="28"/></padding>
+
+    <!-- Título: el controlador lo cambia a "Nuevo ..." o "Editar ..." -->
+    <Label fx:id="lblTitle" text="Nuevo registro" styleClass="page-title"/>
+
+    <!-- REEMPLAZAR: campos del formulario -->
+    <VBox spacing="4">
+        <Label text="Nombre" styleClass="field-label"/>
+        <TextField fx:id="txtName" promptText="Ej.: Filtro de aceite"/>
+    </VBox>
+    <VBox spacing="4">
+        <Label text="Cantidad" styleClass="field-label"/>
+        <TextField fx:id="txtQuantity" promptText="Ej.: 10"/>
+    </VBox>
+    <VBox spacing="4">
+        <Label text="Estado" styleClass="field-label"/>
+        <ComboBox fx:id="cmbStatus" maxWidth="Infinity"/>
+    </VBox>
+
+    <!-- Mensaje de error -->
+    <Label fx:id="lblMessage" styleClass="error-message" wrapText="true"/>
+
+    <!-- Botones -->
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Cancelar" onAction="#cancel" styleClass="secondary-button"/>
+        <Button fx:id="btnSave" text="Guardar" onAction="#save" styleClass="primary-button"/>
+    </HBox>
+</VBox>

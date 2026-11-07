@@ -24,6 +24,13 @@ public interface UserDAO {
     User findByEmail(String email);
 
     /**
+     * Busca un usuario por su identificador.
+     *
+     * @return el usuario, o null si no existe
+     */
+    User findById(int id);
+
+    /**
      * Guarda un usuario nuevo y le asigna el siguiente identificador libre.
      *
      * @return el identificador asignado
