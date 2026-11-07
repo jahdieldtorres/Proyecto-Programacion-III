@@ -10,7 +10,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
+/**
+ * Implementación de {@link AffiliationDAO} con archivos planos: guarda las
+ * afiliaciones en {@code affiliations.csv}, una línea por afiliación. Es la
+ * única clase que toca ese archivo.
+ *
+ * Cuando se pase a base de datos, esta clase se reemplaza por otra que
+ * implemente la misma interfaz y los servicios no cambian.
+ *
+ * @author Héctor Guevara
+ */
 public class AffiliationFileDAO implements AffiliationDAO {
 
     private static final String PATH = FlatFiles.AFFILIATIONS;

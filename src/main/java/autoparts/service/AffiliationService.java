@@ -2,6 +2,7 @@ package autoparts.service;
 
 import autoparts.dao.AffiliationDAO;
 import autoparts.dao.PartnerDAO;
+import autoparts.exception.InvalidDataException;
 import autoparts.model.Affiliation;
 import autoparts.model.Partner;
 import autoparts.model.Status;
@@ -38,7 +39,7 @@ public class AffiliationService {
      * Registra una afiliación nueva.
      *
      * @param affiliation afiliación a registrar
-     * @throws IllegalArgumentException si algún dato no es válido o la pareja ya está afiliada
+     * @throws InvalidDataException si algún dato no es válido o la pareja ya está afiliada
      */
     public void register(Affiliation affiliation) {
         validate(affiliation, 0);
@@ -50,14 +51,14 @@ public class AffiliationService {
      * Actualiza una afiliación.
      *
      * @param affiliation afiliación con los datos nuevos
-     * @throws IllegalArgumentException si la afiliación no existe o algún dato no es válido
+     * @throws InvalidDataException si la afiliación no existe o algún dato no es válido
      */
     public void update(Affiliation affiliation) {
         if (affiliation == null) {
-            throw new IllegalArgumentException("La afiliación es obligatoria.");
+            throw new InvalidDataException("La afiliación es obligatoria.");
         }
         if (affiliationDAO.findById(affiliation.getId()).isEmpty()) {
-            throw new IllegalArgumentException("La afiliación no existe.");
+            throw new InvalidDataException("La afiliación no existe.");
         }
         validate(affiliation, affiliation.getId());
         affiliationDAO.update(affiliation);
@@ -67,11 +68,11 @@ public class AffiliationService {
      * Elimina una afiliación con borrado lógico: pasa a estado {@code INACTIVO}.
      *
      * @param id identificador de la afiliación
-     * @throws IllegalArgumentException si la afiliación no existe
+     * @throws InvalidDataException si la afiliación no existe
      */
     public void delete(int id) {
         Affiliation affiliation = affiliationDAO.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("La afiliación no existe."));
+                .orElseThrow(() -> new InvalidDataException("La afiliación no existe."));
         affiliation.setStatus(Status.INACTIVO);
         affiliationDAO.update(affiliation);
     }
@@ -117,13 +118,13 @@ public class AffiliationService {
 
     private void validate(Affiliation affiliation, int ownId) {
         if (affiliation == null) {
-            throw new IllegalArgumentException("La afiliación es obligatoria.");
+            throw new InvalidDataException("La afiliación es obligatoria.");
         }
         if (affiliation.getStartDate() == null) {
-            throw new IllegalArgumentException("La fecha de inicio es obligatoria.");
+            throw new InvalidDataException("La fecha de inicio es obligatoria.");
         }
         if (affiliation.getStatus() == null) {
-            throw new IllegalArgumentException("El estado es obligatorio.");
+            throw new InvalidDataException("El estado es obligatorio.");
         }
         if (affiliation.getStatus() != Status.ACTIVO) {
             return;
@@ -131,11 +132,11 @@ public class AffiliationService {
 
         Partner supplier = partnerDAO.findById(affiliation.getSupplierId()).orElse(null);
         if (!(supplier instanceof Supplier) || supplier.getStatus() != Status.ACTIVO) {
-            throw new IllegalArgumentException("El proveedor no existe o no está activo.");
+            throw new InvalidDataException("El proveedor no existe o no está activo.");
         }
         Partner workshop = partnerDAO.findById(affiliation.getWorkshopId()).orElse(null);
         if (!(workshop instanceof Workshop) || workshop.getStatus() != Status.ACTIVO) {
-            throw new IllegalArgumentException("El taller no existe o no está activo.");
+            throw new InvalidDataException("El taller no existe o no está activo.");
         }
 
         boolean alreadyAffiliated = affiliationDAO.findByWorkshop(affiliation.getWorkshopId()).stream()
@@ -143,7 +144,7 @@ public class AffiliationService {
                         && a.getSupplierId() == affiliation.getSupplierId()
                         && a.getStatus() == Status.ACTIVO);
         if (alreadyAffiliated) {
-            throw new IllegalArgumentException("El proveedor ya está afiliado a ese taller.");
+            throw new InvalidDataException("El proveedor ya está afiliado a ese taller.");
         }
     }
 }
