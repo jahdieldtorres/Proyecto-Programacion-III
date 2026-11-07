@@ -1,13 +1,17 @@
 package autoparts.view;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
- * Se encarga de cambiar de pantalla, para no repetir ese código en cada controlador.
+ * Se encarga de cambiar de pantalla y de abrir formularios, para no repetir
+ * ese código en cada controlador (fabricación pura).
  *
  * Para cambiar solo el contenido del centro de la ventana principal se usa
  * DashboardController.
@@ -65,5 +69,48 @@ public class Navigator {
      */
     public static boolean exists(String view) {
         return Navigator.class.getResource(view) != null;
+    }
+
+    /**
+     * Abre un formulario en una ventana encima de la principal y espera a que
+     * se cierre. Antes de mostrarlo le entrega sus datos al controlador del
+     * formulario, por ejemplo el socio que se va a editar.
+     *
+     * Uso: {@code Navigator.openForm("PartnerForm.fxml", "Editar socio",
+     * (PartnerFormController form) -> form.setPartner(socio));}
+     *
+     * @param view  nombre del archivo FXML del formulario
+     * @param title texto de la barra de la ventana
+     * @param setup recibe el controlador del formulario para pasarle los datos
+     * @param <C>   tipo del controlador del formulario
+     */
+    public static <C> void openForm(String view, String title, Consumer<C> setup) {
+        try {
+            FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(view));
+            Parent root = loader.load();
+            C controller = loader.getController();
+            setup.accept(controller);
+
+            Stage form = new Stage();
+            form.setTitle(title);
+            form.initOwner(window);
+            form.initModality(Modality.WINDOW_MODAL); // bloquea la ventana de atrás
+            form.setResizable(false);
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(Navigator.class.getResource("styles.css").toExternalForm());
+            form.setScene(scene);
+            form.showAndWait(); // el código sigue cuando el formulario se cierra
+        } catch (IOException e) {
+            throw new RuntimeException("No se pudo abrir el formulario " + view, e);
+        }
+    }
+
+    /**
+     * Cierra la ventana del formulario al que pertenece el componente indicado.
+     *
+     * @param anyNode cualquier componente del formulario, por ejemplo el botón Guardar
+     */
+    public static void closeForm(Node anyNode) {
+        ((Stage) anyNode.getScene().getWindow()).close();
     }
 }
