@@ -15,7 +15,6 @@ public class Car extends Vehicle {
     /**
      * Crea una nueva instancia de Car con los valores especificados.
      * 
-     * @param vehicleType el tipo general del vehículo
      * @param id el identificador del vehículo
      * @param brand la marca del vehículo
      * @param modelName el nombre del modelo del vehículo
@@ -24,7 +23,7 @@ public class Car extends Vehicle {
      * @param numSeats el número de asientos del automóvil
      * @param type el tipo específico del automóvil
      */
-    public Car(VehicleType vehicleType, int id, Brand brand, String modelName, int yearRelease, String status, int numSeats, CarType type) {
+    public Car(int id, Brand brand, String modelName, int yearRelease, String status, int numSeats, CarType type) {
         super(VehicleType.COCHE, id, brand, modelName, yearRelease, status);
         this.numSeats = numSeats;
         this.type = type;
