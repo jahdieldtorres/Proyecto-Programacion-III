@@ -20,12 +20,12 @@ public class Car extends Vehicle {
      * @param modelName el nombre del modelo del vehículo
      * @param yearRelease el año de lanzamiento del vehículo
      * @param status el estado cualitativo del vehículo
-     * @param numSeats el número de asientos del automóvil
+     * @param numDoors el número de puertas del automóvil
      * @param type el tipo específico del automóvil
      */
-    public Car(int id, Brand brand, String modelName, int yearRelease, String status, int numSeats, CarType type) {
+    public Car(int id, Brand brand, String modelName, int yearRelease, String status, int numDoors, CarType type) {
         super(VehicleType.COCHE, id, brand, modelName, yearRelease, status);
-        this.numDoors = numSeats;
+        this.numDoors = numDoors;
         this.type = type;
     }
 
@@ -38,12 +38,12 @@ public class Car extends Vehicle {
         return FileUtil.join(getType().getFileValue(), getId(), getBrand().getName(), getModelName(), getYearRelease(), getStatus(), numDoors, type.getFileValue());
     }
 
-    public int getNumSeats() {
+    public int getNumDoors() {
         return numDoors;
     }
 
-    public void setNumSeats(int numSeats) {
-        this.numDoors = numSeats;
+    public void setNumDoors(int numDoors) {
+        this.numDoors = numDoors;
     }
 
     public CarType getCarType() {
@@ -52,5 +52,10 @@ public class Car extends Vehicle {
 
     public void setCarType(CarType type) {
         this.type = type;
+    }
+    
+    @Override
+    public String getDetail() {
+        return numDoors + " puertas - " + type;
     }
 }
