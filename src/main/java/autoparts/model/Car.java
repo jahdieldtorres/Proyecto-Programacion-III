@@ -9,7 +9,7 @@ import autoparts.util.FileUtil;
  */
 public class Car extends Vehicle {
 
-    private int numSeats;
+    private int numDoors;
     private CarType type;
 
     /**
@@ -25,7 +25,7 @@ public class Car extends Vehicle {
      */
     public Car(int id, Brand brand, String modelName, int yearRelease, String status, int numSeats, CarType type) {
         super(VehicleType.COCHE, id, brand, modelName, yearRelease, status);
-        this.numSeats = numSeats;
+        this.numDoors = numSeats;
         this.type = type;
     }
 
@@ -35,15 +35,15 @@ public class Car extends Vehicle {
      */
     @Override
     public String toLine() {
-        return FileUtil.join(getType().getFileValue(), getId(), getBrand().getName(), getModelName(), getYearRelease(), getStatus(), numSeats, type.getFileValue());
+        return FileUtil.join(getType().getFileValue(), getId(), getBrand().getName(), getModelName(), getYearRelease(), getStatus(), numDoors, type.getFileValue());
     }
 
     public int getNumSeats() {
-        return numSeats;
+        return numDoors;
     }
 
     public void setNumSeats(int numSeats) {
-        this.numSeats = numSeats;
+        this.numDoors = numSeats;
     }
 
     public CarType getCarType() {
