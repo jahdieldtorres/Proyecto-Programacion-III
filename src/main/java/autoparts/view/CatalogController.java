@@ -1,13 +1,16 @@
 package autoparts.view;
 
 import autoparts.AppServices;
+import autoparts.exception.InvalidDataException;
 import autoparts.exception.PersistenceException;
 import autoparts.model.Component;
+import autoparts.service.Session;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -17,10 +20,12 @@ import javafx.scene.control.TextField;
 /**
  * Controlador de la pantalla del catálogo (Catalog.fxml).
  *
- * Muestra los componentes activos que devuelve ComponentService.search y
- * permite filtrarlos por categoría. Hecho a partir de ListTemplateController.
+ * Muestra los componentes que devuelve ComponentService y permite filtrarlos
+ * por categoría. El cliente solo ve los activos; el administrador ve también
+ * los inactivos (columna Estado) y puede crear, editar y desactivar
+ * componentes. Hecho a partir de ListTemplateController.
  *
- * @author Jahdiel Torres
+ * @author Jahdiel Torres, ALVARO
  */
 public class CatalogController {
 
@@ -44,6 +49,14 @@ public class CatalogController {
     @FXML
     private TableColumn<Component, String> colOrigin;
     @FXML
+    private TableColumn<Component, String> colStatus;
+    @FXML
+    private Button btnNew;
+    @FXML
+    private Button btnEdit;
+    @FXML
+    private Button btnDeactivate;
+    @FXML
     private TextField txtSearch;
     @FXML
     private ComboBox<String> cmbCategory;
@@ -62,8 +75,10 @@ public class CatalogController {
         colBrand.setCellValueFactory(row -> new SimpleStringProperty(row.getValue().getBrand().getName()));
         colCategory.setCellValueFactory(row -> new SimpleStringProperty(row.getValue().getCategory().getName()));
         colOrigin.setCellValueFactory(row -> new SimpleStringProperty(row.getValue().getOrigin()));
+        colStatus.setCellValueFactory(row -> new SimpleStringProperty(row.getValue().getStatus()));
 
         tblComponents.setPlaceholder(new Label("No hay componentes que coincidan con la búsqueda."));
+        showAdminButtons();
         loadCategories();
         txtSearch.setText(pendingSearch);
         pendingSearch = "";
@@ -87,7 +102,7 @@ public class CatalogController {
     private void search() {
         lblMessage.getStyleClass().remove("error-message");
         try {
-            List<Component> found = AppServices.components().search(txtSearch.getText());
+            List<Component> found = findComponents(txtSearch.getText());
             List<Component> result = filterByCategory(found, cmbCategory.getValue());
             tblComponents.setItems(FXCollections.observableArrayList(result));
             lblMessage.setText(result.size() + " componente(s).");
@@ -98,13 +113,94 @@ public class CatalogController {
     }
 
     /**
+     * Nuevo, Editar y Desactivar, y la columna Estado, solo los ve el administrador.
+     */
+    private void showAdminButtons() {
+        boolean admin = Session.isAdmin();
+        for (Button button : new Button[]{btnNew, btnEdit, btnDeactivate}) {
+            button.setVisible(admin);
+            button.setManaged(admin);
+        }
+        colStatus.setVisible(admin);
+    }
+
+    /**
+     * El administrador ve todos los componentes; los demás solo los activos.
+     */
+    private List<Component> findComponents(String text) {
+        return Session.isAdmin()
+                ? AppServices.components().searchAll(text)
+                : AppServices.components().search(text);
+    }
+
+    /**
+     * Abre el formulario vacío para crear un componente y, al cerrarse, recarga la tabla.
+     */
+    @FXML
+    private void newComponent() {
+        Navigator.openForm("ComponentForm.fxml", "Nuevo componente",
+                (ComponentFormController form) -> form.setComponent(null));
+        reload();
+    }
+
+    /**
+     * Abre el formulario con el componente elegido en la tabla y, al cerrarse,
+     * recarga la tabla.
+     */
+    @FXML
+    private void editComponent() {
+        Component selected = tblComponents.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Selecciona un componente de la tabla.");
+            return;
+        }
+        Navigator.openForm("ComponentForm.fxml", "Editar componente",
+                (ComponentFormController form) -> form.setComponent(selected));
+        reload();
+    }
+
+    /**
+     * Desactiva el componente elegido (borrado lógico: pasa a INACTIVO) y recarga la tabla.
+     */
+    @FXML
+    private void deactivateComponent() {
+        Component selected = tblComponents.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            showError("Selecciona un componente de la tabla.");
+            return;
+        }
+        try {
+            AppServices.components().deactivate(selected.getId());
+        } catch (InvalidDataException | PersistenceException e) {
+            showError(e.getMessage());
+            return;
+        }
+        reload();
+    }
+
+    /**
+     * Vuelve a llenar el filtro de categorías y la tabla (después de un formulario).
+     */
+    private void reload() {
+        loadCategories();
+        search();
+    }
+
+    private void showError(String message) {
+        if (!lblMessage.getStyleClass().contains("error-message")) {
+            lblMessage.getStyleClass().add("error-message");
+        }
+        lblMessage.setText(message);
+    }
+
+    /**
      * Llena el filtro con las categorías que tienen componentes activos.
      */
     private void loadCategories() {
         List<String> categories = new ArrayList<>();
         categories.add(ALL);
         try {
-            for (Component component : AppServices.components().search("")) {
+            for (Component component : findComponents("")) {
                 String name = component.getCategory().getName();
                 if (!categories.contains(name)) {
                     categories.add(name);
