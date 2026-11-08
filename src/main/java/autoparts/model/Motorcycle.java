@@ -53,4 +53,9 @@ public class Motorcycle extends Vehicle {
     public void setMotorcycleType(MotorcycleType type) {
         this.type = type;
     }
+    
+    @Override
+    public String getDetail() {
+        return cylinders + " cc - " + type;
+    }
 }
