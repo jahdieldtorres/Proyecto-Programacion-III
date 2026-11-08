@@ -11,8 +11,6 @@ public class Brand {
     private int id;
     private String name;
 
-    public Brand(){}
-    
     /**
      * Crea la clase de marca parametrizada con un nombre e identificador propios.
      *
