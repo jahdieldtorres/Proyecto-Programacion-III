@@ -19,8 +19,8 @@ public class CompatibilityFileDAO implements CompatibilityDAO {
         List<Integer> vehicleIds = new ArrayList<>();
         for (String[] fields : FileUtil.readFields(FlatFiles.COMPATIBILITY)) {
             if (fields.length >= 2) {
-                int vId = Integer.parseInt(fields[0].trim());
-                int cId = Integer.parseInt(fields[1].trim());
+                int cId = Integer.parseInt(fields[0].trim());
+                int vId = Integer.parseInt(fields[1].trim()); 
                 if (cId == componentId) {
                     vehicleIds.add(vId);
                 }
