@@ -159,4 +159,25 @@ public class ComponentService {
         
         return filteredComponents;
     }
+
+    /**
+     * Igual que {@link #search(String)} pero incluye también los componentes
+     * INACTIVOS. Lo usa la pantalla del catálogo para el administrador.
+     *
+     * @param text texto a buscar en el nombre o la referencia del componente
+     * @return lista de componentes (activos e inactivos) filtrados
+     */
+    public List<Component> searchAll(String text) {
+        List<Component> result = new ArrayList<>();
+        String query = text == null ? "" : text.trim().toLowerCase();
+
+        for (Component component : componentDAO.listAll()) {
+            String name = component.getName() != null ? component.getName().toLowerCase() : "";
+            String reference = component.getReference() != null ? component.getReference().toLowerCase() : "";
+            if (query.isEmpty() || name.contains(query) || reference.contains(query)) {
+                result.add(component);
+            }
+        }
+        return result;
+    }
 }
