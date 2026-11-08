@@ -29,6 +29,10 @@
         <Region HBox.hgrow="ALWAYS"/>
         <Label text="Categoría:" styleClass="field-label"/>
         <ComboBox fx:id="cmbCategory" onAction="#search" prefWidth="180"/>
+        <!-- Nuevo, Editar y Desactivar: solo los ve el administrador -->
+        <Button fx:id="btnNew" text="Nuevo" onAction="#newComponent" styleClass="primary-button"/>
+        <Button fx:id="btnEdit" text="Editar" onAction="#editComponent" styleClass="secondary-button"/>
+        <Button fx:id="btnDeactivate" text="Desactivar" onAction="#deactivateComponent" styleClass="secondary-button"/>
     </HBox>
 
     <!-- Tabla -->
@@ -40,6 +44,7 @@
             <TableColumn fx:id="colBrand" text="Marca" prefWidth="120"/>
             <TableColumn fx:id="colCategory" text="Categoría" prefWidth="140"/>
             <TableColumn fx:id="colOrigin" text="Procedencia" prefWidth="110"/>
+            <TableColumn fx:id="colStatus" text="Estado" prefWidth="90"/>
         </columns>
         <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN"/>
