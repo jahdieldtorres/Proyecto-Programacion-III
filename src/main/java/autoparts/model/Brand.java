@@ -11,8 +11,6 @@ public class Brand {
     private int id;
     private String name;
 
-    public Brand(){}
-    
     /**
      * Crea la clase de marca parametrizada con un nombre e identificador propios.
      *
@@ -47,5 +45,9 @@ public class Brand {
     public void setName(String name) {
         this.name = name;
     }
-    
+
+    @Override
+    public String toString() {
+        return id + " - " + name;
+    }
 }
