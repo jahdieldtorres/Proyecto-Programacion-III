@@ -9,24 +9,23 @@ import autoparts.util.FileUtil;
  */
 public class Car extends Vehicle {
 
-    private int numSeats;
+    private int numDoors;
     private CarType type;
 
     /**
      * Crea una nueva instancia de Car con los valores especificados.
      * 
-     * @param vehicleType el tipo general del vehículo
      * @param id el identificador del vehículo
      * @param brand la marca del vehículo
      * @param modelName el nombre del modelo del vehículo
      * @param yearRelease el año de lanzamiento del vehículo
      * @param status el estado cualitativo del vehículo
-     * @param numSeats el número de asientos del automóvil
+     * @param numDoors el número de puertas del automóvil
      * @param type el tipo específico del automóvil
      */
-    public Car(VehicleType vehicleType, int id, Brand brand, String modelName, int yearRelease, String status, int numSeats, CarType type) {
+    public Car(int id, Brand brand, String modelName, int yearRelease, String status, int numDoors, CarType type) {
         super(VehicleType.COCHE, id, brand, modelName, yearRelease, status);
-        this.numSeats = numSeats;
+        this.numDoors = numDoors;
         this.type = type;
     }
 
@@ -36,15 +35,15 @@ public class Car extends Vehicle {
      */
     @Override
     public String toLine() {
-        return FileUtil.join(getType().getFileValue(), getId(), getBrand().getName(), getModelName(), getYearRelease(), getStatus(), numSeats, type.getFileValue());
+        return FileUtil.join(getType().getFileValue(), getId(), getBrand().getName(), getModelName(), getYearRelease(), getStatus(), numDoors, type.getFileValue());
     }
 
-    public int getNumSeats() {
-        return numSeats;
+    public int getNumDoors() {
+        return numDoors;
     }
 
-    public void setNumSeats(int numSeats) {
-        this.numSeats = numSeats;
+    public void setNumDoors(int numDoors) {
+        this.numDoors = numDoors;
     }
 
     public CarType getCarType() {
@@ -53,5 +52,10 @@ public class Car extends Vehicle {
 
     public void setCarType(CarType type) {
         this.type = type;
+    }
+    
+    @Override
+    public String getDetail() {
+        return numDoors + " puertas - " + type;
     }
 }

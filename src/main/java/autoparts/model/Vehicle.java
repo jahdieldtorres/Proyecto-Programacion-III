@@ -1,6 +1,7 @@
 package autoparts.model;
 
 import autoparts.util.FileUtil;
+import java.lang.reflect.Field;
 
 /**
  * Clase abstracta que representa un vehículo en el sistema.
@@ -90,4 +91,11 @@ public abstract class Vehicle {
     public void setStatus(String status) {
         this.status = status;
     }
+    
+    /**
+     * Método para la descripción de objetos Vehículo dependientemente del tipo.
+     * @return Descripción del vehículo.
+     */
+    public abstract String getDetail();
+    
 }

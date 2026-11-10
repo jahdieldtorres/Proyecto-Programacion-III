@@ -28,13 +28,13 @@ public interface CompatibilityDAO {
      * @param vehicleId El identificador del vehículo
      * @param componentId El identificador del componente
      */
-    void link(int vehicleId, int componentId);
+    void link(int componentId, int vehicleId);
     
     /**
      * Desenlaza un vehículo de un componente.
      * @param vehicleId El identificador del vehículo
      * @param componentId El identificador del componente
      */
-    void unlink(int vehicleId, int componentId);
+    void unlink(int componentId, int vehicleId);
     
 }

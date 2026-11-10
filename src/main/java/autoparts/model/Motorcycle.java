@@ -15,7 +15,6 @@ public class Motorcycle extends Vehicle {
     /**
      * Crea una nueva instancia de Motorcycle con los valores especificados.
      * 
-     * @param vehicleType el tipo general del vehículo
      * @param id el identificador del vehículo
      * @param brand la marca del vehículo
      * @param modelName el nombre del modelo del vehículo
@@ -24,7 +23,7 @@ public class Motorcycle extends Vehicle {
      * @param cylinders el número de cilindros de la motocicleta
      * @param type el tipo específico de la motocicleta
      */
-    public Motorcycle(VehicleType vehicleType, int id, Brand brand, String modelName, int yearRelease, String status, int cylinders, MotorcycleType type) {
+    public Motorcycle(int id, Brand brand, String modelName, int yearRelease, String status, int cylinders, MotorcycleType type) {
         super(VehicleType.MOTOCICLETA, id, brand, modelName, yearRelease, status);
         this.cylinders = cylinders;
         this.type = type;
@@ -53,5 +52,10 @@ public class Motorcycle extends Vehicle {
 
     public void setMotorcycleType(MotorcycleType type) {
         this.type = type;
+    }
+    
+    @Override
+    public String getDetail() {
+        return cylinders + " cc - " + type;
     }
 }

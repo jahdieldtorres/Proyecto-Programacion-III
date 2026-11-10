@@ -19,8 +19,8 @@ public class CompatibilityFileDAO implements CompatibilityDAO {
         List<Integer> vehicleIds = new ArrayList<>();
         for (String[] fields : FileUtil.readFields(FlatFiles.COMPATIBILITY)) {
             if (fields.length >= 2) {
-                int vId = Integer.parseInt(fields[0].trim());
-                int cId = Integer.parseInt(fields[1].trim());
+                int cId = Integer.parseInt(fields[0].trim());
+                int vId = Integer.parseInt(fields[1].trim()); 
                 if (cId == componentId) {
                     vehicleIds.add(vId);
                 }
@@ -34,8 +34,8 @@ public class CompatibilityFileDAO implements CompatibilityDAO {
         List<Integer> componentIds = new ArrayList<>();
         for (String[] fields : FileUtil.readFields(FlatFiles.COMPATIBILITY)) {
             if (fields.length >= 2) {
-                int vId = Integer.parseInt(fields[0].trim());
-                int cId = Integer.parseInt(fields[1].trim());
+                int cId = Integer.parseInt(fields[0].trim());
+                int vId = Integer.parseInt(fields[1].trim());
                 if (vId == vehicleId) {
                     componentIds.add(cId);
                 }
@@ -45,18 +45,18 @@ public class CompatibilityFileDAO implements CompatibilityDAO {
     }
 
     @Override
-    public void link(int vehicleId, int componentId) {
-        String line = FileUtil.join(vehicleId, componentId);
+    public void link(int componentId, int vehicleId) {
+        String line = FileUtil.join(componentId, vehicleId);
         FileUtil.append(FlatFiles.COMPATIBILITY, line);
     }
 
     @Override
-    public void unlink(int vehicleId, int componentId) {
+    public void unlink(int componentId, int vehicleId) {
         List<String> lines = new ArrayList<>();
         for (String[] fields : FileUtil.readFields(FlatFiles.COMPATIBILITY)) {
             if (fields.length >= 2) {
-                int vId = Integer.parseInt(fields[0].trim());
-                int cId = Integer.parseInt(fields[1].trim());
+                int cId = Integer.parseInt(fields[0].trim());
+                int vId = Integer.parseInt(fields[1].trim());
                 if (vId == vehicleId && cId == componentId) {
                     continue;
                 }

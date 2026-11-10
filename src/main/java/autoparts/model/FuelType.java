@@ -1,8 +1,8 @@
 package autoparts.model;
 
 /**
- * Tipo de caja de una transmisión. Cada constante guarda el texto que se
- * escribe en el campo tipo_caja de components.csv.
+ * Tipo de combustible que usa un motor. Cada constante guarda el texto que se
+ * escribe en el campo FuelType de un registro tipo Motor en components.csv.
  *
  * @author ALVARO
  */

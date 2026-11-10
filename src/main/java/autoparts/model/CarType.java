@@ -1,7 +1,9 @@
 package autoparts.model;
 
 /**
- *
+ * Tipo de coche. Cada constante guarda el texto que se
+ * escribe en el campo CarType de un registro tipo Coche vehicles.csv.
+ * 
  * @author ALVARO
  */
 public enum CarType {

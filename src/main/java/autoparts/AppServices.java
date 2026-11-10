@@ -3,17 +3,20 @@ package autoparts;
 import autoparts.dao.file.AffiliationFileDAO;
 import autoparts.dao.file.BrandFileDAO;
 import autoparts.dao.file.CategoryFileDAO;
+import autoparts.dao.file.CompatibilityFileDAO;
 import autoparts.dao.file.ComponentFileDAO;
 import autoparts.dao.file.FeeFileDAO;
 import autoparts.dao.file.InventoryFileDAO;
 import autoparts.dao.file.PartnerFileDAO;
 import autoparts.dao.file.UserFileDAO;
+import autoparts.dao.file.VehicleFileDAO;
 import autoparts.service.AffiliationService;
 import autoparts.service.ComparatorService;
 import autoparts.service.ComponentService;
 import autoparts.service.FeeService;
 import autoparts.service.PartnerService;
 import autoparts.service.UserService;
+import autoparts.service.VehicleService;
 
 /**
  * Único lugar donde se crean los servicios con su DAO.
@@ -34,6 +37,8 @@ public class AppServices {
             new AffiliationService(new AffiliationFileDAO(), new PartnerFileDAO());
     private static final ComparatorService COMPARATOR_SERVICE =
             new ComparatorService(new InventoryFileDAO(), new PartnerFileDAO());
+    private static final VehicleService VEHICLE_SERVICE =
+            new VehicleService(new VehicleFileDAO(), new CompatibilityFileDAO(), new ComponentFileDAO());
 
     public static UserService users() {
         return USER_SERVICE;
@@ -57,5 +62,9 @@ public class AppServices {
 
     public static ComparatorService comparator() {
         return COMPARATOR_SERVICE;
+    }
+
+    public static VehicleService vehicles() {
+        return VEHICLE_SERVICE;
     }
 }

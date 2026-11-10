@@ -104,15 +104,15 @@ public class VehicleFileDAO implements VehicleDAO {
             case COCHE:
                 int numSeats = fields.length > 6 ? Integer.parseInt(fields[6].trim()) : 0;
                 CarType carType = fields.length > 7 ? CarType.fromFileValue(fields[7].trim()) : null;
-                return new Car(vType, id, brand, modelName, yearRelease, status, numSeats, carType);
+                return new Car(id, brand, modelName, yearRelease, status, numSeats, carType);
             
             case MOTOCICLETA:
                 int cylinders = fields.length > 6 ? Integer.parseInt(fields[6].trim()) : 0;
                 MotorcycleType motoType = fields.length > 7 ? MotorcycleType.fromFileValue(fields[7].trim()) : null;
-                return new Motorcycle(vType, id, brand, modelName, yearRelease, status, cylinders, motoType);
+                return new Motorcycle(id, brand, modelName, yearRelease, status, cylinders, motoType);
             
             default:
-                return new Car(vType, id, brand, modelName, yearRelease, status, 0, null);
+                return new Car(id, brand, modelName, yearRelease, status, 0, null);
         }
     }
 }
