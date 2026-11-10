@@ -1,6 +1,8 @@
 package autoparts;
 
 import autoparts.dao.file.AffiliationFileDAO;
+import autoparts.dao.file.BrandFileDAO;
+import autoparts.dao.file.CategoryFileDAO;
 import autoparts.dao.file.CompatibilityFileDAO;
 import autoparts.dao.file.ComponentFileDAO;
 import autoparts.dao.file.FeeFileDAO;
@@ -27,14 +29,14 @@ import autoparts.service.VehicleService;
 public class AppServices {
 
     private static final UserService USER_SERVICE = new UserService(new UserFileDAO());
-    private static final ComponentService COMPONENT_SERVICE = new ComponentService(new ComponentFileDAO());
+    private static final ComponentService COMPONENT_SERVICE = new ComponentService(
+            new ComponentFileDAO(), new BrandFileDAO(), new CategoryFileDAO());
     private static final PartnerService PARTNER_SERVICE = new PartnerService(new PartnerFileDAO());
     private static final FeeService FEE_SERVICE = new FeeService(new FeeFileDAO());
     private static final AffiliationService AFFILIATION_SERVICE =
             new AffiliationService(new AffiliationFileDAO(), new PartnerFileDAO());
     private static final ComparatorService COMPARATOR_SERVICE =
             new ComparatorService(new InventoryFileDAO(), new PartnerFileDAO());
-
     private static final VehicleService VEHICLE_SERVICE =
             new VehicleService(new VehicleFileDAO(), new CompatibilityFileDAO(), new ComponentFileDAO());
 

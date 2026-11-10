@@ -3,7 +3,7 @@ package autoparts.model;
 import autoparts.util.FileUtil;
 
 /**
- * Representa un componente de motor de un vehÃ­culo, conteniendo informaciÃ³n sobre su cilindraje y potencia.
+ * Representa un componente de motor de un vehículo, conteniendo información sobre su cilindraje y potencia.
  * 
  * @author ALVARO
  */
@@ -21,11 +21,11 @@ public class Engine extends Component {
      * @param name nombre descriptivo del componente
      * @param reference referencia de fabricante
      * @param brand marca del componente
-     * @param category categorÃ­a del componente
+     * @param category categoría del componente
      * @param origin origen del componente
      * @param status estado cualitativo del componente
-     * @param displacementCc el cilindraje del motor en centÃ­metros cÃºbicos
-     * @param cylinders el nÃºmero de cilindros del motor
+     * @param displacementCc el cilindraje del motor en centímetros cúbicos
+     * @param cylinders el número de cilindros del motor
      * @param fuel el tipo de combustible del motor
      * @param horsepower la potencia del motor
      */
@@ -38,8 +38,8 @@ public class Engine extends Component {
     }
 
     /**
-     * Convierte el objeto en una lÃ­nea de registro.
-     * @return Devuelve la lÃ­nea para guardar en components.csv.
+     * Convierte el objeto en una línea de registro.
+     * @return Devuelve la línea para guardar en components.csv.
      */
     @Override
     public String toLine() {
