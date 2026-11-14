@@ -15,7 +15,7 @@ public abstract class Vehicle {
     private Brand brand;
     private String modelName;
     private int yearRelease;
-    private String status;
+    private Status status;
 
     /**
      * Crea una nueva instancia de Vehicle con los valores especificados.
@@ -27,7 +27,7 @@ public abstract class Vehicle {
      * @param yearRelease año de lanzamiento del vehículo
      * @param status estado cualitativo del vehículo
      */
-    public Vehicle(VehicleType type, int id, Brand brand, String modelName, int yearRelease, String status) {
+    public Vehicle(VehicleType type, int id, Brand brand, String modelName, int yearRelease, Status status) {
         this.type = type;
         this.id = id;
         this.brand = brand;
@@ -84,11 +84,11 @@ public abstract class Vehicle {
         this.yearRelease = yearRelease;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
     

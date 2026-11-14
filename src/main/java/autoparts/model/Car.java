@@ -23,7 +23,7 @@ public class Car extends Vehicle {
      * @param numDoors el número de puertas del automóvil
      * @param type el tipo específico del automóvil
      */
-    public Car(int id, Brand brand, String modelName, int yearRelease, String status, int numDoors, CarType type) {
+    public Car(int id, Brand brand, String modelName, int yearRelease, Status status, int numDoors, CarType type) {
         super(VehicleType.COCHE, id, brand, modelName, yearRelease, status);
         this.numDoors = numDoors;
         this.type = type;
