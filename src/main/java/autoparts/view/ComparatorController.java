@@ -72,7 +72,7 @@ public class ComparatorController {
         colTotal.setCellValueFactory(c -> new SimpleStringProperty(money(c.getValue().getTotalCost())));
         colWarranty.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getWarrantyMonths() + " meses"));
         colDelivery.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getDeliveryDays() + " días"));
-        colCondition.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCondition()));
+        colCondition.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getCondition().name()));   
         colStock.setCellValueFactory(c -> new SimpleStringProperty(String.valueOf(c.getValue().getStock())));
 
         // El orden lo define el criterio elegido, no el clic en una columna
