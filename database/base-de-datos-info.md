@@ -50,9 +50,12 @@ mismos de los `.csv`, así los DAO no traducen valores.
 ## Reglas que ya cuida la base
 
 Estados, roles, condición, tipos y materiales con `CHECK`; precio mayor que 0; stock,
-envío y garantía no negativos; correo, NIT y referencia únicos; un proveedor no repite el
-mismo componente en `INVENTORY`; latitud y longitud dentro de rango. Las validaciones
-normales siguen en los servicios: la base es una protección extra.
+envío y garantía no negativos; correo, NIT y referencia únicos; latitud y longitud dentro
+de rango. Las validaciones normales siguen en los servicios: la base es una protección extra.
+
+`INVENTORY` no tiene restricción de unicidad por proveedor y componente: una oferta
+desactivada sigue en la tabla y se puede crear otra igual. Que no haya dos ofertas
+**activas** repetidas lo cuida `InventoryService`.
 
 ## Datos pendientes de otros puntos
 
