@@ -3,6 +3,7 @@ package autoparts.view;
 import autoparts.AppServices;
 import autoparts.exception.InvalidDataException;
 import autoparts.exception.PersistenceException;
+import autoparts.model.Category;
 import autoparts.model.Component;
 import autoparts.service.Session;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.util.StringConverter;
 
 /**
  * Controlador de la pantalla del catálogo (Catalog.fxml).
@@ -29,7 +31,8 @@ import javafx.scene.control.TextField;
  */
 public class CatalogController {
 
-    private static final String ALL = "Todas";
+    /** Opción "Todas" del filtro: su id 0 significa que no se filtra por categoría. */
+    private static final Category ALL = new Category(0, "Todas");
 
     /** Texto que se escribió en el buscador de Inicio; se usa una sola vez al abrir. */
     private static String pendingSearch = "";
@@ -59,7 +62,7 @@ public class CatalogController {
     @FXML
     private TextField txtSearch;
     @FXML
-    private ComboBox<String> cmbCategory;
+    private ComboBox<Category> cmbCategory;
     @FXML
     private Label lblMessage;
 
@@ -76,6 +79,18 @@ public class CatalogController {
         colCategory.setCellValueFactory(row -> new SimpleStringProperty(row.getValue().getCategory().getName()));
         colOrigin.setCellValueFactory(row -> new SimpleStringProperty(row.getValue().getOrigin()));
         colStatus.setCellValueFactory(row -> new SimpleStringProperty(row.getValue().getStatus()));
+
+        cmbCategory.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Category category) {
+                return category == null ? "" : category.getName();
+            }
+
+            @Override
+            public Category fromString(String text) {
+                return null;
+            }
+        });
 
         tblComponents.setPlaceholder(new Label("No hay componentes que coincidan con la búsqueda."));
         showAdminButtons();
@@ -102,8 +117,7 @@ public class CatalogController {
     private void search() {
         lblMessage.getStyleClass().remove("error-message");
         try {
-            List<Component> found = findComponents(txtSearch.getText());
-            List<Component> result = filterByCategory(found, cmbCategory.getValue());
+            List<Component> result = findComponents(txtSearch.getText(), selectedCategoryId());
             tblComponents.setItems(FXCollections.observableArrayList(result));
             lblMessage.setText(result.size() + " componente(s).");
         } catch (PersistenceException e) {
@@ -126,11 +140,20 @@ public class CatalogController {
 
     /**
      * El administrador ve todos los componentes; los demás solo los activos.
+     * La búsqueda (texto sin tildes y categoría) la hace el servicio.
      */
-    private List<Component> findComponents(String text) {
+    private List<Component> findComponents(String text, Integer categoryId) {
         return Session.isAdmin()
-                ? AppServices.components().searchAll(text)
-                : AppServices.components().search(text);
+                ? AppServices.components().searchAll(text, categoryId)
+                : AppServices.components().search(text, categoryId);
+    }
+
+    /**
+     * Id de la categoría elegida en el filtro, o null si está en "Todas".
+     */
+    private Integer selectedCategoryId() {
+        Category selected = cmbCategory.getValue();
+        return selected == null || selected.getId() == ALL.getId() ? null : selected.getId();
     }
 
     /**
@@ -197,13 +220,14 @@ public class CatalogController {
      * Llena el filtro con las categorías que tienen componentes activos.
      */
     private void loadCategories() {
-        List<String> categories = new ArrayList<>();
+        List<Category> categories = new ArrayList<>();
         categories.add(ALL);
         try {
-            for (Component component : findComponents("")) {
-                String name = component.getCategory().getName();
-                if (!categories.contains(name)) {
-                    categories.add(name);
+            for (Component component : findComponents("", null)) {
+                Category category = component.getCategory();
+                boolean added = categories.stream().anyMatch(c -> c.getId() == category.getId());
+                if (!added) {
+                    categories.add(category);
                 }
             }
         } catch (PersistenceException e) {
@@ -211,21 +235,5 @@ public class CatalogController {
         }
         cmbCategory.setItems(FXCollections.observableArrayList(categories));
         cmbCategory.setValue(ALL);
-    }
-
-    /**
-     * Deja solo los componentes de la categoría elegida ("Todas" no filtra).
-     */
-    private List<Component> filterByCategory(List<Component> components, String category) {
-        if (category == null || ALL.equals(category)) {
-            return components;
-        }
-        List<Component> result = new ArrayList<>();
-        for (Component component : components) {
-            if (component.getCategory().getName().equals(category)) {
-                result.add(component);
-            }
-        }
-        return result;
     }
 }
