@@ -7,6 +7,7 @@ import autoparts.model.Brand;
 import autoparts.model.Category;
 import autoparts.model.Component;
 import autoparts.model.ComponentType;
+import autoparts.model.Status;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -99,7 +100,7 @@ public class ComponentFormController {
             if (original == null) {
                 AppServices.components().register(new Component(ComponentType.GENERAL, 0,
                         txtName.getText(), txtReference.getText(), cmbBrand.getValue(),
-                        cmbCategory.getValue(), cmbOrigin.getValue(), "ACTIVO"));
+                        cmbCategory.getValue(), cmbOrigin.getValue(), Status.ACTIVO));
             } else {
                 original.setName(txtName.getText());
                 original.setReference(txtReference.getText());
