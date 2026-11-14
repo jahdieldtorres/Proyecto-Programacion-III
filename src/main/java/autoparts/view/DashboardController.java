@@ -86,8 +86,8 @@ public class DashboardController {
     }
 
     /**
-     * Muestra quién inició sesión y oculta las opciones que su rol no puede usar:
-     * el cliente no ve la gestión de socios, y solo el administrador ve Usuarios.
+     * Muestra quién inició sesión y oculta las opciones de gestión (socios,
+     * inventario, tarifas, afiliaciones y usuarios) si no es administrador.
      */
     private void showUser() {
         User user = Session.getUser();
@@ -95,10 +95,8 @@ public class DashboardController {
             return;
         }
         lblUser.setText(user.getName());
-        lblRole.setText(user.getRole());
-        boolean client = Session.hasRole(User.ROLE_CLIENT);
-        hide(client, btnPartners, btnInventory, btnFees, btnAffiliations);
-        hide(!Session.isAdmin(), btnUsers);
+        lblRole.setText(user.getRole().name());
+        hide(!Session.isAdmin(), btnPartners, btnInventory, btnFees, btnAffiliations, btnUsers);
     }
 
     /**

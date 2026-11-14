@@ -2,6 +2,8 @@ package autoparts.service;
 
 import autoparts.dao.UserDAO;
 import autoparts.exception.InvalidDataException;
+import autoparts.model.Role;
+import autoparts.model.Status;
 import autoparts.model.User;
 import autoparts.util.PasswordHasher;
 import java.time.LocalDate;
@@ -64,7 +66,7 @@ public class UserService {
             throw new InvalidDataException("Ya existe una cuenta con ese correo.");
         }
         User user = new User(0, name.trim(), email.trim(), PasswordHasher.hash(password),
-                User.ROLE_CLIENT, User.STATUS_ACTIVE, LocalDate.now(), 0);
+                Role.CLIENTE, Status.ACTIVO, LocalDate.now());
         userDAO.save(user);
     }
 
@@ -105,13 +107,13 @@ public class UserService {
      * Devuelve los usuarios cuyo nombre o correo contienen el texto (todos si
      * está vacío) y que tienen el rol indicado (todos si el rol es null).
      */
-    public List<User> search(String text, String role) {
+    public List<User> search(String text, Role role) {
         String query = text == null ? "" : text.trim().toLowerCase();
         List<User> result = new ArrayList<>();
         for (User user : userDAO.findAll()) {
             boolean matchesText = user.getName().toLowerCase().contains(query)
                     || user.getEmail().toLowerCase().contains(query);
-            boolean matchesRole = role == null || role.equals(user.getRole());
+            boolean matchesRole = role == null || role == user.getRole();
             if (matchesText && matchesRole) {
                 result.add(user);
             }
@@ -122,13 +124,12 @@ public class UserService {
     /**
      * Cambia el rol de un usuario. Solo lo usa el administrador.
      *
-     * @throws InvalidDataException si el usuario no existe, el rol no es válido
+     * @throws InvalidDataException si no se eligió un rol, el usuario no existe
      *                              o el administrador intenta cambiar su propio rol
      */
-    public void changeRole(int userId, String role) {
-        if (!User.ROLE_CLIENT.equals(role) && !User.ROLE_PARTNER.equals(role)
-                && !User.ROLE_ADMIN.equals(role)) {
-            throw new InvalidDataException("Elige un rol válido.");
+    public void changeRole(int userId, Role role) {
+        if (role == null) {
+            throw new InvalidDataException("Elige un rol.");
         }
         User user = findExisting(userId);
         checkNotCurrentUser(user, "No puedes cambiar tu propio rol.");
@@ -144,7 +145,7 @@ public class UserService {
     public void setActive(int userId, boolean active) {
         User user = findExisting(userId);
         checkNotCurrentUser(user, "No puedes desactivar tu propia cuenta.");
-        user.setStatus(active ? User.STATUS_ACTIVE : User.STATUS_INACTIVE);
+        user.setStatus(active ? Status.ACTIVO : Status.INACTIVO);
         userDAO.update(user);
     }
 

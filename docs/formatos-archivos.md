@@ -62,8 +62,8 @@ public Supplier(String line) {
   `UserService` debe calcular el mismo hash al validar el login.
   Si el equipo elige otro algoritmo, hay que regenerar `users.csv`.
 - Usuarios: `admin@example.com` (ADMIN), `carlos.perez@example.com` y
-  `maria.gomez@example.com` (CLIENTE), `proveedor@example.com` (SOCIO del
-  proveedor 1), `taller@example.com` (SOCIO del taller 3) e
+  `maria.gomez@example.com`, `luis.martinez@example.com` y
+  `ana.rodriguez@example.com` (CLIENTE) e
   `inactivo@example.com` (CLIENTE inactivo, para probar que no puede entrar).
 - Casos para probar el comparador: el componente 5 lo ofrecen 4 proveedores
   (uno sin stock); el 8 y el 10 tienen precios y envíos distintos; el 4 tiene
@@ -98,10 +98,10 @@ public Supplier(String line) {
 ## Usuarios
 
 ### `users.csv`
-`id|nombre|correo|clave_hash|rol|estado|fecha_registro|id_socio`
+`id|nombre|correo|clave_hash|rol|estado|fecha_registro`
 
-- `rol`: `CLIENTE`, `ADMIN` o `SOCIO`.
-- `id_socio`: identificador en `partners.csv` si el rol es `SOCIO`; `0` en los demás.
+- `rol`: `ADMIN` o `CLIENTE` (enum `Role`).
+- `estado`: `ACTIVO` o `INACTIVO` (enum `Status`).
 - El correo no se puede repetir.
 
 ```
