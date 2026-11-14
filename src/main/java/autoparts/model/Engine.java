@@ -29,7 +29,7 @@ public class Engine extends Component {
      * @param fuel el tipo de combustible del motor
      * @param horsepower la potencia del motor
      */
-    public Engine(int id, String name, String reference, Brand brand, Category category, String origin, String status, int displacementCc, int cylinders, FuelType fuel, int horsepower) {
+    public Engine(int id, String name, String reference, Brand brand, Category category, String origin, Status status, int displacementCc, int cylinders, FuelType fuel, int horsepower) {
         super(ComponentType.ENGINE, id, name, reference, brand, category, origin, status);
         this.displacementCc = displacementCc;
         this.cylinders = cylinders;

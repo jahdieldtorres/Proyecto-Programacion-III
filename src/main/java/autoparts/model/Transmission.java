@@ -25,7 +25,7 @@ public class Transmission extends Component {
      * @param transmissionType el tipo de transmisión
      * @param numberOfSpeeds el número de velocidades
      */
-    public Transmission(int id, String name, String reference, Brand brand, Category category, String origin, String status, TransmissionType transmissionType, int numberOfSpeeds) {
+    public Transmission(int id, String name, String reference, Brand brand, Category category, String origin, Status status, TransmissionType transmissionType, int numberOfSpeeds) {
         super(ComponentType.TRANSMISSION, id, name, reference, brand, category, origin, status);
         this.transmissionType = transmissionType;
         this.numberOfSpeeds = numberOfSpeeds;

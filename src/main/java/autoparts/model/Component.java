@@ -16,7 +16,7 @@ public class Component {
     private Brand brand;
     private Category category;
     private String origin;
-    private String status;
+    private Status status;
 
     
     /**
@@ -39,7 +39,7 @@ public class Component {
      * @param origin origen del componente
      * @param status estado cualitativo del componente
      */
-    public Component(ComponentType type, int id, String name, String reference, Brand brand, Category category, String origin, String status) {
+    public Component(ComponentType type, int id, String name, String reference, Brand brand, Category category, String origin, Status status) {
         this.type = type;
         this.id = id;
         this.name = name;
@@ -115,11 +115,11 @@ public class Component {
         this.origin = origin;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 }
