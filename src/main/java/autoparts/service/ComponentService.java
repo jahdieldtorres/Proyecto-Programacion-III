@@ -182,7 +182,7 @@ public class ComponentService {
         List<Component> result = new ArrayList<>();
 
         for (Component component : componentDAO.listAll()) {
-            if (onlyActive && !"ACTIVO".equals(component.getStatus())) {
+            if (onlyActive && component.getStatus() != Status.ACTIVO) {
                 continue;
             }
             if (categoryId != null && component.getCategory().getId() != categoryId) {
