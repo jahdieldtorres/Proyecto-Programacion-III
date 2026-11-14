@@ -24,6 +24,18 @@ public class Navigator {
     public static final String DASHBOARD = "Dashboard.fxml";
     public static final String REGISTER = "Register.fxml";
 
+    // Tamaño de la ventana en Login y Registro (ventana compacta)
+    private static final double SMALL_WIDTH = 960;
+    private static final double SMALL_HEIGHT = 620;
+    private static final double SMALL_MIN_WIDTH = 900;
+    private static final double SMALL_MIN_HEIGHT = 580;
+
+    // Tamaño de la ventana principal, después de iniciar sesión
+    private static final double LARGE_WIDTH = 1280;
+    private static final double LARGE_HEIGHT = 760;
+    private static final double LARGE_MIN_WIDTH = 1000;
+    private static final double LARGE_MIN_HEIGHT = 640;
+
     private static Stage window;
 
     /**
@@ -34,7 +46,8 @@ public class Navigator {
     }
 
     /**
-     * Reemplaza toda la pantalla por la vista indicada.
+     * Reemplaza toda la pantalla por la vista indicada y ajusta el tamaño de la
+     * ventana: compacta para Login y Registro, grande para el resto.
      *
      * @param view nombre del archivo FXML, por ejemplo Navigator.DASHBOARD
      */
@@ -42,12 +55,26 @@ public class Navigator {
         Parent root = load(view);
         if (window.getScene() == null) {
             // La primera vez se crea la escena y se le aplican los estilos
-            Scene scene = new Scene(root, 1280, 760);
+            Scene scene = new Scene(root);
             scene.getStylesheets().add(Navigator.class.getResource("styles.css").toExternalForm());
             window.setScene(scene);
         } else {
             window.getScene().setRoot(root);
         }
+        resizeWindowFor(view);
+    }
+
+    /**
+     * Da a la ventana el tamaño que corresponde a la vista y la centra en la pantalla.
+     */
+    private static void resizeWindowFor(String view) {
+        boolean compact = LOGIN.equals(view) || REGISTER.equals(view);
+        window.setMaximized(false);
+        window.setMinWidth(compact ? SMALL_MIN_WIDTH : LARGE_MIN_WIDTH);
+        window.setMinHeight(compact ? SMALL_MIN_HEIGHT : LARGE_MIN_HEIGHT);
+        window.setWidth(compact ? SMALL_WIDTH : LARGE_WIDTH);
+        window.setHeight(compact ? SMALL_HEIGHT : LARGE_HEIGHT);
+        window.centerOnScreen();
     }
 
     /**
