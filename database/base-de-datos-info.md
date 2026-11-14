@@ -12,9 +12,9 @@ con el botón *Ejecutar script* (F5), en este orden:
 Se pueden repetir 1 y 2 las veces que haga falta: los ID se reinician al recrear las tablas.
 Usar siempre el usuario `ORIGEN`, no `ADMIN`.
 
-## Decisión de herencia: una tabla por subclase
+## Herencia: una tabla por subclase
 
-La tabla padre guarda lo común y una columna de tipo. Cada subtabla usa como llave
+Así queda definida la herencia para todo el proyecto (DAO de Oracle y MER). La tabla padre guarda lo común y una columna de tipo. Cada subtabla usa como llave
 primaria la llave foránea a su padre (relación 1 a 1).
 
 | Padre | Columna de tipo | Subtablas |
