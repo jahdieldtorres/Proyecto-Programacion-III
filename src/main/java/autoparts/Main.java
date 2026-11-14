@@ -19,8 +19,6 @@ public class Main extends Application {
         Navigator.init(window);
         Navigator.goTo(Navigator.LOGIN);
         window.setTitle("ORIGEN | Portal de Repuestos");
-        window.setMinWidth(1000);
-        window.setMinHeight(640);
         window.show();
     }
 
