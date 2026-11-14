@@ -8,6 +8,7 @@ import autoparts.model.Brand;
 import autoparts.model.Category;
 import autoparts.model.Component;
 import autoparts.model.Status;
+import autoparts.util.TextUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -130,55 +131,80 @@ public class ComponentService {
     }
 
     /**
-     * Busca componentes que se encuentren activos y coincidan con el texto de búsqueda.
-     * 
-     * @param text texto a buscar en el nombre o la referencia del componente
+     * Busca los componentes activos que coinciden con el texto, sin importar
+     * tildes ni mayúsculas.
+     *
+     * @param text texto a buscar en el nombre, la referencia, la marca o la categoría; vacío o null no filtra
      * @return lista de componentes activos filtrados
      */
     public List<Component> search(String text) {
-        List<Component> allComponents = componentDAO.listAll();
-        List<Component> filteredComponents = new ArrayList<>();
-        
-        String query = text == null ? "" : text.trim().toLowerCase();
+        return filter(text, null, true);
+    }
 
-        for (Component component : allComponents) {
-            boolean isActive = component.getStatus() == Status.ACTIVO;
-            
-            if (isActive) {
-                if (query.isEmpty()) {
-                    filteredComponents.add(component);
-                } else {
-                    String name = component.getName() != null ? component.getName().toLowerCase() : "";
-                    String reference = component.getReference() != null ? component.getReference().toLowerCase() : "";
-                    
-                    if (name.contains(query) || reference.contains(query)) {
-                        filteredComponents.add(component);
-                    }
-                }
-            }
-        }
-        
-        return filteredComponents;
+    /**
+     * Igual que {@link #search(String)} pero además deja solo los componentes de una categoría.
+     *
+     * @param text texto a buscar en el nombre, la referencia, la marca o la categoría; vacío o null no filtra
+     * @param categoryId identificador de la categoría; null para no filtrar por categoría
+     * @return lista de componentes activos filtrados
+     */
+    public List<Component> search(String text, Integer categoryId) {
+        return filter(text, categoryId, true);
     }
 
     /**
      * Igual que {@link #search(String)} pero incluye también los componentes
      * INACTIVOS. Lo usa la pantalla del catálogo para el administrador.
      *
-     * @param text texto a buscar en el nombre o la referencia del componente
+     * @param text texto a buscar en el nombre, la referencia, la marca o la categoría
      * @return lista de componentes (activos e inactivos) filtrados
      */
     public List<Component> searchAll(String text) {
+        return filter(text, null, false);
+    }
+
+    /**
+     * Igual que {@link #search(String, Integer)} pero incluye también los componentes INACTIVOS.
+     *
+     * @param text texto a buscar en el nombre, la referencia, la marca o la categoría
+     * @param categoryId identificador de la categoría; null para no filtrar por categoría
+     * @return lista de componentes (activos e inactivos) filtrados
+     */
+    public List<Component> searchAll(String text, Integer categoryId) {
+        return filter(text, categoryId, false);
+    }
+
+    /**
+     * Búsqueda común: filtra por estado, por categoría y por texto.
+     */
+    private List<Component> filter(String text, Integer categoryId, boolean onlyActive) {
+        String query = TextUtil.normalize(text);
         List<Component> result = new ArrayList<>();
-        String query = text == null ? "" : text.trim().toLowerCase();
 
         for (Component component : componentDAO.listAll()) {
-            String name = component.getName() != null ? component.getName().toLowerCase() : "";
-            String reference = component.getReference() != null ? component.getReference().toLowerCase() : "";
-            if (query.isEmpty() || name.contains(query) || reference.contains(query)) {
+            if (onlyActive && !"ACTIVO".equals(component.getStatus())) {
+                continue;
+            }
+            if (categoryId != null && component.getCategory().getId() != categoryId) {
+                continue;
+            }
+            if (query.isEmpty() || matches(component, query)) {
                 result.add(component);
             }
         }
         return result;
+    }
+
+    /**
+     * Indica si el texto (ya normalizado) aparece en el nombre, la referencia,
+     * la marca o la categoría del componente.
+     */
+    private boolean matches(Component component, String query) {
+        String brand = component.getBrand() != null ? component.getBrand().getName() : "";
+        String category = component.getCategory() != null ? component.getCategory().getName() : "";
+        return TextUtil.normalize(component.getName()).contains(query)
+                || TextUtil.normalize(component.getReference()).contains(query)
+                || TextUtil.normalize(brand).contains(query)
+                || TextUtil.normalize(category).contains(query);
     }
 }

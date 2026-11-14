@@ -23,7 +23,7 @@
 
     <!-- Barra de búsqueda y filtro -->
     <HBox spacing="10" styleClass="toolbar">
-        <TextField fx:id="txtSearch" promptText="Buscar por nombre o referencia..." onAction="#search"
+        <TextField fx:id="txtSearch" promptText="Buscar por nombre, referencia, marca o categoría..." onAction="#search"
                    HBox.hgrow="ALWAYS" maxWidth="420"/>
         <Button text="Buscar" onAction="#search" styleClass="primary-button"/>
         <Region HBox.hgrow="ALWAYS"/>
