@@ -47,7 +47,7 @@ public class MyAccountController {
         User user = Session.getUser();
         txtName.setText(user.getName());
         lblEmail.setText(user.getEmail());
-        lblRole.setText(user.getRole());
+        lblRole.setText(user.getRole().name());
         lblSince.setText(String.valueOf(user.getRegistrationDate()));
     }
 

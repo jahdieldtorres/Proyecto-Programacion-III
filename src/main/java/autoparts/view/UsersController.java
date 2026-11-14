@@ -3,6 +3,7 @@ package autoparts.view;
 import autoparts.AppServices;
 import autoparts.exception.InvalidDataException;
 import autoparts.exception.PersistenceException;
+import autoparts.model.Role;
 import autoparts.model.User;
 import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
@@ -43,7 +44,7 @@ public class UsersController {
     @FXML
     private TableColumn<User, String> colSince;
     @FXML
-    private ComboBox<String> cmbRole;
+    private ComboBox<Role> cmbRole;
     @FXML
     private Label lblMessage;
 
@@ -54,14 +55,14 @@ public class UsersController {
     private void initialize() {
         colName.setCellValueFactory(row -> new SimpleStringProperty(row.getValue().getName()));
         colEmail.setCellValueFactory(row -> new SimpleStringProperty(row.getValue().getEmail()));
-        colRole.setCellValueFactory(row -> new SimpleStringProperty(row.getValue().getRole()));
-        colStatus.setCellValueFactory(row -> new SimpleStringProperty(row.getValue().getStatus()));
+        colRole.setCellValueFactory(row -> new SimpleStringProperty(row.getValue().getRole().name()));
+        colStatus.setCellValueFactory(row -> new SimpleStringProperty(row.getValue().getStatus().name()));
         colSince.setCellValueFactory(row -> new SimpleStringProperty(
                 String.valueOf(row.getValue().getRegistrationDate())));
 
-        cmbFilter.getItems().setAll(ALL, User.ROLE_CLIENT, User.ROLE_PARTNER, User.ROLE_ADMIN);
+        cmbFilter.getItems().setAll(ALL, Role.ADMIN.name(), Role.CLIENTE.name());
         cmbFilter.setValue(ALL);
-        cmbRole.getItems().setAll(User.ROLE_CLIENT, User.ROLE_PARTNER, User.ROLE_ADMIN);
+        cmbRole.getItems().setAll(Role.values());
         tblUsers.setPlaceholder(new Label("No hay usuarios que coincidan con la búsqueda."));
         search();
     }
@@ -72,7 +73,7 @@ public class UsersController {
     @FXML
     private void search() {
         try {
-            String role = ALL.equals(cmbFilter.getValue()) ? null : cmbFilter.getValue();
+            Role role = ALL.equals(cmbFilter.getValue()) ? null : Role.valueOf(cmbFilter.getValue());
             List<User> users = AppServices.users().search(txtSearch.getText(), role);
             tblUsers.setItems(FXCollections.observableArrayList(users));
             lblMessage.setText(users.size() + " usuario(s).");

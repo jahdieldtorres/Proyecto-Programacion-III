@@ -4,7 +4,7 @@ import autoparts.model.User;
 
 /**
  * Guarda el usuario que inició sesión, para que cualquier pantalla sepa
- * quién es y qué rol tiene.
+ * quién es y si es administrador.
  *
  * @author Jahdiel Torres
  */
@@ -29,18 +29,9 @@ public class Session {
     }
 
     /**
-     * Indica si el usuario de la sesión tiene el rol indicado.
-     *
-     * @param role uno de User.ROLE_CLIENT, User.ROLE_PARTNER o User.ROLE_ADMIN
-     */
-    public static boolean hasRole(String role) {
-        return currentUser != null && currentUser.getRole().equals(role);
-    }
-
-    /**
-     * Atajo para preguntar si quien inició sesión es administrador.
+     * Indica si quien inició sesión es administrador. Si no hay sesión, devuelve false.
      */
     public static boolean isAdmin() {
-        return hasRole(User.ROLE_ADMIN);
+        return currentUser != null && currentUser.isAdmin();
     }
 }

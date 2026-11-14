@@ -79,7 +79,7 @@ search();
 
 ### Menú y roles
 
-Las secciones del menú se conectan por nombre en `DashboardController`: `Vehicles.fxml`, `Inventory.fxml`, `Fees.fxml`, `Affiliations.fxml`, `Users.fxml` y `MyAccount.fxml`, además de las que ya existían. El cliente no ve Socios, Inventario, Tarifas ni Afiliaciones, y solo el administrador ve Usuarios. Para preguntar el rol en cualquier pantalla: `Session.isAdmin()` o `Session.hasRole(User.ROLE_PARTNER)`.
+Las secciones del menú se conectan por nombre en `DashboardController`: `Vehicles.fxml`, `Inventory.fxml`, `Fees.fxml`, `Affiliations.fxml`, `Users.fxml` y `MyAccount.fxml`, además de las que ya existían. Solo hay dos roles (enum `Role`): `ADMIN` y `CLIENTE`. El cliente no ve Socios, Inventario, Tarifas, Afiliaciones ni Usuarios. Para preguntar el rol en cualquier pantalla: `Session.isAdmin()`.
 
 ## Convenciones
 

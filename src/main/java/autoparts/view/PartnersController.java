@@ -5,7 +5,6 @@ import autoparts.exception.InvalidDataException;
 import autoparts.exception.PersistenceException;
 import autoparts.model.Partner;
 import autoparts.model.Supplier;
-import autoparts.model.User;
 import autoparts.model.Workshop;
 import autoparts.service.Session;
 
@@ -82,8 +81,7 @@ public class PartnersController {
      * Nuevo, Editar y Desactivar solo los ve el administrador.
      */
     private void showAdminButtons() {
-        User user = Session.getUser();
-        boolean admin = user != null && User.ROLE_ADMIN.equals(user.getRole());
+        boolean admin = Session.isAdmin();
         for (Button button : new Button[]{btnNew, btnEdit, btnDeactivate}) {
             button.setVisible(admin);
             button.setManaged(admin);
@@ -169,4 +167,4 @@ public class PartnersController {
         Workshop workshop = (Workshop) partner;
         return workshop.getSpecialty() + " · " + workshop.getBayCount() + " bahías";
     }
-}
+}
