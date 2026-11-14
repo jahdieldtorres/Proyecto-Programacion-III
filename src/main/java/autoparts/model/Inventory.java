@@ -23,7 +23,7 @@ public class Inventory {
     private int stock;
     private int shippingCost;
     private int warrantyMonths;
-    private String condition;
+    private Condition condition;                       
     private Status status;
 
     /**
@@ -40,7 +40,7 @@ public class Inventory {
      * @param status         estado de la fila
      */
     public Inventory(int id, int supplierId, int componentId, int price, int stock,
-            int shippingCost, int warrantyMonths, String condition, Status status) {
+            int shippingCost, int warrantyMonths, Condition condition, Status status) {   // H1
         this.id = id;
         this.supplierId = supplierId;
         this.componentId = componentId;
@@ -69,7 +69,7 @@ public class Inventory {
         this.stock = Integer.parseInt(f[4].trim());
         this.shippingCost = Integer.parseInt(f[5].trim());
         this.warrantyMonths = Integer.parseInt(f[6].trim());
-        this.condition = f[7];
+        this.condition = Condition.valueOf(f[7].trim());                                   
         this.status = Status.valueOf(f[8].trim());
     }
 
@@ -106,8 +106,8 @@ public class Inventory {
     public void setShippingCost(int shippingCost) { this.shippingCost = shippingCost; }
     public int getWarrantyMonths() { return warrantyMonths; }
     public void setWarrantyMonths(int warrantyMonths) { this.warrantyMonths = warrantyMonths; }
-    public String getCondition() { return condition; }
-    public void setCondition(String condition) { this.condition = condition; }
+    public Condition getCondition() { return condition; }                                  
+    public void setCondition(Condition condition) { this.condition = condition; }          
     public Status getStatus() { return status; }
     public void setStatus(Status status) { this.status = status; }
 }
