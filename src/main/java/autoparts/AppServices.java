@@ -14,6 +14,7 @@ import autoparts.service.AffiliationService;
 import autoparts.service.ComparatorService;
 import autoparts.service.ComponentService;
 import autoparts.service.FeeService;
+import autoparts.service.InventoryService;
 import autoparts.service.PartnerService;
 import autoparts.service.UserService;
 import autoparts.service.VehicleService;
@@ -37,6 +38,8 @@ public class AppServices {
             new AffiliationService(new AffiliationFileDAO(), new PartnerFileDAO());
     private static final ComparatorService COMPARATOR_SERVICE =
             new ComparatorService(new InventoryFileDAO(), new PartnerFileDAO());
+    private static final InventoryService INVENTORY_SERVICE =
+            new InventoryService(new InventoryFileDAO(), new PartnerFileDAO());
     private static final VehicleService VEHICLE_SERVICE =
             new VehicleService(new VehicleFileDAO(), new CompatibilityFileDAO(), new ComponentFileDAO());
 
@@ -64,7 +67,11 @@ public class AppServices {
         return COMPARATOR_SERVICE;
     }
 
+    public static InventoryService inventory() {
+        return INVENTORY_SERVICE;
+    }
+
     public static VehicleService vehicles() {
         return VEHICLE_SERVICE;
     }
-}
+}
