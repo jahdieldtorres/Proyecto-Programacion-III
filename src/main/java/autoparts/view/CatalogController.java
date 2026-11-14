@@ -75,7 +75,7 @@ public class CatalogController {
         colBrand.setCellValueFactory(row -> new SimpleStringProperty(row.getValue().getBrand().getName()));
         colCategory.setCellValueFactory(row -> new SimpleStringProperty(row.getValue().getCategory().getName()));
         colOrigin.setCellValueFactory(row -> new SimpleStringProperty(row.getValue().getOrigin()));
-        colStatus.setCellValueFactory(row -> new SimpleStringProperty(row.getValue().getStatus()));
+        colStatus.setCellValueFactory(row -> new SimpleStringProperty(row.getValue().getStatus().name()));
 
         tblComponents.setPlaceholder(new Label("No hay componentes que coincidan con la búsqueda."));
         showAdminButtons();
