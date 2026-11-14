@@ -5,6 +5,7 @@ import autoparts.dao.ComponentDAO;
 import autoparts.dao.VehicleDAO;
 import autoparts.exception.InvalidDataException;
 import autoparts.model.Component;
+import autoparts.model.Status;
 import autoparts.model.Vehicle;
 
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class VehicleService {
         String query = text == null ? "" : text.trim().toLowerCase();
         List<Vehicle> result = new ArrayList<>();
         for (Vehicle vehicle : vehicleDAO.listAll()) {
-            if (!"ACTIVO".equalsIgnoreCase(vehicle.getStatus())) {
+            if (!Status.ACTIVO.equals(vehicle.getStatus())) {
                 continue;
             }
             String brand = vehicle.getBrand() != null ? vehicle.getBrand().getName().toLowerCase() : "";
@@ -73,7 +74,7 @@ public class VehicleService {
         Set<Integer> componentIds = new HashSet<>(compatibilityDAO.listComponentIds(vehicleId));
         List<Component> result = new ArrayList<>();
         for (Component component : componentDAO.listAll()) {
-            boolean active = "ACTIVO".equalsIgnoreCase(component.getStatus());
+            boolean active = Status.ACTIVO.equals(component.getStatus());
             if (active && componentIds.contains(component.getId())) {
                 result.add(component);
             }

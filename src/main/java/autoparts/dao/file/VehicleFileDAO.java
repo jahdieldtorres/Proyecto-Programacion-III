@@ -44,8 +44,8 @@ public class VehicleFileDAO implements VehicleDAO {
     public void save(Vehicle vehicle) {
         int nextId = FileUtil.nextId(FlatFiles.VEHICLES, 1);
         vehicle.setId(nextId);
-        if (vehicle.getStatus() == null || vehicle.getStatus().isBlank()) {
-            vehicle.setStatus("ACTIVO");
+        if (vehicle.getStatus() == null) {
+            vehicle.setStatus(Status.ACTIVO);
         }
         FileUtil.append(FlatFiles.VEHICLES, vehicle.toLine());
     }
@@ -68,7 +68,7 @@ public class VehicleFileDAO implements VehicleDAO {
         List<String> lines = new ArrayList<>();
         for (String[] fields : FileUtil.readFields(FlatFiles.VEHICLES)) {
             if (fields.length >= 2 && Integer.parseInt(fields[1].trim()) == id) {
-                fields[5] = "INACTIVO";
+                fields[5] = Status.INACTIVO.name();
                 lines.add(FileUtil.join((Object[]) fields));
             } else {
                 lines.add(FileUtil.join((Object[]) fields));
@@ -96,7 +96,7 @@ public class VehicleFileDAO implements VehicleDAO {
         Brand brand = brandsMap.getOrDefault(brandName, new Brand(0, brandName));
         String modelName = fields[3].trim();
         int yearRelease = Integer.parseInt(fields[4].trim());
-        String status = fields[5].trim();
+        Status status = Status.valueOf(fields[5].trim());
 
         VehicleType vType = VehicleType.fromFileValue(typeStr);
 

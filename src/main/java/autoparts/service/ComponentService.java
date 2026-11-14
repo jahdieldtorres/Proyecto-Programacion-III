@@ -72,7 +72,7 @@ public class ComponentService {
      */
     public void register(Component component) {
         validate(component);
-        component.setStatus("ACTIVO");
+        component.setStatus(Status.ACTIVO);
         componentDAO.save(component);
     }
 
@@ -182,7 +182,7 @@ public class ComponentService {
         List<Component> result = new ArrayList<>();
 
         for (Component component : componentDAO.listAll()) {
-            if (onlyActive && !"ACTIVO".equals(component.getStatus())) {
+            if (onlyActive && component.getStatus() != Status.ACTIVO) {
                 continue;
             }
             if (categoryId != null && component.getCategory().getId() != categoryId) {
