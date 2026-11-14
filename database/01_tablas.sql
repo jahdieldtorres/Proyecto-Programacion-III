@@ -309,6 +309,9 @@ CREATE TABLE COMPATIBILITY (
 
 -- ---------------------------------------------------------------------
 -- 6. Inventario (oferta de un proveedor por un componente)
+--    No hay UNIQUE (proveedor, componente): una oferta desactivada sigue en
+--    la tabla y se puede crear otra igual. InventoryService cuida que no haya
+--    dos ofertas ACTIVAS repetidas.
 -- ---------------------------------------------------------------------
 CREATE TABLE INVENTORY (
     ID               NUMBER GENERATED ALWAYS AS IDENTITY,
@@ -321,7 +324,6 @@ CREATE TABLE INVENTORY (
     CONDITION        VARCHAR2(15) DEFAULT 'NUEVO' NOT NULL,
     STATUS           VARCHAR2(10) DEFAULT 'ACTIVO' NOT NULL,
     CONSTRAINT PK_INVENTORY PRIMARY KEY (ID),
-    CONSTRAINT UQ_INVENTORY_SUPPLIER_COMP UNIQUE (SUPPLIER_ID, COMPONENT_ID),
     CONSTRAINT FK_INVENTORY_SUPPLIER FOREIGN KEY (SUPPLIER_ID) REFERENCES SUPPLIERS (PARTNER_ID),
     CONSTRAINT FK_INVENTORY_COMPONENT FOREIGN KEY (COMPONENT_ID) REFERENCES COMPONENTS (ID),
     CONSTRAINT CK_INVENTORY_PRICE CHECK (PRICE > 0),
