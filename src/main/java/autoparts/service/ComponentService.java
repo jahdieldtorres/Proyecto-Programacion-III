@@ -7,6 +7,7 @@ import autoparts.exception.InvalidDataException;
 import autoparts.model.Brand;
 import autoparts.model.Category;
 import autoparts.model.Component;
+import autoparts.model.Status;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +71,7 @@ public class ComponentService {
      */
     public void register(Component component) {
         validate(component);
-        component.setStatus("ACTIVO");
+        component.setStatus(Status.ACTIVO);
         componentDAO.save(component);
     }
 
@@ -141,7 +142,7 @@ public class ComponentService {
         String query = text == null ? "" : text.trim().toLowerCase();
 
         for (Component component : allComponents) {
-            boolean isActive = "ACTIVO".equalsIgnoreCase(component.getStatus());
+            boolean isActive = component.getStatus() == Status.ACTIVO;
             
             if (isActive) {
                 if (query.isEmpty()) {
