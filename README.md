@@ -22,6 +22,17 @@ Aplicación de escritorio en Java que reúne en un solo lugar lo que ofrecen dis
 
 La primera vez Maven descarga JavaFX, así que necesita internet.
 
+## Base de datos (Oracle Cloud)
+
+La app se conecta a una Oracle Autonomous Database con el usuario `ORIGEN`. Para configurarla en tu PC:
+
+1. Pide al líder técnico el archivo `Wallet_origen.zip` y la clave de `ORIGEN` (por privado, nunca por GitHub).
+2. Descomprime el wallet en `C:\oracle\wallet_origen` (o en otra carpeta, fuera del proyecto).
+3. Copia `db.properties.example` con el nombre `db.properties` y escribe la clave. Si usaste otra carpeta, cambia la ruta de `TNS_ADMIN`.
+4. Prueba la conexión: clic derecho en `autoparts.util.DatabaseCheck` → Run File. Debe decir `Conexión correcta. Usuario conectado: ORIGEN`.
+
+Las conexiones se piden con `DatabaseConnection.getConnection()` y se cierran con try-with-resources.
+
 ## Estructura
 
 ```

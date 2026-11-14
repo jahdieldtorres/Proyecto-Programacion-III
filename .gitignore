@@ -33,3 +33,15 @@ nb-configuration.xml
 # Sistema operativo
 .DS_Store
 Thumbs.db
+
+# Base de datos: datos de conexión y wallet de Oracle (nunca se suben)
+db.properties
+wallet*/
+Wallet*/
+*.sso
+*.p12
+*.jks
+*.pem
+
+# Archivos que guarda la app de Claude en la carpeta del proyecto
+Claude outputs/
