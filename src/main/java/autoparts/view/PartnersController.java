@@ -44,6 +44,10 @@ public class PartnersController {
     @FXML
     private TableColumn<Partner, String> colPhone;
     @FXML
+    private TableColumn<Partner, String> colAddress;
+    @FXML
+    private TableColumn<Partner, String> colLocation;
+    @FXML
     private TableColumn<Partner, String> colDetail;
     @FXML
     private TableColumn<Partner, String> colStatus;
@@ -67,6 +71,9 @@ public class PartnersController {
         colType.setCellValueFactory(c -> new SimpleStringProperty(typeName(c.getValue())));
         colTaxId.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTaxId()));
         colPhone.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getPhone()));
+        colAddress.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getAddress()));
+        colLocation.setCellValueFactory(c -> new SimpleStringProperty(
+                c.getValue().getLatitude() + ", " + c.getValue().getLongitude()));
         colDetail.setCellValueFactory(c -> new SimpleStringProperty(detail(c.getValue())));
         colStatus.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getStatus().name()));
         tblPartners.setPlaceholder(new Label("No hay socios para mostrar."));
@@ -167,4 +174,4 @@ public class PartnersController {
         Workshop workshop = (Workshop) partner;
         return workshop.getSpecialty() + " · " + workshop.getBayCount() + " bahías";
     }
-}
+}

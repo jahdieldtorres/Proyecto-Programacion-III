@@ -20,8 +20,11 @@ public abstract class Partner {
     /** Valor del campo tipo para un taller en {@code partners.csv}. */
     public static final String TYPE_WORKSHOP = "TALLER";
 
-    /** Cantidad de campos comunes (tipo, id, nombre, nit, teléfono, estado, fecha). */
-    protected static final int COMMON_FIELDS = 7;
+    /**
+     * Cantidad de campos comunes (tipo, id, nombre, nit, teléfono, estado,
+     * fecha, dirección, latitud, longitud).
+     */
+    protected static final int COMMON_FIELDS = 10;
 
     private int id;
     private String companyName;
@@ -29,6 +32,9 @@ public abstract class Partner {
     private String phone;
     private Status status;
     private LocalDate registrationDate;
+    private String address;
+    private double latitude;
+    private double longitude;
 
     /**
      * Crea un socio con sus campos comunes.
@@ -39,15 +45,22 @@ public abstract class Partner {
      * @param phone            teléfono de contacto
      * @param status           estado del socio
      * @param registrationDate fecha de registro
+     * @param address          dirección del socio en Valledupar
+     * @param latitude         latitud en grados (por ejemplo 10.46)
+     * @param longitude        longitud en grados (por ejemplo -73.25)
      */
     protected Partner(int id, String companyName, String taxId, String phone,
-            Status status, LocalDate registrationDate) {
+            Status status, LocalDate registrationDate,
+            String address, double latitude, double longitude) {
         this.id = id;
         this.companyName = companyName;
         this.taxId = taxId;
         this.phone = phone;
         this.status = status;
         this.registrationDate = registrationDate;
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     /**
@@ -62,6 +75,9 @@ public abstract class Partner {
         this.phone = fields[4];
         this.status = Status.valueOf(fields[5].trim());
         this.registrationDate = LocalDate.parse(fields[6].trim());
+        this.address = fields[7];
+        this.latitude = Double.parseDouble(fields[8].trim());
+        this.longitude = Double.parseDouble(fields[9].trim());
     }
 
     /**
@@ -88,6 +104,9 @@ public abstract class Partner {
         all[4] = phone;
         all[5] = status;
         all[6] = registrationDate;
+        all[7] = address;
+        all[8] = latitude;
+        all[9] = longitude;
         System.arraycopy(own, 0, all, COMMON_FIELDS, own.length);
         return FileUtil.join(all);
     }
@@ -104,4 +123,10 @@ public abstract class Partner {
     public void setStatus(Status status) { this.status = status; }
     public LocalDate getRegistrationDate() { return registrationDate; }
     public void setRegistrationDate(LocalDate registrationDate) { this.registrationDate = registrationDate; }
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+    public double getLatitude() { return latitude; }
+    public void setLatitude(double latitude) { this.latitude = latitude; }
+    public double getLongitude() { return longitude; }
+    public void setLongitude(double longitude) { this.longitude = longitude; }
 }

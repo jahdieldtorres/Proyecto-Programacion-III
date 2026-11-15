@@ -12,7 +12,7 @@ import java.util.Optional;
 
 /**
  * Reglas de negocio de los socios (proveedores y talleres): validación de los
- * datos, NIT único y borrado lógico. Solo depende de la interfaz {@link PartnerDAO}.
+ * datos (incluida su ubicación), NIT único y borrado lógico. Solo depende de la interfaz {@link PartnerDAO}.
  *
  * @author Héctor Guevara
  */
@@ -138,6 +138,13 @@ public class PartnerService {
         partner.setCompanyName(cleanText(partner.getCompanyName(), "El nombre de la compañía"));
         partner.setTaxId(cleanText(partner.getTaxId(), "El NIT"));
         partner.setPhone(cleanText(partner.getPhone(), "El teléfono"));
+        partner.setAddress(cleanText(partner.getAddress(), "La dirección"));
+        if (Double.isNaN(partner.getLatitude()) || partner.getLatitude() < -90 || partner.getLatitude() > 90) {
+            throw new InvalidDataException("La latitud debe estar entre -90 y 90.");
+        }
+        if (Double.isNaN(partner.getLongitude()) || partner.getLongitude() < -180 || partner.getLongitude() > 180) {
+            throw new InvalidDataException("La longitud debe estar entre -180 y 180.");
+        }
         if (partner.getStatus() == null) {
             throw new InvalidDataException("El estado es obligatorio.");
         }

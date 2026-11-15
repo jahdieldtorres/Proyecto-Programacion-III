@@ -41,6 +41,20 @@
         <Label text="Teléfono" styleClass="field-label"/>
         <TextField fx:id="txtPhone" promptText="Ej.: 3001112233"/>
     </VBox>
+    <VBox spacing="4">
+        <Label text="Dirección" styleClass="field-label"/>
+        <TextField fx:id="txtAddress" promptText="Ej.: Cra 9 #16-45, Valledupar"/>
+    </VBox>
+    <HBox spacing="12">
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="Latitud" styleClass="field-label"/>
+            <TextField fx:id="txtLatitude" promptText="Ej.: 10.4631"/>
+        </VBox>
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="Longitud" styleClass="field-label"/>
+            <TextField fx:id="txtLongitude" promptText="Ej.: -73.2532"/>
+        </VBox>
+    </HBox>
 
     <!-- Solo proveedor -->
     <VBox fx:id="boxSupplier" spacing="4">

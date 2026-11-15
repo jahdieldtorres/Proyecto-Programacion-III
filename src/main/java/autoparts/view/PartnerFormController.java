@@ -57,6 +57,12 @@ public class PartnerFormController {
     @FXML
     private TextField txtPhone;
     @FXML
+    private TextField txtAddress;
+    @FXML
+    private TextField txtLatitude;
+    @FXML
+    private TextField txtLongitude;
+    @FXML
     private VBox boxSupplier;
     @FXML
     private TextField txtDeliveryDays;
@@ -100,6 +106,9 @@ public class PartnerFormController {
         txtName.setText(partner.getCompanyName());
         txtTaxId.setText(partner.getTaxId());
         txtPhone.setText(partner.getPhone());
+        txtAddress.setText(partner.getAddress());
+        txtLatitude.setText(String.valueOf(partner.getLatitude()));
+        txtLongitude.setText(String.valueOf(partner.getLongitude()));
         if (partner instanceof Supplier supplier) {
             cmbType.setValue(PartnerType.SUPPLIER);
             txtDeliveryDays.setText(String.valueOf(supplier.getDeliveryDays()));
@@ -162,11 +171,16 @@ public class PartnerFormController {
         String name = txtName.getText();
         String taxId = txtTaxId.getText();
         String phone = txtPhone.getText();
+        String address = txtAddress.getText();
+        double latitude = readDecimal(txtLatitude, "La latitud");
+        double longitude = readDecimal(txtLongitude, "La longitud");
 
         return switch (cmbType.getValue()) {
             case SUPPLIER -> new Supplier(id, name, taxId, phone, status, date,
+                    address, latitude, longitude,
                     readNumber(txtDeliveryDays, "Los días de entrega"));
             default -> new Workshop(id, name, taxId, phone, status, date,
+                    address, latitude, longitude,
                     txtSpecialty.getText(), readNumber(txtBayCount, "Las bahías"));
         };
     }
@@ -196,6 +210,24 @@ public class PartnerFormController {
             return Integer.parseInt(text);
         } catch (NumberFormatException e) {
             throw new InvalidDataException(label + " debe ser un número.");
+        }
+    }
+
+    /**
+     * Lee un número decimal de un campo de texto. Acepta coma o punto como
+     * separador decimal (por ejemplo 10,46 o 10.46).
+     *
+     * @param field campo del que se lee
+     * @param label nombre del dato para el mensaje, por ejemplo "La latitud"
+     * @return el número escrito
+     * @throws InvalidDataException si el campo está vacío o no es un número
+     */
+    private double readDecimal(TextField field, String label) {
+        String text = field.getText() == null ? "" : field.getText().trim().replace(',', '.');
+        try {
+            return Double.parseDouble(text);
+        } catch (NumberFormatException e) {
+            throw new InvalidDataException(label + " debe ser un número, por ejemplo 10.46.");
         }
     }
 }
