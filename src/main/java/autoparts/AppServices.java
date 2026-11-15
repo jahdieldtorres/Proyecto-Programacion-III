@@ -8,8 +8,8 @@ import autoparts.dao.file.ComponentFileDAO;
 import autoparts.dao.file.FeeFileDAO;
 import autoparts.dao.file.InventoryFileDAO;
 import autoparts.dao.file.PartnerFileDAO;
-import autoparts.dao.file.UserFileDAO;
 import autoparts.dao.file.VehicleFileDAO;
+import autoparts.dao.oracle.UserOracleDAO;
 import autoparts.service.AffiliationService;
 import autoparts.service.ComparatorService;
 import autoparts.service.ComponentService;
@@ -22,14 +22,17 @@ import autoparts.service.VehicleService;
 /**
  * Único lugar donde se crean los servicios con su DAO.
  *
- * Los controladores de JavaFX los obtienen de aquí. Cuando se conecte la base
- * de datos, solo se cambian en esta clase los FileDAO por la versión de Oracle.
+ * Los controladores de JavaFX los obtienen de aquí. Para pasar un módulo a la
+ * base de datos solo se cambia, en esta clase, su FileDAO por la versión de
+ * Oracle (paquete dao.oracle). Los servicios no cambian.
+ *
+ * Ya usan Oracle: usuarios.
  *
  * @author Jahdiel Torres
  */
 public class AppServices {
 
-    private static final UserService USER_SERVICE = new UserService(new UserFileDAO());
+    private static final UserService USER_SERVICE = new UserService(new UserOracleDAO());
     private static final ComponentService COMPONENT_SERVICE = new ComponentService(
             new ComponentFileDAO(), new BrandFileDAO(), new CategoryFileDAO());
     private static final PartnerService PARTNER_SERVICE = new PartnerService(new PartnerFileDAO());
