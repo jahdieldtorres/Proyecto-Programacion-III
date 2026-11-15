@@ -33,6 +33,8 @@
                 <TableColumn fx:id="colType" text="Tipo" prefWidth="90"/>
                 <TableColumn fx:id="colTaxId" text="NIT" prefWidth="120"/>
                 <TableColumn fx:id="colPhone" text="Teléfono" prefWidth="110"/>
+                <TableColumn fx:id="colAddress" text="Dirección" prefWidth="200"/>
+                <TableColumn fx:id="colLocation" text="Coordenadas" prefWidth="130"/>
                 <TableColumn fx:id="colDetail" text="Detalle" prefWidth="200"/>
                 <TableColumn fx:id="colStatus" text="Estado" prefWidth="90"/>
             </columns>

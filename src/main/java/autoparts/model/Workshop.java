@@ -24,13 +24,17 @@ public class Workshop extends Partner {
      * @param phone            teléfono de contacto
      * @param status           estado del socio
      * @param registrationDate fecha de registro
+     * @param address          dirección del taller
+     * @param latitude         latitud en grados
+     * @param longitude        longitud en grados
      * @param specialty        especialidad del taller
      * @param bayCount         número de bahías
      */
     public Workshop(int id, String companyName, String taxId, String phone,
             Status status, LocalDate registrationDate,
+            String address, double latitude, double longitude,
             String specialty, int bayCount) {
-        super(id, companyName, taxId, phone, status, registrationDate);
+        super(id, companyName, taxId, phone, status, registrationDate, address, latitude, longitude);
         this.specialty = specialty;
         this.bayCount = bayCount;
     }
@@ -49,8 +53,8 @@ public class Workshop extends Partner {
         if (fields.length != COMMON_FIELDS + 2) {
             throw new IllegalArgumentException("Un taller tiene " + (COMMON_FIELDS + 2) + " campos.");
         }
-        this.specialty = fields[7];
-        this.bayCount = Integer.parseInt(fields[8].trim());
+        this.specialty = fields[COMMON_FIELDS];
+        this.bayCount = Integer.parseInt(fields[COMMON_FIELDS + 1].trim());
     }
 
     @Override
