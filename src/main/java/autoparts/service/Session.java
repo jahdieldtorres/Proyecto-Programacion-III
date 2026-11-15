@@ -38,7 +38,6 @@ public class Session {
     /**
      * Carrito de compras de quien inició sesión. Siempre existe (puede estar vacío)
      * y es nuevo en cada inicio y cierre de sesión.
-     * @return 
      */
     public static Cart getCart() {
         return cart;
@@ -46,7 +45,6 @@ public class Session {
 
     /**
      * Indica si quien inició sesión es administrador. Si no hay sesión, devuelve false.
-     * @return 
      */
     public static boolean isAdmin() {
         return currentUser != null && currentUser.isAdmin();
