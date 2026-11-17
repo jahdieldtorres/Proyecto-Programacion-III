@@ -17,7 +17,7 @@ import java.util.Set;
  * Servicio de consulta de vehículos y de los repuestos compatibles con cada
  * uno. Es solo de lectura: no crea, edita ni desactiva vehículos.
  *
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class VehicleService {
 

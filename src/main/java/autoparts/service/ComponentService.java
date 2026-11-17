@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Servicio encargado de la lógica de negocio y gestión de componentes y autopartes.
  * 
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class ComponentService {
 
