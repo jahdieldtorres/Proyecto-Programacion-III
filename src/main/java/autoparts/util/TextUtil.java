@@ -6,7 +6,7 @@ import java.text.Normalizer;
  * Utilidades para trabajar con texto. Se usa en las búsquedas para que
  * "bateria", "Batería" y "BATERÍA" se consideren el mismo texto.
  *
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public final class TextUtil {
 
