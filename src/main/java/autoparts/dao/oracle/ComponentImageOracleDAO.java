@@ -21,7 +21,7 @@ import java.util.List;
  *
  * Sigue el patrón de {@link UserOracleDAO}.
  *
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class ComponentImageOracleDAO implements ComponentImageDAO {
 

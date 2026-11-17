@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Interfaz que define las operaciones de acceso a datos para la compatibilidad entre vehículos y componentes.
  * 
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public interface CompatibilityDAO {
     

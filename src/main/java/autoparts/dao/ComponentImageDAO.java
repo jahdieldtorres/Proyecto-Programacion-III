@@ -9,7 +9,7 @@ import java.util.List;
  * Solo maneja los registros (el nombre del archivo y si es la principal);
  * copiar o borrar el archivo de la foto es trabajo de ImageStorage.
  *
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public interface ComponentImageDAO {
 
