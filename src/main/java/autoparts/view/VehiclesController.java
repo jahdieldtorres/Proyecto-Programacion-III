@@ -20,7 +20,7 @@ import javafx.scene.control.TextField;
  * compatibles con él. Solo llama a {@code VehicleService} a través de
  * {@link AppServices}. Hecho a partir de ListTemplateController.
  *
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class VehiclesController {
 

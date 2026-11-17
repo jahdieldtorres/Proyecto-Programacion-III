@@ -27,7 +27,7 @@ import javafx.util.StringConverter;
  * los inactivos (columna Estado) y puede crear, editar y desactivar
  * componentes. Hecho a partir de ListTemplateController.
  *
- * @author Jahdiel Torres, ALVARO
+ * @author Jahdiel Torres, Alvaro Aramendiz
  */
 public class CatalogController {
 
