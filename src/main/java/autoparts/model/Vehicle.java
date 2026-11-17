@@ -6,7 +6,7 @@ import java.lang.reflect.Field;
 /**
  * Clase abstracta que representa un vehículo en el sistema.
  * 
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public abstract class Vehicle {
 

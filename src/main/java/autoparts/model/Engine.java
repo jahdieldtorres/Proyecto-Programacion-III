@@ -5,7 +5,7 @@ import autoparts.util.FileUtil;
 /**
  * Representa un componente de motor de un vehículo, conteniendo información sobre su cilindraje y potencia.
  * 
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class Engine extends Component {
 

@@ -4,7 +4,7 @@ package autoparts.model;
  * Tipo de combustible que usa un motor. Cada constante guarda el texto que se
  * escribe en el campo FuelType de un registro tipo Motor en components.csv.
  *
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public enum FuelType {
 

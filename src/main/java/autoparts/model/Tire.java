@@ -5,7 +5,7 @@ import autoparts.util.FileUtil;
 /**
  * Representa el componente de llanta de un vehículo, detallando sus medidas e índices.
  * 
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class Tire extends Component {
 

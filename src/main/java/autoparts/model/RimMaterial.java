@@ -4,7 +4,7 @@ package autoparts.model;
  * Material de un rin. Cada constante guarda el texto que se
  * escribe en el campo RimMaterial de un registro tipo Rin en components.csv.
  *
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public enum RimMaterial {
 

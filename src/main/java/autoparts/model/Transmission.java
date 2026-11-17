@@ -5,7 +5,7 @@ import autoparts.util.FileUtil;
 /**
  * Representa el componente de transmisión de un vehículo, detallando su tipo y número de velocidades.
  * 
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class Transmission extends Component {
 
