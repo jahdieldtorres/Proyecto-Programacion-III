@@ -1,0 +1,294 @@
+====================================================
+ CRÉDITOS DE LAS FOTOS DEL CATÁLOGO (UNSPLASH)
+====================================================
+
+Generado por `descargar_fotos3.py` con los datos que entrega la API de Unsplash
+(o los anotados a mano en `data/images.csv`). Las fotos se redujeron a 600 px de ancho.
+
+• Repuesto: Alternador reacondicionado
+  Archivo:  al-9001.jpg
+  Fuente:   Unsplash
+  Autor:    Konstantin Zolotov
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/close-up-of-a-cars-engine-with-chrome-alternator-Leqgimt28cM
+----------------------------------------------------
+• Repuesto: Amortiguador delantero
+  Archivo:  ad-9021.jpg
+  Fuente:   Unsplash
+  Autor:    Deepak Singh
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/red-suspension-coil-spring-and-black-shock-absorber-Fnm148JkxsM
+----------------------------------------------------
+• Repuesto: Amortiguador trasero
+  Archivo:  at-9130.jpg
+  Fuente:   Unsplash
+  Autor:    Olivie Zemanova
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/close-up-of-a-vehicles-shock-absorber-and-suspension-34yNyLyKJ4Y
+----------------------------------------------------
+• Repuesto: Batería Bosch S4 12 V 60 Ah
+  Archivo:  bt-1260.jpg
+  Fuente:   Unsplash
+  Autor:    Wesley Tingey
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/close-up-of-a-car-battery-with-wires-connected-E4Oz0TZUDe8
+----------------------------------------------------
+• Repuesto: Bobina de encendido
+  Archivo:  bo-4401.jpg
+  Fuente:   Unsplash
+  Autor:    Chris Carzoli
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/red-and-black-car-engine-z6Zpjwp7j-s
+----------------------------------------------------
+• Repuesto: Bomba de combustible eléctrica
+  Archivo:  bc-3050.jpg
+  Fuente:   Unsplash
+  Autor:    Gab Pili
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/automotive-fuel-pump-reading-at-242-pesos-zXbKVDCyW8A
+----------------------------------------------------
+• Repuesto: Bombillo H4 Philips 12 V 60/55 W
+  Archivo:  ph-h4-12342.jpg
+  Fuente:   Unsplash
+  Autor:    Dom .
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/turned-on-gray-bulb-VJlNXBkkHFo
+----------------------------------------------------
+• Repuesto: Brazo de control de suspensión (Tijera)
+  Archivo:  bc-9910.jpg
+  Fuente:   Unsplash
+  Autor:    Zoshua Colah
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/close-up-of-a-cars-suspension-system-K2Hrts8qc3w
+----------------------------------------------------
+• Repuesto: Bujía NGK BKR6E
+  Archivo:  bkr6e.jpg
+  Fuente:   Unsplash
+  Autor:    ObjectType RAW
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/several-metallic-spark-plugs-against-a-gradient-gray-background-xRcR5P-sGBI
+----------------------------------------------------
+• Repuesto: Bujía NGK CR8E para motocicleta
+  Archivo:  cr8e.jpg
+  Fuente:   Unsplash
+  Autor:    Haberdoedas
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/close-up-of-a-spark-plug-on-a-vintage-motorcycle--sPNbWQSy6I
+----------------------------------------------------
+• Repuesto: Caja automática 6 velocidades
+  Archivo:  tr-a6-001.jpg
+  Fuente:   Unsplash
+  Autor:    Shadow Photography
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/automatic-car-gear-shifter-settings-QGHIhtT04vg
+----------------------------------------------------
+• Repuesto: Caja manual 5 velocidades
+  Archivo:  tr-m5-002.jpg
+  Fuente:   Unsplash
+  Autor:    Kirill Prikhodko
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/a-close-up-of-a-machine-with-many-gears-kRp5woiVDaY
+----------------------------------------------------
+• Repuesto: Caliper de freno delantero
+  Archivo:  cf-3320.jpg
+  Fuente:   Unsplash
+  Autor:    T
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/aston-martin-wheel-with-teal-calipers-ukcIXyl534g
+----------------------------------------------------
+• Repuesto: Cojinete de rueda (Balero)
+  Archivo:  cr-8800.jpg
+  Fuente:   Unsplash
+  Autor:    gabbiistudios
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/bicycle-wheel-with-dt-swiss-branding-I6c-_J4XOfw
+----------------------------------------------------
+• Repuesto: Correa de accesorios multi-V 6PK1195
+  Archivo:  6pk1195.jpg
+  Fuente:   Unsplash
+  Autor:    Chad Kirchoff
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/gray-and-black-engine-xe-e69j6-Ds
+----------------------------------------------------
+• Repuesto: Disco de freno trasero sólido
+  Archivo:  df-4421.jpg
+  Fuente:   Unsplash
+  Autor:    Erik Mclean
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/close-up-of-a-cars-brake-rotor-and-caliper-vS2shmNei2E
+----------------------------------------------------
+• Repuesto: Disco de freno ventilado
+  Archivo:  df-4410.jpg
+  Fuente:   Unsplash
+  Autor:    Zan Lazarevic
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/perforated-metal-brake-disc-with-cracks-g8mopn9K4d0
+----------------------------------------------------
+• Repuesto: Filtro de aire de motor
+  Archivo:  fa-4400.jpg
+  Fuente:   Unsplash
+  Autor:    Silas Lundquist
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/oldsmobile-engine-with-chrome-parts-cZQeUaHlCsg
+----------------------------------------------------
+• Repuesto: Filtro de aire del habitáculo
+  Archivo:  fh-6120.jpg
+  Fuente:   Unsplash
+  Autor:    Bohdan Hyrovych
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/black-and-white-vintage-car-engine-with-exposed-air-filter-kLCIzNUUs90
+----------------------------------------------------
+• Repuesto: Junta homocinética lado rueda
+  Archivo:  jh-6401.jpg
+  Fuente:   Unsplash
+  Autor:    Zoshua Colah
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/close-up-view-of-a-cars-suspension-system-and-wheel-RDhXpNrafIU
+----------------------------------------------------
+• Repuesto: Kit de arrastre 428H para motocicleta
+  Archivo:  ka-4281.jpg
+  Fuente:   Unsplash
+  Autor:    Mohamed B.
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/a-motorcycles-chain-and-sprocket-are-visible-GpyuQG_C6no
+----------------------------------------------------
+• Repuesto: Kit de embrague
+  Archivo:  ke-3001.jpg
+  Fuente:   Unsplash
+  Autor:    Griest Projects
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/person-holding-round-brown-metal-tool-lqkiWY_JrFw
+----------------------------------------------------
+• Repuesto: Llanta Bridgestone Dueler H/T 265/65 R17
+  Archivo:  br-2656517.jpg
+  Fuente:   Unsplash
+  Autor:    Obi
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/dark-green-suv-with-spare-tire-on-back-TGm3C-SiHNI
+----------------------------------------------------
+• Repuesto: Llanta Goodyear Assurance 185/65 R15
+  Archivo:  gy-1856515.jpg
+  Fuente:   Unsplash
+  Autor:    Robert Laursoo
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/piles-of-car-tires-WHPOFFzY9gU
+----------------------------------------------------
+• Repuesto: Llanta Michelin Energy XM2+ 195/55 R16
+  Archivo:  mi-1955516.jpg
+  Fuente:   Unsplash
+  Autor:    Tim Ren
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/close-up-of-a-racing-car-tire-with-michelin-branding-eKflvAtG9Qs
+----------------------------------------------------
+• Repuesto: Llanta Michelin Primacy 4
+  Archivo:  mp4-2055516.jpg
+  Fuente:   Unsplash
+  Autor:    Thomas De Giorgio
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/close-up-of-a-racing-tire-with-michelin-branding-830yk-b1R90
+----------------------------------------------------
+• Repuesto: Llanta Pirelli Cinturato P1 175/65 R14
+  Archivo:  pi-1756514.jpg
+  Fuente:   Unsplash
+  Autor:    Reiss kelly-Alder
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/pirelli-racing-tires-sit-close-together-wA_DEksz1Ec
+----------------------------------------------------
+• Repuesto: Llanta Pirelli Sport Demon 110/70-17 para motocicleta
+  Archivo:  pi-m1107017.jpg
+  Fuente:   Unsplash
+  Autor:    C
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/two-motorcycle-tires-in-front-of-stacked-firewood-VXpp_IsTcMQ
+----------------------------------------------------
+• Repuesto: Manguera de freno flexible
+  Archivo:  mf-1140.jpg
+  Fuente:   Unsplash
+  Autor:    Ian Edokov
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/fuzzy-character-cover-on-engine-reservoir-s7aKjULktzY
+----------------------------------------------------
+• Repuesto: Motor de arranque
+  Archivo:  ma-8801.jpg
+  Fuente:   Unsplash
+  Autor:    MChe Lee
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/several-old-rusty-electric-motors-piled-together-JWN2iUX8dEI
+----------------------------------------------------
+• Repuesto: Pastillas de freno delanteras cerámicas
+  Archivo:  pf-2201.jpg
+  Fuente:   Unsplash
+  Autor:    Obi
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/close-up-of-a-red-carbon-ceramic-brake-caliper-pOiqfux0lZc
+----------------------------------------------------
+• Repuesto: Pastillas de freno para motocicleta
+  Archivo:  pf-m150.jpg
+  Fuente:   Unsplash
+  Autor:    Ronnzy Moto
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/close-up-of-a-motorcycles-front-brake-system-sKGyaOusfLQ
+----------------------------------------------------
+• Repuesto: Pastillas de freno traseras
+  Archivo:  pf-1235.jpg
+  Fuente:   Unsplash
+  Autor:    Toby Hall
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/a-close-up-of-a-brake-on-a-vehicle-ii4XEyJEm_I
+----------------------------------------------------
+• Repuesto: Radiador de refrigeración
+  Archivo:  rc-1100.jpg
+  Fuente:   Unsplash
+  Autor:    Erik Mclean
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/black-and-white-close-up-of-a-cars-radiator-grille-dyqWRCgkgEs
+----------------------------------------------------
+• Repuesto: Rin de acero 14 pulgadas
+  Archivo:  ra-14-4100.jpg
+  Fuente:   Unsplash
+  Autor:    Rob Wingate
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/handwheel-on-circular-stainless-steel-hatch--WJnEXTQHOw
+----------------------------------------------------
+• Repuesto: Rin de aleación 15 pulgadas
+  Archivo:  ra-15-4101.jpg
+  Fuente:   Unsplash
+  Autor:    Chinmay Jade
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/white-audi-vehicle-with-gray-wheels-XNN9C8MG4KM
+----------------------------------------------------
+• Repuesto: Rin de aleación 16 pulgadas
+  Archivo:  ra-16-5108.jpg
+  Fuente:   Unsplash
+  Autor:    Car Photographers
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/a-close-up-of-a-cars-shiny-alloy-wheel-Ne18B46QEVU
+----------------------------------------------------
+• Repuesto: Rin de aleación 17 pulgadas
+  Archivo:  ra-17-5114.jpg
+  Fuente:   Unsplash
+  Autor:    Komorebi Photo
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/a-close-up-shot-of-a-gold-alloy-wheel-zAfKgmZIbSU
+----------------------------------------------------
+• Repuesto: Semieje de transmisión delantero
+  Archivo:  se-6501.jpg
+  Fuente:   Unsplash
+  Autor:    Zoshua Colah
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/close-up-of-a-cars-suspension-and-axle-components-kQzRZjrr6sw
+----------------------------------------------------
+• Repuesto: Termostato de motor
+  Archivo:  tm-2200.jpg
+  Fuente:   Unsplash
+  Autor:    Tim Mossholder
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/car-engine-bay-VurHDpO4VYI
+----------------------------------------------------
+• Repuesto: Turbocompresor
+  Archivo:  tc-7770.jpg
+  Fuente:   Unsplash
+  Autor:    Jeff Cooper
+  Licencia: Unsplash License (Gratis comercial y editorial)
+  Enlace:   https://unsplash.com/photos/close-up-of-a-modified-car-engine-with-turbocharger-GrkpmkCT16Q
+----------------------------------------------------
