@@ -17,7 +17,7 @@ import java.util.List;
  * Implementa la misma interfaz {@link CompatibilityDAO} que
  * CompatibilityFileDAO. Sigue el patrón de {@link UserOracleDAO}.
  *
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class CompatibilityOracleDAO implements CompatibilityDAO {
 

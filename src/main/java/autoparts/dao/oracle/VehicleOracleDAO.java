@@ -29,7 +29,7 @@ import java.util.List;
  * Implementa la misma interfaz {@link VehicleDAO} que VehicleFileDAO. Sigue el
  * patrón de {@link UserOracleDAO}.
  *
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class VehicleOracleDAO implements VehicleDAO {
 

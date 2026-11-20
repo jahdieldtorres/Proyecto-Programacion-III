@@ -17,7 +17,7 @@ import java.util.List;
  * Lee y escribe archivos planos: un registro por línea, campos separados por "|", UTF-8. Agrega, Reescribe, Añade y Separa
  * con respecto a campos de las líneas de registros.
  * 
- * @author alvaro
+ * @author Alvaro Aramendiz
  */
 
 public final class FileUtil {

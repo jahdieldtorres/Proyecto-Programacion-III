@@ -5,7 +5,7 @@ import autoparts.util.FileUtil;
 /**
  * Clase que contiene los atributos de componentes y autopartes para vehículos automotrices.
  * 
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class Component {
 

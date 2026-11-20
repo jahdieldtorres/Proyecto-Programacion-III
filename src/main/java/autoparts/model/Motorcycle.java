@@ -5,7 +5,7 @@ import autoparts.util.FileUtil;
 /**
  * Representa una motocicleta en el sistema.
  * 
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class Motorcycle extends Vehicle {
 

@@ -8,7 +8,7 @@ package autoparts.model;
  * componente puede tener varias fotos y una de ellas es la principal, la que
  * se muestra en las tarjetas del catálogo.
  *
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class ComponentImage {
 

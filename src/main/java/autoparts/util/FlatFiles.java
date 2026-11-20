@@ -12,7 +12,7 @@ package autoparts.util;
  * minúsculas y extensión {@code .csv}. El formato de cada uno está en
  * {@code docs/formatos-archivos.md}.</p>
  * 
- * @author alvaro
+ * @author Alvaro Aramendiz
  * 
  */
 public final class FlatFiles {

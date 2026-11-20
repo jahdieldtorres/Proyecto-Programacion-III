@@ -5,7 +5,7 @@ import autoparts.util.FileUtil;
 /**
  * Representa un vehículo de tipo automóvil en el sistema.
  * 
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class Car extends Vehicle {
 

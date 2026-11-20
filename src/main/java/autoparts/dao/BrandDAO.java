@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Interfaz que define las operaciones de acceso a datos para las marcas.
  * 
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public interface BrandDAO {
     

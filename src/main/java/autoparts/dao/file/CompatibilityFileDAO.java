@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Implementación basada en archivos planos para el acceso a datos de compatibilidad.
  * 
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class CompatibilityFileDAO implements CompatibilityDAO {
 

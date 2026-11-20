@@ -17,7 +17,7 @@ import java.util.List;
  * Implementa la misma interfaz {@link CategoryDAO} que CategoryFileDAO, por eso
  * ComponentService no cambia. Sigue el patrón de {@link UserOracleDAO}.
  *
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class CategoryOracleDAO implements CategoryDAO {
 

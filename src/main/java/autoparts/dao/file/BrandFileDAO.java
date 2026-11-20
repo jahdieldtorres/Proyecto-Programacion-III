@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Implementación basada en archivos planos para el acceso a datos de marcas.
  * 
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class BrandFileDAO implements BrandDAO {
 

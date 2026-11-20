@@ -26,7 +26,7 @@ import javafx.scene.control.TextField;
  * objeto original con sus setters, así una llanta sigue siendo una llanta
  * (polimorfismo) y sus medidas no se pierden.
  *
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class ComponentFormController {
 

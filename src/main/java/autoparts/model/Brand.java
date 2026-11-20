@@ -5,7 +5,7 @@ import autoparts.util.FileUtil;
 /**
  * Clase que describe las marcas propietarias de las autopartes y los automóviles disponibles.
  * 
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class Brand {
     private int id;

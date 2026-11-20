@@ -4,7 +4,7 @@ import autoparts.util.FileUtil;
 
 /**
  * Clase que describe el componente rin de vehículos
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class Rim extends Component {
     private int diameterInches;

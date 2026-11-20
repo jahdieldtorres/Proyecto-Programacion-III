@@ -19,7 +19,7 @@ import java.util.UUID;
  * Para que dos fotos nunca se pisen, al copiar se le agrega al nombre original
  * un código corto al azar.
  *
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public final class ImageStorage {
 

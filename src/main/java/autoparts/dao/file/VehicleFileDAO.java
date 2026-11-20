@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * Implementación basada en archivos planos para el acceso a datos de vehículos.
  * 
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class VehicleFileDAO implements VehicleDAO {
 

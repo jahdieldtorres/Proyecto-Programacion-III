@@ -17,7 +17,7 @@ import java.util.List;
  * Implementa la misma interfaz {@link BrandDAO} que BrandFileDAO, por eso
  * ComponentService no cambia. Sigue el patrón de {@link UserOracleDAO}.
  *
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class BrandOracleDAO implements BrandDAO {
 
