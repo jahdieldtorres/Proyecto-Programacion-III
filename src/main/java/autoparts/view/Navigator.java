@@ -1,11 +1,13 @@
 package autoparts.view;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.function.Consumer;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -36,13 +38,33 @@ public class Navigator {
     private static final double LARGE_MIN_WIDTH = 1000;
     private static final double LARGE_MIN_HEIGHT = 640;
 
+    // Letras de la app (carpeta fonts). Se cargan una vez y styles.css las usa por su nombre.
+    private static final String[] FONTS = {
+        "Inter-Regular.ttf", "Inter-Bold.ttf", "Manrope-Bold.ttf", "IBMPlexMono-Medium.ttf"
+    };
+
     private static Stage window;
 
     /**
-     * Guarda la ventana de la aplicación para poder cambiar su contenido después.
+     * Guarda la ventana de la aplicación para poder cambiar su contenido después
+     * y carga las letras que usa styles.css.
      */
     public static void init(Stage mainWindow) {
         window = mainWindow;
+        loadFonts();
+    }
+
+    /**
+     * Registra en JavaFX cada archivo de letra de la carpeta fonts. Si alguno
+     * no está, la app sigue con la letra del sistema.
+     */
+    private static void loadFonts() {
+        for (String file : FONTS) {
+            URL font = Navigator.class.getResource("fonts/" + file);
+            if (font != null) {
+                Font.loadFont(font.toExternalForm(), 14);
+            }
+        }
     }
 
     /**
