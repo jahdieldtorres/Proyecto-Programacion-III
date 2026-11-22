@@ -2,11 +2,12 @@ package autoparts.service;
 
 import autoparts.model.Cart;
 import autoparts.model.User;
+import autoparts.model.Vehicle;
 
 /**
  * Guarda el usuario que inició sesión, para que cualquier pantalla sepa
  * quién es y si es administrador. También guarda el carrito de compras de ese
- * usuario.
+ * usuario y el vehículo que eligió para buscar repuestos.
  *
  * @author Jahdiel Torres
  */
@@ -17,9 +18,13 @@ public class Session {
     /** Carrito del cliente. Se vacía al iniciar y al cerrar sesión. */
     private static Cart cart = new Cart();
 
+    /** Vehículo elegido en Inicio para ver solo lo compatible. Null si no eligió. */
+    private static Vehicle vehicle;
+
     public static void start(User user) {
         currentUser = user;
         cart = new Cart();
+        vehicle = null;
     }
 
     public static User getUser() {
@@ -33,6 +38,7 @@ public class Session {
     public static void close() {
         currentUser = null;
         cart = new Cart();
+        vehicle = null;
     }
 
     /**
@@ -41,6 +47,20 @@ public class Session {
      */
     public static Cart getCart() {
         return cart;
+    }
+
+    /**
+     * Vehículo que el cliente eligió para buscar repuestos, o null si no eligió.
+     */
+    public static Vehicle getVehicle() {
+        return vehicle;
+    }
+
+    /**
+     * Guarda el vehículo elegido. Con null se deja de filtrar por vehículo.
+     */
+    public static void setVehicle(Vehicle selected) {
+        vehicle = selected;
     }
 
     /**
