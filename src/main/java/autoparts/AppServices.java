@@ -4,6 +4,7 @@ import autoparts.dao.oracle.AffiliationOracleDAO;
 import autoparts.dao.oracle.BrandOracleDAO;
 import autoparts.dao.oracle.CategoryOracleDAO;
 import autoparts.dao.oracle.CompatibilityOracleDAO;
+import autoparts.dao.oracle.ComponentImageOracleDAO;
 import autoparts.dao.oracle.ComponentOracleDAO;
 import autoparts.dao.oracle.FeeOracleDAO;
 import autoparts.dao.oracle.InventoryOracleDAO;
@@ -11,7 +12,9 @@ import autoparts.dao.oracle.PartnerOracleDAO;
 import autoparts.dao.oracle.UserOracleDAO;
 import autoparts.dao.oracle.VehicleOracleDAO;
 import autoparts.service.AffiliationService;
+import autoparts.service.CatalogService;
 import autoparts.service.ComparatorService;
+import autoparts.service.ComponentImageService;
 import autoparts.service.ComponentService;
 import autoparts.service.FeeService;
 import autoparts.service.InventoryService;
@@ -46,6 +49,10 @@ public class AppServices {
             new InventoryService(new InventoryOracleDAO(), new PartnerOracleDAO());
     private static final VehicleService VEHICLE_SERVICE = new VehicleService(
             new VehicleOracleDAO(), new CompatibilityOracleDAO(), new ComponentOracleDAO());
+    private static final ComponentImageService IMAGE_SERVICE =
+            new ComponentImageService(new ComponentImageOracleDAO());
+    private static final CatalogService CATALOG_SERVICE = new CatalogService(
+            COMPONENT_SERVICE, IMAGE_SERVICE, new InventoryOracleDAO(), new CompatibilityOracleDAO());
 
     public static UserService users() {
         return USER_SERVICE;
@@ -77,5 +84,13 @@ public class AppServices {
 
     public static VehicleService vehicles() {
         return VEHICLE_SERVICE;
+    }
+
+    public static ComponentImageService images() {
+        return IMAGE_SERVICE;
+    }
+
+    public static CatalogService catalog() {
+        return CATALOG_SERVICE;
     }
 }
