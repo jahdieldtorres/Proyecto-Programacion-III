@@ -2,41 +2,56 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.Region?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="autoparts.view.RegisterController" styleClass="login-background">
-    <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+<!-- Mismo diseño del inicio de sesión: logo a la izquierda y formulario a la derecha -->
+<HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="autoparts.view.RegisterController" styleClass="login-root">
 
-    <VBox spacing="12" maxWidth="420" maxHeight="-Infinity" styleClass="card">
-        <padding><Insets top="32" right="36" bottom="32" left="36"/></padding>
-        <Label text="Crear cuenta" styleClass="card-title"/>
-        <Label text="Regístrate para comparar y comprar repuestos" styleClass="secondary-text"/>
-        <Region prefHeight="4"/>
+    <StackPane prefWidth="440" minWidth="400" styleClass="login-side">
+        <VBox alignment="CENTER" spacing="18">
+            <ImageView fitWidth="200" preserveRatio="true" smooth="true">
+                <image><Image url="@images/logo.png"/></image>
+            </ImageView>
+            <Label text="Crea tu cuenta y compara precios en toda la ciudad" styleClass="login-tagline"
+                   wrapText="true" maxWidth="320"/>
+        </VBox>
+    </StackPane>
 
-        <Label text="Nombre completo" styleClass="field-label"/>
-        <TextField fx:id="txtName" promptText="Nombre y apellido"/>
+    <StackPane HBox.hgrow="ALWAYS" styleClass="login-form-side">
+        <padding><Insets top="30" right="48" bottom="30" left="48"/></padding>
+        <VBox spacing="9" maxWidth="360" maxHeight="-Infinity">
+            <Label text="Crear cuenta" styleClass="card-title"/>
+            <Label text="Regístrate para comparar y comprar repuestos." styleClass="secondary-text"/>
 
-        <Label text="Correo" styleClass="field-label"/>
-        <TextField fx:id="txtEmail" promptText="tucorreo@ejemplo.com"/>
+            <Label text="Nombre completo" styleClass="field-label">
+                <VBox.margin><Insets top="6"/></VBox.margin>
+            </Label>
+            <TextField fx:id="txtName" promptText="Nombre y apellido"/>
+            <Label text="Correo" styleClass="field-label"/>
+            <TextField fx:id="txtEmail" promptText="tucorreo@ejemplo.com"/>
+            <Label text="Contraseña" styleClass="field-label"/>
+            <PasswordField fx:id="txtPassword" promptText="Mínimo 8 caracteres"/>
+            <Label text="Confirmar contraseña" styleClass="field-label"/>
+            <PasswordField fx:id="txtConfirmation" promptText="Repite la contraseña" onAction="#register"/>
 
-        <Label text="Contraseña" styleClass="field-label"/>
-        <PasswordField fx:id="txtPassword" promptText="Mínimo 8 caracteres"/>
+            <Label fx:id="lblMessage" styleClass="error-message" wrapText="true"/>
+            <Label fx:id="lblSuccess" styleClass="success-message" wrapText="true"/>
 
-        <Label text="Confirmar contraseña" styleClass="field-label"/>
-        <PasswordField fx:id="txtConfirmation" promptText="Repite la contraseña" onAction="#register"/>
-
-        <Label fx:id="lblMessage" styleClass="error-message" wrapText="true"/>
-        <Label fx:id="lblSuccess" styleClass="success-message" wrapText="true"/>
-
-        <Button text="Crear cuenta" onAction="#register" defaultButton="true"
-                maxWidth="Infinity" styleClass="primary-button"/>
-        <Button text="Volver a iniciar sesión" onAction="#backToLogin"
-                maxWidth="Infinity" styleClass="secondary-button"/>
-    </VBox>
-</StackPane>
+            <Button text="Crear cuenta" onAction="#register" defaultButton="true"
+                    maxWidth="Infinity" styleClass="primary-button"/>
+            <HBox alignment="CENTER" spacing="4">
+                <Label text="¿Ya tienes cuenta?" styleClass="secondary-text"/>
+                <Hyperlink text="Inicia sesión" onAction="#backToLogin"/>
+            </HBox>
+        </VBox>
+    </StackPane>
+</HBox>

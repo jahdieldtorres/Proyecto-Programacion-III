@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
@@ -10,58 +9,60 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 
 <HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="autoparts.view.LoginController" styleClass="login-background">
+      fx:controller="autoparts.view.LoginController" styleClass="login-root">
 
-    <!-- Panel izquierdo: marca -->
-    <StackPane HBox.hgrow="ALWAYS" styleClass="login-brand">
-        <VBox alignment="CENTER" spacing="14" maxWidth="460">
-            <ImageView fitWidth="240" preserveRatio="true" smooth="true">
-                <image><Image url="@images/logo.png"/></image>
-            </ImageView>
-            <Label text="Portal inteligente de repuestos" styleClass="brand-title"/>
-            <Label text="Compara precios, disponibilidad y procedencia de los almacenes de repuestos de tu ciudad."
-                   wrapText="true" styleClass="secondary-text" textAlignment="CENTER"/>
-            <HBox alignment="CENTER" spacing="12">
-                <padding><Insets top="18"/></padding>
-                <Label text="Disponibilidad inmediata" styleClass="chip"/>
-                <Label text="Locales verificados" styleClass="chip"/>
-                <Label text="Mejor precio" styleClass="chip"/>
-            </HBox>
+    <!-- Panel izquierdo: logo con brillo animado -->
+    <StackPane prefWidth="440" minWidth="400" styleClass="login-side">
+        <Label text="Valledupar, Cesar" StackPane.alignment="TOP_LEFT" styleClass="location-chip">
+            <StackPane.margin><Insets top="20" left="20"/></StackPane.margin>
+        </Label>
+        <VBox alignment="CENTER" spacing="18">
+            <StackPane>
+                <Circle fx:id="glow" radius="130" styleClass="logo-glow"/>
+                <ImageView fx:id="imgLogo" fitWidth="230" preserveRatio="true" smooth="true">
+                    <image><Image url="@images/logo.png"/></image>
+                </ImageView>
+            </StackPane>
+            <Label text="Los repuestos de tu ciudad, conectados" styleClass="login-tagline"/>
         </VBox>
     </StackPane>
 
     <!-- Panel derecho: formulario -->
-    <StackPane prefWidth="520" minWidth="440">
-        <padding><Insets top="40" right="48" bottom="40" left="24"/></padding>
-        <VBox spacing="14" maxWidth="400" maxHeight="-Infinity" styleClass="card">
-            <padding><Insets top="36" right="36" bottom="36" left="36"/></padding>
-            <Label text="Iniciar sesión" styleClass="card-title"/>
-            <Label text="Accede a tu cuenta para continuar" styleClass="secondary-text"/>
-            <Region prefHeight="6"/>
+    <StackPane HBox.hgrow="ALWAYS" styleClass="login-form-side">
+        <padding><Insets top="40" right="48" bottom="40" left="48"/></padding>
+        <VBox fx:id="formBox" spacing="12" maxWidth="360" maxHeight="-Infinity">
+            <Label text="Bienvenido a ORIGEN" styleClass="card-title"/>
+            <Label text="Encuentra y compara repuestos de los almacenes de Valledupar."
+                   styleClass="secondary-text" wrapText="true"/>
 
-            <Label text="Correo o usuario" styleClass="field-label"/>
+            <Label text="Correo" styleClass="field-label">
+                <VBox.margin><Insets top="8"/></VBox.margin>
+            </Label>
             <TextField fx:id="txtEmail" promptText="tucorreo@ejemplo.com" onAction="#login"/>
 
             <Label text="Contraseña" styleClass="field-label"/>
-            <PasswordField fx:id="txtPassword" promptText="••••••••" onAction="#login"/>
-
-            <HBox alignment="CENTER_LEFT" spacing="8">
-                <CheckBox text="Recordarme"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Hyperlink text="¿Olvidaste tu contraseña?"/>
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <!-- Dos campos con el mismo texto: uno oculta lo escrito y el otro lo muestra -->
+                <StackPane HBox.hgrow="ALWAYS">
+                    <PasswordField fx:id="txtPassword" promptText="Tu contraseña" onAction="#login"/>
+                    <TextField fx:id="txtPasswordVisible" promptText="Tu contraseña" onAction="#login" visible="false"/>
+                </StackPane>
+                <Button fx:id="btnShowPassword" text="Mostrar" onAction="#togglePassword" styleClass="secondary-button"/>
             </HBox>
 
             <Label fx:id="lblMessage" styleClass="error-message" wrapText="true"/>
 
-            <Button text="Ingresar" onAction="#login" defaultButton="true"
+            <Button text="Entrar" onAction="#login" defaultButton="true"
                     maxWidth="Infinity" styleClass="primary-button"/>
-            <Button text="Crear cuenta" onAction="#createAccount"
-                    maxWidth="Infinity" styleClass="secondary-button"/>
+            <HBox alignment="CENTER" spacing="4">
+                <Label text="¿No tienes cuenta?" styleClass="secondary-text"/>
+                <Hyperlink text="Crear cuenta" onAction="#createAccount"/>
+            </HBox>
         </VBox>
     </StackPane>
 </HBox>
