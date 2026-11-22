@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Catálogo del cliente: filtros a la izquierda y tarjetas de repuestos a la derecha -->
+<HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="autoparts.view.ShopController" spacing="24">
+
+    <!-- Filtros -->
+    <VBox spacing="16" prefWidth="250" minWidth="250">
+        <VBox fx:id="vehicleBox" spacing="6" styleClass="vehicle-card">
+            <Label text="Buscando para" styleClass="vehicle-card-caption"/>
+            <Label fx:id="lblVehicle" styleClass="vehicle-card-title" wrapText="true"/>
+            <Button text="Quitar vehículo" onAction="#clearVehicle" styleClass="link-button-light"/>
+        </VBox>
+
+        <VBox spacing="10" styleClass="card">
+            <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
+            <Label text="Categoría" styleClass="field-label"/>
+            <FlowPane fx:id="categoryChips" hgap="6" vgap="6"/>
+        </VBox>
+
+        <VBox spacing="10" styleClass="card">
+            <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
+            <Label text="Compatibilidad" styleClass="field-label"/>
+            <CheckBox fx:id="chkCompatible" text="Solo compatibles con mi vehículo" wrapText="true" onAction="#search"/>
+            <Label fx:id="lblNoVehicle" text="Elige tu vehículo en Inicio para usar este filtro."
+                   styleClass="secondary-text" wrapText="true"/>
+        </VBox>
+    </VBox>
+
+    <!-- Resultados -->
+    <VBox spacing="14" HBox.hgrow="ALWAYS">
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <VBox spacing="2">
+                <Label fx:id="lblTitle" text="Catálogo" styleClass="page-title"/>
+                <Label fx:id="lblCount" styleClass="secondary-text"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="btnClearSearch" text="Quitar búsqueda" onAction="#clearSearch" styleClass="secondary-button"/>
+        </HBox>
+
+        <StackPane VBox.vgrow="ALWAYS">
+            <ScrollPane fx:id="scroll" fitToWidth="true" styleClass="clear-scroll">
+                <FlowPane fx:id="cards" hgap="16" vgap="16">
+                    <padding><Insets top="4" right="4" bottom="16" left="4"/></padding>
+                </FlowPane>
+            </ScrollPane>
+
+            <!-- Estado vacío: aparece cuando ningún repuesto coincide -->
+            <VBox fx:id="emptyBox" alignment="CENTER" spacing="10" visible="false">
+                <Label text="Todavía no encontramos ese repuesto" styleClass="section-title"/>
+                <Label text="Prueba con otro nombre o revisa la referencia. También puedes quitar los filtros."
+                       styleClass="secondary-text" wrapText="true"/>
+                <Button text="Limpiar filtros" onAction="#clearAll" styleClass="primary-button"/>
+            </VBox>
+        </StackPane>
+    </VBox>
+</HBox>

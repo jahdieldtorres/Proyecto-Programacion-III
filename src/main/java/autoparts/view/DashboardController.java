@@ -1,29 +1,43 @@
 package autoparts.view;
 
+import autoparts.model.CatalogItem;
 import autoparts.model.User;
 import autoparts.service.Session;
+import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 /**
- * Controlador de la ventana principal (Dashboard.fxml): menú lateral y contenido.
+ * Controlador de la ventana principal (Dashboard.fxml): barra superior y contenido.
  *
  * Cada módulo se conecta por el nombre de su archivo FXML (constantes de abajo).
- * Mientras el archivo no exista, se muestra "Sección en construcción". El menú
- * se ajusta al rol de quien inició sesión.
+ * Mientras el archivo no exista, se muestra "Sección en construcción". La barra
+ * se ajusta al rol de quien inició sesión: el menú Administrar (repuestos,
+ * vehículos, socios, inventario, tarifas, afiliaciones y usuarios) solo lo ve
+ * el admin.
  *
  * @author Jahdiel Torres
  */
 public class DashboardController {
 
     public static final String HOME = "Home.fxml";
+    public static final String SHOP = "Shop.fxml";
+    public static final String DETAIL = "ComponentDetail.fxml";
     public static final String CATALOG = "Catalog.fxml";
     public static final String COMPARATOR = "Comparator.fxml";
     public static final String VEHICLES = "Vehicles.fxml";
+    public static final String SERVICES = "Services.fxml";
+    public static final String CART = "Cart.fxml";
     public static final String PARTNERS = "Partners.fxml";
     public static final String INVENTORY = "Inventory.fxml";
     public static final String FEES = "Fees.fxml";
@@ -31,37 +45,33 @@ public class DashboardController {
     public static final String USERS = "Users.fxml";
     public static final String MY_ACCOUNT = "MyAccount.fxml";
 
+    /** Margen de las pantallas normales. El Inicio ocupa todo el ancho, sin margen. */
+    private static final Insets PAGE_PADDING = new Insets(24, 28, 24, 28);
+
     /** Ventana principal abierta, para que otras pantallas puedan pedirle cambiar de sección. */
     private static DashboardController current;
 
     @FXML
     private StackPane content;
     @FXML
+    private TextField searchField;
+    @FXML
     private Button btnHome;
     @FXML
     private Button btnCatalog;
     @FXML
-    private Button btnComparator;
+    private Button btnServices;
     @FXML
-    private Button btnVehicles;
+    private Button btnCart;
     @FXML
-    private Button btnPartners;
+    private MenuButton menuAdmin;
     @FXML
-    private Button btnInventory;
+    private MenuButton menuUser;
     @FXML
-    private Button btnFees;
-    @FXML
-    private Button btnAffiliations;
-    @FXML
-    private Button btnUsers;
-    @FXML
-    private Button btnMyAccount;
-    @FXML
-    private Label lblUser;
-    @FXML
-    private Label lblRole;
+    private Label lblCartCount;
 
-    private Button activeButton;
+    /** Opción de la barra que está resaltada (la sección abierta). */
+    private Node activeItem;
 
     /**
      * JavaFX llama este método automáticamente al cargar la pantalla.
@@ -74,40 +84,77 @@ public class DashboardController {
     }
 
     /**
-     * Abre el catálogo con un texto ya buscado. Lo usa el buscador de Inicio.
+     * Abre el catálogo con un texto ya buscado (vacío = todo el catálogo).
+     * Lo usan el buscador de la barra, Inicio y los botones "Volver".
      *
      * @param text lo que el usuario escribió
      */
     public static void openCatalogWith(String text) {
-        CatalogController.setPendingSearch(text);
+        ShopController.setPendingSearch(text);
         if (current != null) {
-            current.goToCatalog();
+            current.show(SHOP, current.btnCatalog);
         }
     }
 
     /**
-     * Muestra quién inició sesión y oculta las opciones de gestión (socios,
-     * inventario, tarifas, afiliaciones y usuarios) si no es administrador.
+     * Abre el detalle de un repuesto con la comparación entre almacenes.
+     *
+     * @param item el repuesto elegido en el catálogo o en Inicio
+     */
+    public static void openDetail(CatalogItem item) {
+        ComponentDetailController.setItem(item);
+        if (current != null) {
+            current.show(DETAIL, current.btnCatalog);
+        }
+    }
+
+    /**
+     * Abre la pantalla de servicios. La usa el recuadro de talleres de Inicio.
+     */
+    public static void openServices() {
+        if (current != null) {
+            current.goToServices();
+        }
+    }
+
+    /**
+     * Actualiza el número del carrito en la barra. Lo llaman las pantallas
+     * que agregan o quitan repuestos del carrito.
+     */
+    public static void refreshCartCount() {
+        if (current != null) {
+            current.lblCartCount.setText(String.valueOf(Session.getCart().getUnitCount()));
+        }
+    }
+
+    /**
+     * Muestra el nombre de quien inició sesión y oculta el menú Administrar
+     * si no es administrador.
      */
     private void showUser() {
         User user = Session.getUser();
         if (user == null) {
             return;
         }
-        lblUser.setText(user.getName());
-        lblRole.setText(user.getRole().name());
-        hide(!Session.isAdmin(), btnPartners, btnInventory, btnFees, btnAffiliations, btnUsers);
+        menuUser.setText(firstName(user.getName()));
+        boolean admin = Session.isAdmin();
+        menuAdmin.setVisible(admin);
+        menuAdmin.setManaged(admin); // setManaged(false) también quita el espacio que ocupa
+        refreshCartCount();
     }
 
     /**
-     * Oculta los botones indicados si la condición se cumple. setManaged(false)
-     * hace que el espacio del botón también desaparezca.
+     * Devuelve solo el primer nombre, para que quepa en la barra.
      */
-    private void hide(boolean condition, Button... buttons) {
-        for (Button button : buttons) {
-            button.setVisible(!condition);
-            button.setManaged(!condition);
-        }
+    private String firstName(String fullName) {
+        String[] parts = fullName.trim().split(" ");
+        return parts[0];
+    }
+
+    @FXML
+    private void search() {
+        openCatalogWith(searchField.getText());
+        searchField.clear();
     }
 
     @FXML
@@ -117,47 +164,62 @@ public class DashboardController {
 
     @FXML
     private void goToCatalog() {
-        show(CATALOG, btnCatalog);
+        openCatalogWith("");
     }
 
     @FXML
-    private void goToComparator() {
-        show(COMPARATOR, btnComparator);
+    private void goToComponents() {
+        show(CATALOG, menuAdmin);
     }
 
     @FXML
     private void goToVehicles() {
-        show(VEHICLES, btnVehicles);
+        show(VEHICLES, menuAdmin);
+    }
+
+    @FXML
+    private void goToComparator() {
+        show(COMPARATOR, menuAdmin);
+    }
+
+    @FXML
+    private void goToServices() {
+        show(SERVICES, btnServices);
+    }
+
+    @FXML
+    private void goToCart() {
+        show(CART, btnCart);
     }
 
     @FXML
     private void goToPartners() {
-        show(PARTNERS, btnPartners);
+        show(PARTNERS, menuAdmin);
     }
 
     @FXML
     private void goToInventory() {
-        show(INVENTORY, btnInventory);
+        show(INVENTORY, menuAdmin);
     }
 
     @FXML
     private void goToFees() {
-        show(FEES, btnFees);
+        show(FEES, menuAdmin);
     }
 
     @FXML
     private void goToAffiliations() {
-        show(AFFILIATIONS, btnAffiliations);
+        show(AFFILIATIONS, menuAdmin);
     }
 
     @FXML
     private void goToUsers() {
-        show(USERS, btnUsers);
+        show(USERS, menuAdmin);
     }
 
     @FXML
     private void goToMyAccount() {
-        show(MY_ACCOUNT, btnMyAccount);
+        show(MY_ACCOUNT, menuUser);
     }
 
     @FXML
@@ -168,20 +230,41 @@ public class DashboardController {
     }
 
     /**
-     * Muestra una vista en el centro de la ventana y resalta su botón del menú.
+     * Muestra una vista en el centro de la ventana, resalta su opción de la
+     * barra y la hace aparecer con un desvanecido corto.
+     *
+     * @param view     nombre del archivo FXML
+     * @param navItem  botón o menú de la barra que corresponde a esa vista
      */
-    private void show(String view, Button button) {
-        if (activeButton != null) {
-            activeButton.getStyleClass().remove("menu-active");
-        }
-        button.getStyleClass().add("menu-active");
-        activeButton = button;
+    private void show(String view, Node navItem) {
+        markActive(navItem);
+        content.setPadding(HOME.equals(view) ? Insets.EMPTY : PAGE_PADDING);
 
-        if (Navigator.exists(view)) {
-            content.getChildren().setAll(Navigator.load(view));
-        } else {
-            content.getChildren().setAll(underConstruction(view));
+        Parent screen = Navigator.exists(view) ? Navigator.load(view) : underConstruction(view);
+        content.getChildren().setAll(screen);
+        fadeIn(screen);
+        refreshCartCount();
+    }
+
+    /**
+     * Quita el resaltado de la opción anterior y lo pone en la nueva.
+     */
+    private void markActive(Node navItem) {
+        if (activeItem != null) {
+            activeItem.getStyleClass().remove("nav-active");
         }
+        navItem.getStyleClass().add("nav-active");
+        activeItem = navItem;
+    }
+
+    /**
+     * Animación de entrada: la pantalla pasa de transparente a visible.
+     */
+    private void fadeIn(Node screen) {
+        FadeTransition fade = new FadeTransition(Duration.millis(220), screen);
+        fade.setFromValue(0);
+        fade.setToValue(1);
+        fade.play();
     }
 
     /**
