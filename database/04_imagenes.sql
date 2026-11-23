@@ -107,3 +107,15 @@ SELECT C.ID, C.REFERENCE, C.NAME
 FROM COMPONENTS C
 WHERE NOT EXISTS (SELECT 1 FROM COMPONENT_IMAGES I WHERE I.COMPONENT_ID = C.ID)
 ORDER BY C.ID;
+
+-- ---------------------------------------------------------------------
+-- Fotos por tienda (INVENTORY_IMAGES). Hoy la tabla queda vacía: cada foto
+-- necesita su archivo en images/inventory/. Cuando haya archivos, cada foto
+-- se une a la oferta por proveedor y componente (así no depende de los ID):
+--
+-- INSERT INTO INVENTORY_IMAGES (INVENTORY_ID, FILE_NAME, CAPTION, IS_MAIN, SORT_ORDER)
+--     SELECT I.ID, 'automax-pf-1235.jpg', 'Incluye caja original', 'S', 1
+--     FROM INVENTORY I
+--     JOIN COMPONENTS C ON C.ID = I.COMPONENT_ID
+--     WHERE I.SUPPLIER_ID = 1 AND C.REFERENCE = 'PF-1235' AND I.STATUS = 'ACTIVO';
+-- ---------------------------------------------------------------------
