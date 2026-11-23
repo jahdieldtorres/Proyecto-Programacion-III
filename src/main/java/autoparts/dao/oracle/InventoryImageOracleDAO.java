@@ -17,12 +17,18 @@ import java.util.List;
  * llamando a las funciones del paquete PL/SQL PKG_INVENTORY_IMAGES
  * (database/05a_paquetes_catalogo.sql).
  *
+ * Este DAO no escribe SELECT, INSERT, UPDATE ni DELETE: toda la consulta vive
+ * en la base de datos. Todo es una función y el resultado llega por el primer
+ * ? de la llamada: un cursor en las consultas, el ID nuevo en el INSERT y las
+ * filas cambiadas en el UPDATE y el DELETE.
+ *
  * Regla que cuida el paquete: una oferta tiene como máximo una foto
  * principal. Al guardar o actualizar una foto como principal, las otras de la
  * misma oferta se desmarcan dentro de la misma llamada, así que el DAO no
  * necesita manejar la transacción: la conexión confirma al terminar la
  * llamada y Oracle deshace todo si algo falla.
  *
+ * Sigue el patrón de UserOracleDAO (funciones con CallableStatement).
  *
  * @author Álvaro Aramendiz
  */
