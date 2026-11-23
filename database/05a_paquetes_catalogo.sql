@@ -2,7 +2,7 @@
 -- ORIGEN · Script 05a · Paquetes PL/SQL del catálogo
 -- Programación de Computadores III · Universidad Popular del Cesar
 -- Motor: Oracle Autonomous Database (Always Free)
--- @author Jahdiel Torres
+-- @author Jahdiel Torres, Álvaro Aramendiz
 --
 -- Cómo correrlo: Database Actions → SQL → pegar todo → "Ejecutar script" (F5).
 -- Se corre DESPUÉS de 01 → 02 → 03 → 04. Se puede repetir las veces que
