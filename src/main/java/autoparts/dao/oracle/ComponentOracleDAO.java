@@ -15,99 +15,74 @@ import autoparts.model.Tire;
 import autoparts.model.Transmission;
 import autoparts.model.TransmissionType;
 import autoparts.util.DatabaseConnection;
+import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Guarda y consulta los componentes (repuestos) en Oracle.
+ * Guarda y consulta los componentes (repuestos) llamando a las funciones del
+ * paquete PL/SQL PKG_COMPONENTS (database/05a_paquetes_catalogo.sql).
+ *
+ * Todo es una función y el resultado llega por el primer ? de la llamada: un
+ * cursor en las consultas, el ID nuevo en INSERT_COMPONENT y las filas afectadas
+ * en las demás.
  *
  * Cada componente ocupa dos tablas: COMPONENTS (datos comunes) y, si es una
  * llanta, un rin, un motor o una transmisión, también TIRES, RIMS, ENGINES o
- * TRANSMISSIONS (datos propios) con el mismo ID. Por eso guardar y actualizar
- * se hacen en una transacción: o se guardan las dos filas o no se guarda
- * ninguna. Un componente GENERAL solo tiene fila en COMPONENTS.
+ * TRANSMISSIONS (datos propios) con el mismo ID. Cada función del paquete toca
+ * una sola tabla, así que guardar y actualizar siguen haciéndose aquí en una
+ * transacción (commit y rollback los maneja Java, el paquete no confirma):
+ * o se guardan las dos filas o no se guarda ninguna. Un componente GENERAL
+ * solo tiene fila en COMPONENTS.
  *
  * Implementa la misma interfaz {@link ComponentDAO} que ComponentFileDAO, por
  * eso ComponentService no cambia. Sigue el patrón de {@link UserOracleDAO}.
  *
- * @author Alvaro Aramendiz
+ * @author Álvaro Aramendiz
  */
 public class ComponentOracleDAO implements ComponentDAO {
 
-    /**
-     * Lee el componente con su marca, su categoría y los datos de su subtipo.
-     * Los LEFT JOIN dejan en NULL las columnas de los subtipos que no aplican.
-     */
-    private static final String SELECT_COMPONENTS =
-            "SELECT C.ID, C.COMPONENT_TYPE, C.NAME, C.REFERENCE, C.ORIGIN, C.STATUS, "
-            + "B.ID AS BRAND_ID, B.NAME AS BRAND_NAME, "
-            + "G.ID AS CATEGORY_ID, G.NAME AS CATEGORY_NAME, "
-            + "T.WIDTH_MM, T.ASPECT_RATIO, T.DIAMETER_INCHES AS TIRE_DIAMETER, T.LOAD_INDEX, T.SPEED_INDEX, "
-            + "R.DIAMETER_INCHES AS RIM_DIAMETER, R.WIDTH_INCHES AS RIM_WIDTH, R.PCD, R.MATERIAL, "
-            + "E.DISPLACEMENT_CC, E.CYLINDERS, E.FUEL, E.HORSEPOWER, "
-            + "X.TRANSMISSION_TYPE, X.NUMBER_OF_SPEEDS "
-            + "FROM COMPONENTS C "
-            + "JOIN BRANDS B ON B.ID = C.BRAND_ID "
-            + "JOIN CATEGORIES G ON G.ID = C.CATEGORY_ID "
-            + "LEFT JOIN TIRES T ON T.COMPONENT_ID = C.ID "
-            + "LEFT JOIN RIMS R ON R.COMPONENT_ID = C.ID "
-            + "LEFT JOIN ENGINES E ON E.COMPONENT_ID = C.ID "
-            + "LEFT JOIN TRANSMISSIONS X ON X.COMPONENT_ID = C.ID";
+    // Consultas: el primer ? es el cursor que devuelve la función
+    private static final String CALL_LIST_ALL = "{ ? = call PKG_COMPONENTS.LIST_ALL }";
+    private static final String CALL_FIND_BY_ID = "{ ? = call PKG_COMPONENTS.FIND_BY_ID(?) }";
 
-    private static final String FIND_ALL = SELECT_COMPONENTS + " ORDER BY C.ID";
-
-    private static final String FIND_BY_ID = SELECT_COMPONENTS + " WHERE C.ID = ?";
-
-    private static final String INSERT_COMPONENT =
-            "INSERT INTO COMPONENTS (COMPONENT_TYPE, NAME, REFERENCE, BRAND_ID, CATEGORY_ID, ORIGIN, STATUS) "
-            + "VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-    private static final String UPDATE_COMPONENT =
-            "UPDATE COMPONENTS SET COMPONENT_TYPE = ?, NAME = ?, REFERENCE = ?, BRAND_ID = ?, "
-            + "CATEGORY_ID = ?, ORIGIN = ?, STATUS = ? WHERE ID = ?";
+    // Componente: INSERT devuelve el ID nuevo; UPDATE y DEACTIVATE, las filas cambiadas
+    private static final String CALL_INSERT_COMPONENT =
+            "{ ? = call PKG_COMPONENTS.INSERT_COMPONENT(?, ?, ?, ?, ?, ?, ?) }";
+    private static final String CALL_UPDATE_COMPONENT =
+            "{ ? = call PKG_COMPONENTS.UPDATE_COMPONENT(?, ?, ?, ?, ?, ?, ?, ?) }";
 
     /** Los componentes no se borran (un disparador lo impide): se pasan a INACTIVO. */
-    private static final String DEACTIVATE = "UPDATE COMPONENTS SET STATUS = 'INACTIVO' WHERE ID = ?";
+    private static final String CALL_DEACTIVATE = "{ ? = call PKG_COMPONENTS.DEACTIVATE_COMPONENT(?) }";
 
-    // En los INSERT y UPDATE de los subtipos el ID va de último, así los dos usan los mismos parámetros.
-    private static final String INSERT_TIRE =
-            "INSERT INTO TIRES (WIDTH_MM, ASPECT_RATIO, DIAMETER_INCHES, LOAD_INDEX, SPEED_INDEX, COMPONENT_ID) "
-            + "VALUES (?, ?, ?, ?, ?, ?)";
-
-    private static final String UPDATE_TIRE =
-            "UPDATE TIRES SET WIDTH_MM = ?, ASPECT_RATIO = ?, DIAMETER_INCHES = ?, LOAD_INDEX = ?, "
-            + "SPEED_INDEX = ? WHERE COMPONENT_ID = ?";
-
-    private static final String INSERT_RIM =
-            "INSERT INTO RIMS (DIAMETER_INCHES, WIDTH_INCHES, PCD, MATERIAL, COMPONENT_ID) VALUES (?, ?, ?, ?, ?)";
-
-    private static final String UPDATE_RIM =
-            "UPDATE RIMS SET DIAMETER_INCHES = ?, WIDTH_INCHES = ?, PCD = ?, MATERIAL = ? WHERE COMPONENT_ID = ?";
-
-    private static final String INSERT_ENGINE =
-            "INSERT INTO ENGINES (DISPLACEMENT_CC, CYLINDERS, FUEL, HORSEPOWER, COMPONENT_ID) VALUES (?, ?, ?, ?, ?)";
-
-    private static final String UPDATE_ENGINE =
-            "UPDATE ENGINES SET DISPLACEMENT_CC = ?, CYLINDERS = ?, FUEL = ?, HORSEPOWER = ? WHERE COMPONENT_ID = ?";
-
-    private static final String INSERT_TRANSMISSION =
-            "INSERT INTO TRANSMISSIONS (TRANSMISSION_TYPE, NUMBER_OF_SPEEDS, COMPONENT_ID) VALUES (?, ?, ?)";
-
-    private static final String UPDATE_TRANSMISSION =
-            "UPDATE TRANSMISSIONS SET TRANSMISSION_TYPE = ?, NUMBER_OF_SPEEDS = ? WHERE COMPONENT_ID = ?";
+    // Subtipos: devuelven las filas afectadas. El ID del componente va de último,
+    // así INSERT y UPDATE de cada subtipo usan los mismos parámetros.
+    private static final String CALL_INSERT_TIRE = "{ ? = call PKG_COMPONENTS.INSERT_TIRE(?, ?, ?, ?, ?, ?) }";
+    private static final String CALL_UPDATE_TIRE = "{ ? = call PKG_COMPONENTS.UPDATE_TIRE(?, ?, ?, ?, ?, ?) }";
+    private static final String CALL_INSERT_RIM = "{ ? = call PKG_COMPONENTS.INSERT_RIM(?, ?, ?, ?, ?) }";
+    private static final String CALL_UPDATE_RIM = "{ ? = call PKG_COMPONENTS.UPDATE_RIM(?, ?, ?, ?, ?) }";
+    private static final String CALL_INSERT_ENGINE = "{ ? = call PKG_COMPONENTS.INSERT_ENGINE(?, ?, ?, ?, ?) }";
+    private static final String CALL_UPDATE_ENGINE = "{ ? = call PKG_COMPONENTS.UPDATE_ENGINE(?, ?, ?, ?, ?) }";
+    private static final String CALL_INSERT_TRANSMISSION =
+            "{ ? = call PKG_COMPONENTS.INSERT_TRANSMISSION(?, ?, ?) }";
+    private static final String CALL_UPDATE_TRANSMISSION =
+            "{ ? = call PKG_COMPONENTS.UPDATE_TRANSMISSION(?, ?, ?) }";
 
     @Override
     public List<Component> listAll() {
         List<Component> components = new ArrayList<>();
         try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(FIND_ALL);
-                ResultSet result = statement.executeQuery()) {
-            while (result.next()) {
-                components.add(mapRow(result));
+                CallableStatement call = connection.prepareCall(CALL_LIST_ALL)) {
+            call.registerOutParameter(1, Types.REF_CURSOR);
+            call.execute();
+            try (ResultSet result = (ResultSet) call.getObject(1)) {
+                while (result.next()) {
+                    components.add(mapRow(result));
+                }
             }
         } catch (SQLException e) {
             throw new PersistenceException("No se pudieron leer los componentes.", e);
@@ -118,9 +93,11 @@ public class ComponentOracleDAO implements ComponentDAO {
     @Override
     public Component findById(int id) {
         try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
-            statement.setInt(1, id);
-            try (ResultSet result = statement.executeQuery()) {
+                CallableStatement call = connection.prepareCall(CALL_FIND_BY_ID)) {
+            call.registerOutParameter(1, Types.REF_CURSOR);
+            call.setInt(2, id);
+            call.execute();
+            try (ResultSet result = (ResultSet) call.getObject(1)) {
                 return result.next() ? mapRow(result) : null;
             }
         } catch (SQLException e) {
@@ -129,8 +106,8 @@ public class ComponentOracleDAO implements ComponentDAO {
     }
 
     /**
-     * Guarda un componente nuevo con una transacción: inserta en COMPONENTS,
-     * toma el ID que genera Oracle e inserta en la tabla de su subtipo. Si
+     * Guarda un componente nuevo con una transacción: llama a INSERT_COMPONENT,
+     * toma el ID que devuelve la función y llama a la función de su subtipo. Si
      * algo falla, se deshace todo. Al terminar, el ID queda asignado en el
      * objeto, igual que hace ComponentFileDAO.
      */
@@ -186,52 +163,61 @@ public class ComponentOracleDAO implements ComponentDAO {
     @Override
     public void delete(int id) {
         try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(DEACTIVATE)) {
-            statement.setInt(1, id);
-            statement.executeUpdate();
+                CallableStatement call = connection.prepareCall(CALL_DEACTIVATE)) {
+            call.registerOutParameter(1, Types.NUMERIC); // filas cambiadas
+            call.setInt(2, id);
+            call.execute();
         } catch (SQLException e) {
             throw new PersistenceException("No se pudo desactivar el componente.", e);
         }
     }
 
     /**
-     * Inserta la fila de COMPONENTS y devuelve el ID que generó Oracle.
+     * Llama a INSERT_COMPONENT y devuelve el ID que generó Oracle.
      */
     private int insertComponent(Connection connection, Component component) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(INSERT_COMPONENT, new String[]{"ID"})) {
-            bindComponent(statement, component);
-            statement.executeUpdate();
-            try (ResultSet keys = statement.getGeneratedKeys()) {
-                keys.next();
-                return keys.getInt(1);
+        try (CallableStatement call = connection.prepareCall(CALL_INSERT_COMPONENT)) {
+            call.registerOutParameter(1, Types.NUMERIC); // ID nuevo
+            bindComponent(call, component);
+            call.execute();
+            return call.getInt(1);
+        }
+    }
+
+    /**
+     * Llama a UPDATE_COMPONENT. Si no cambió ninguna fila, el componente no
+     * existe y la transacción se deshace.
+     */
+    private void updateComponent(Connection connection, Component component) throws SQLException {
+        try (CallableStatement call = connection.prepareCall(CALL_UPDATE_COMPONENT)) {
+            call.registerOutParameter(1, Types.NUMERIC); // filas cambiadas
+            bindComponent(call, component);
+            call.setInt(9, component.getId());
+            call.execute();
+            if (call.getInt(1) == 0) {
+                throw new PersistenceException("No existe el componente que se quiere actualizar.");
             }
         }
     }
 
-    private void updateComponent(Connection connection, Component component) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(UPDATE_COMPONENT)) {
-            bindComponent(statement, component);
-            statement.setInt(8, component.getId());
-            statement.executeUpdate();
-        }
-    }
-
     /**
-     * Pone en la sentencia los 7 datos comunes (parámetros 1 a 7).
+     * Pone en la llamada los 7 datos comunes (parámetros 2 a 8; el 1 es lo que
+     * devuelve la función).
      */
-    private void bindComponent(PreparedStatement statement, Component component) throws SQLException {
-        statement.setString(1, component.getType().getFileValue());
-        statement.setString(2, component.getName());
-        statement.setString(3, component.getReference());
-        statement.setInt(4, component.getBrand().getId());
-        statement.setInt(5, component.getCategory().getId());
-        statement.setString(6, component.getOrigin());
-        statement.setString(7, component.getStatus().name());
+    private void bindComponent(CallableStatement call, Component component) throws SQLException {
+        call.setString(2, component.getType().getFileValue());
+        call.setString(3, component.getName());
+        call.setString(4, component.getReference());
+        call.setInt(5, component.getBrand().getId());
+        call.setInt(6, component.getCategory().getId());
+        call.setString(7, component.getOrigin());
+        call.setString(8, component.getStatus().name());
     }
 
     /**
-     * Ejecuta el INSERT o el UPDATE de la tabla del subtipo del componente.
-     * Un componente GENERAL no tiene tabla de subtipo y no hace nada.
+     * Llama a la función INSERT o UPDATE de la tabla del subtipo del
+     * componente. Un componente GENERAL no tiene tabla de subtipo y no hace
+     * nada.
      *
      * @param insert true para insertar, false para actualizar
      * @return filas afectadas
@@ -239,43 +225,51 @@ public class ComponentOracleDAO implements ComponentDAO {
     private int writeSubtype(Connection connection, int id, Component component, boolean insert)
             throws SQLException {
         if (component instanceof Tire tire) {
-            try (PreparedStatement statement = connection.prepareStatement(insert ? INSERT_TIRE : UPDATE_TIRE)) {
-                statement.setInt(1, tire.getWidthMm());
-                statement.setInt(2, tire.getProfile());
-                statement.setInt(3, tire.getDiameterInches());
-                statement.setInt(4, tire.getLoadIndex());
-                statement.setString(5, tire.getSpeedIndex());
-                statement.setInt(6, id);
-                return statement.executeUpdate();
+            try (CallableStatement call = connection.prepareCall(insert ? CALL_INSERT_TIRE : CALL_UPDATE_TIRE)) {
+                call.registerOutParameter(1, Types.NUMERIC);
+                call.setInt(2, tire.getWidthMm());
+                call.setInt(3, tire.getProfile());
+                call.setInt(4, tire.getDiameterInches());
+                call.setInt(5, tire.getLoadIndex());
+                call.setString(6, tire.getSpeedIndex());
+                call.setInt(7, id);
+                call.execute();
+                return call.getInt(1);
             }
         }
         if (component instanceof Rim rim) {
-            try (PreparedStatement statement = connection.prepareStatement(insert ? INSERT_RIM : UPDATE_RIM)) {
-                statement.setInt(1, rim.getDiameterInches());
-                statement.setDouble(2, rim.getWidthInches());
-                statement.setString(3, rim.getPcd());
-                statement.setString(4, rim.getMaterial().getFileValue());
-                statement.setInt(5, id);
-                return statement.executeUpdate();
+            try (CallableStatement call = connection.prepareCall(insert ? CALL_INSERT_RIM : CALL_UPDATE_RIM)) {
+                call.registerOutParameter(1, Types.NUMERIC);
+                call.setInt(2, rim.getDiameterInches());
+                call.setDouble(3, rim.getWidthInches());
+                call.setString(4, rim.getPcd());
+                call.setString(5, rim.getMaterial().getFileValue());
+                call.setInt(6, id);
+                call.execute();
+                return call.getInt(1);
             }
         }
         if (component instanceof Engine engine) {
-            try (PreparedStatement statement = connection.prepareStatement(insert ? INSERT_ENGINE : UPDATE_ENGINE)) {
-                statement.setInt(1, engine.getDisplacementCc());
-                statement.setInt(2, engine.getCylinders());
-                statement.setString(3, engine.getFuel().getFileValue());
-                statement.setInt(4, engine.getHorsepower());
-                statement.setInt(5, id);
-                return statement.executeUpdate();
+            try (CallableStatement call = connection.prepareCall(insert ? CALL_INSERT_ENGINE : CALL_UPDATE_ENGINE)) {
+                call.registerOutParameter(1, Types.NUMERIC);
+                call.setInt(2, engine.getDisplacementCc());
+                call.setInt(3, engine.getCylinders());
+                call.setString(4, engine.getFuel().getFileValue());
+                call.setInt(5, engine.getHorsepower());
+                call.setInt(6, id);
+                call.execute();
+                return call.getInt(1);
             }
         }
         if (component instanceof Transmission transmission) {
-            try (PreparedStatement statement = connection.prepareStatement(
-                    insert ? INSERT_TRANSMISSION : UPDATE_TRANSMISSION)) {
-                statement.setString(1, transmission.getTransmissionType().getFileValue());
-                statement.setInt(2, transmission.getNumberOfSpeeds());
-                statement.setInt(3, id);
-                return statement.executeUpdate();
+            try (CallableStatement call = connection.prepareCall(
+                    insert ? CALL_INSERT_TRANSMISSION : CALL_UPDATE_TRANSMISSION)) {
+                call.registerOutParameter(1, Types.NUMERIC);
+                call.setString(2, transmission.getTransmissionType().getFileValue());
+                call.setInt(3, transmission.getNumberOfSpeeds());
+                call.setInt(4, id);
+                call.execute();
+                return call.getInt(1);
             }
         }
         return 0;
