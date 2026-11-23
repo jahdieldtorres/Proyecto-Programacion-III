@@ -60,6 +60,9 @@ desactivada sigue en la tabla y se puede crear otra igual. Que no haya dos ofert
 ## Datos pendientes de otros puntos
 
 - **Dirección y coordenadas de los socios:** provisionales. Cuando entre H3, usar las mismas de `data/partners.csv`.
+- **Fotos y descripción de cada tienda:** `INVENTORY.DESCRIPTION` y la tabla `INVENTORY_IMAGES`
+  (hija de `INVENTORY`) guardan lo que es de la oferta de cada proveedor. `COMPONENT_IMAGES` queda
+  como la foto general del producto, la que se usa si la tienda no subió fotos. Empiezan vacías.
 - **Imágenes y descripciones** de componentes (`COMPONENT_IMAGES`, `COMPONENTS.DESCRIPTION`) y
   `CATEGORIES.IMAGE_FILE`: se llenan en A5, A6 y A8.
 - `ORDERS`, `ORDER_ITEMS` y `PRICE_HISTORY` empiezan vacías; las llena la aplicación y los disparadores.

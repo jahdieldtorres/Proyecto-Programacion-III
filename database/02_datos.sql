@@ -416,6 +416,17 @@ INSERT INTO INVENTORY (SUPPLIER_ID, COMPONENT_ID, PRICE, STOCK, SHIPPING_COST, W
 INSERT INTO INVENTORY (SUPPLIER_ID, COMPONENT_ID, PRICE, STOCK, SHIPPING_COST, WARRANTY_MONTHS, CONDITION, STATUS) VALUES (2, 50, 2900000, 1, 48000, 6, 'NUEVO', 'ACTIVO');
 INSERT INTO INVENTORY (SUPPLIER_ID, COMPONENT_ID, PRICE, STOCK, SHIPPING_COST, WARRANTY_MONTHS, CONDITION, STATUS) VALUES (5, 50, 2755000, 2, 28000, 6, 'NUEVO', 'ACTIVO');
 
+-- Descripción de cada oferta: la escribe la tienda (INVENTORY.DESCRIPTION).
+-- Se arma con el nombre de la tienda y la condición de la pieza.
+UPDATE INVENTORY SET DESCRIPTION = 'AutoMax Repuestos: Producto nuevo, sin uso. Retiro en la tienda del Centro o envío a toda la ciudad.' WHERE SUPPLIER_ID = 1 AND CONDITION = 'NUEVO';
+UPDATE INVENTORY SET DESCRIPTION = 'AutoMax Repuestos: Pieza reacondicionada y probada antes de la venta. Retiro en la tienda del Centro o envío a toda la ciudad.' WHERE SUPPLIER_ID = 1 AND CONDITION = 'REACONDICIONADO';
+UPDATE INVENTORY SET DESCRIPTION = 'Repuestos del Caribe: Producto nuevo, sin uso. Un asesor confirma la compatibilidad antes de despachar.' WHERE SUPPLIER_ID = 2 AND CONDITION = 'NUEVO';
+UPDATE INVENTORY SET DESCRIPTION = 'Repuestos del Caribe: Pieza reacondicionada y probada antes de la venta. Un asesor confirma la compatibilidad antes de despachar.' WHERE SUPPLIER_ID = 2 AND CONDITION = 'REACONDICIONADO';
+UPDATE INVENTORY SET DESCRIPTION = 'Importadora Cesar: Producto nuevo, sin uso. Despacho desde Novalito con guía de seguimiento.' WHERE SUPPLIER_ID = 5 AND CONDITION = 'NUEVO';
+UPDATE INVENTORY SET DESCRIPTION = 'Importadora Cesar: Pieza reacondicionada y probada antes de la venta. Despacho desde Novalito con guía de seguimiento.' WHERE SUPPLIER_ID = 5 AND CONDITION = 'REACONDICIONADO';
+UPDATE INVENTORY SET DESCRIPTION = 'MotoPartes Valledupar: Producto nuevo, sin uso. Atención personalizada en la tienda de Los Músicos.' WHERE SUPPLIER_ID = 6 AND CONDITION = 'NUEVO';
+UPDATE INVENTORY SET DESCRIPTION = 'MotoPartes Valledupar: Pieza usada, revisada por la tienda antes de venderla. Atención personalizada en la tienda de Los Músicos.' WHERE SUPPLIER_ID = 6 AND CONDITION = 'USADO';
+
 COMMIT;
 
 -- ---------------------------------------------------------------------
@@ -443,4 +454,5 @@ UNION ALL SELECT 'VEHICLES', COUNT(*), 8 FROM VEHICLES
 UNION ALL SELECT 'CARS', COUNT(*), 6 FROM CARS
 UNION ALL SELECT 'MOTORCYCLES', COUNT(*), 2 FROM MOTORCYCLES
 UNION ALL SELECT 'COMPATIBILITY', COUNT(*), 114 FROM COMPATIBILITY
-UNION ALL SELECT 'INVENTORY', COUNT(*), 96 FROM INVENTORY;
+UNION ALL SELECT 'INVENTORY', COUNT(*), 96 FROM INVENTORY
+UNION ALL SELECT 'INVENTORY con descripción', COUNT(DESCRIPTION), 96 FROM INVENTORY;
