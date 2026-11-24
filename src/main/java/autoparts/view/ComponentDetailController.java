@@ -50,6 +50,8 @@ public class ComponentDetailController {
     @FXML
     private Label lblCompatibility;
     @FXML
+    private Label lblDescription;
+    @FXML
     private Label lblCategory;
     @FXML
     private Label lblOrigin;
@@ -94,6 +96,13 @@ public class ComponentDetailController {
         lblReference.setText(component.getReference());
         lblCategory.setText("Categoría: " + component.getCategory().getName());
         lblOrigin.setText("Procedencia: " + component.getOrigin());
+
+        // La descripción es opcional: si el repuesto no tiene, se oculta el texto.
+        String description = component.getDescription();
+        boolean hasDescription = description != null && !description.isBlank();
+        lblDescription.setText(hasDescription ? description : "");
+        lblDescription.setVisible(hasDescription);
+        lblDescription.setManaged(hasDescription);
 
         if (item.getImageUrl() != null) {
             imgPhoto.setImage(new Image(item.getImageUrl(), true));
