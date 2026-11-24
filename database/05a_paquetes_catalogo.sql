@@ -480,6 +480,7 @@ CREATE OR REPLACE PACKAGE PKG_COMPONENTS AS
         p_brand_id    IN NUMBER,
         p_category_id IN NUMBER,
         p_origin      IN VARCHAR2,
+        p_description IN VARCHAR2,
         p_status      IN VARCHAR2
     ) RETURN NUMBER;
 
@@ -491,6 +492,7 @@ CREATE OR REPLACE PACKAGE PKG_COMPONENTS AS
         p_brand_id    IN NUMBER,
         p_category_id IN NUMBER,
         p_origin      IN VARCHAR2,
+        p_description IN VARCHAR2,
         p_status      IN VARCHAR2,
         p_id          IN NUMBER
     ) RETURN NUMBER;
@@ -553,6 +555,7 @@ CREATE OR REPLACE PACKAGE BODY PKG_COMPONENTS AS
     BEGIN
         OPEN c_components FOR
             SELECT C.ID, C.COMPONENT_TYPE, C.NAME, C.REFERENCE, C.ORIGIN, C.STATUS,
+                   C.DESCRIPTION,
                    B.ID AS BRAND_ID, B.NAME AS BRAND_NAME,
                    G.ID AS CATEGORY_ID, G.NAME AS CATEGORY_NAME,
                    T.WIDTH_MM, T.ASPECT_RATIO, T.DIAMETER_INCHES AS TIRE_DIAMETER,
@@ -577,6 +580,7 @@ CREATE OR REPLACE PACKAGE BODY PKG_COMPONENTS AS
     BEGIN
         OPEN c_component FOR
             SELECT C.ID, C.COMPONENT_TYPE, C.NAME, C.REFERENCE, C.ORIGIN, C.STATUS,
+                   C.DESCRIPTION,
                    B.ID AS BRAND_ID, B.NAME AS BRAND_NAME,
                    G.ID AS CATEGORY_ID, G.NAME AS CATEGORY_NAME,
                    T.WIDTH_MM, T.ASPECT_RATIO, T.DIAMETER_INCHES AS TIRE_DIAMETER,
@@ -603,12 +607,13 @@ CREATE OR REPLACE PACKAGE BODY PKG_COMPONENTS AS
         p_brand_id    IN NUMBER,
         p_category_id IN NUMBER,
         p_origin      IN VARCHAR2,
+        p_description IN VARCHAR2,
         p_status      IN VARCHAR2
     ) RETURN NUMBER IS
         v_id NUMBER;
     BEGIN
-        INSERT INTO COMPONENTS (COMPONENT_TYPE, NAME, REFERENCE, BRAND_ID, CATEGORY_ID, ORIGIN, STATUS)
-        VALUES (p_type, p_name, p_reference, p_brand_id, p_category_id, p_origin, p_status)
+        INSERT INTO COMPONENTS (COMPONENT_TYPE, NAME, REFERENCE, BRAND_ID, CATEGORY_ID, ORIGIN, DESCRIPTION, STATUS)
+        VALUES (p_type, p_name, p_reference, p_brand_id, p_category_id, p_origin, p_description, p_status)
         RETURNING ID INTO v_id;
         RETURN v_id;
     END INSERT_COMPONENT;
@@ -620,6 +625,7 @@ CREATE OR REPLACE PACKAGE BODY PKG_COMPONENTS AS
         p_brand_id    IN NUMBER,
         p_category_id IN NUMBER,
         p_origin      IN VARCHAR2,
+        p_description IN VARCHAR2,
         p_status      IN VARCHAR2,
         p_id          IN NUMBER
     ) RETURN NUMBER IS
@@ -631,6 +637,7 @@ CREATE OR REPLACE PACKAGE BODY PKG_COMPONENTS AS
             BRAND_ID = p_brand_id,
             CATEGORY_ID = p_category_id,
             ORIGIN = p_origin,
+            DESCRIPTION = p_description,
             STATUS = p_status
         WHERE ID = p_id;
         RETURN SQL%ROWCOUNT;
