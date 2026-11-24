@@ -16,6 +16,7 @@ public final class Icons {
     public static final String COMPARE = "M4 18V9M10 18V5M16 18v-7M22 18H2";
     public static final String LOCATION = "M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21zM12 7a2.5 2.5 0 1 0 0 5a2.5 2.5 0 1 0 0-5";
     public static final String WRENCH = "M14.5 6.5a4 4 0 0 0-5.3 5.3L4 17l3 3 5.2-5.2a4 4 0 0 0 5.3-5.3l-2.5 2.5-2.5-.5-.5-2.5z";
+    public static final String STORE = "M3 9l1.5-5h15L21 9M3 9h18v11H3zM9 20v-6h6v6";
     public static final String PART = "M12 3l8 4.5v9L12 21l-8-4.5v-9zM12 12l8-4.5M12 12v9M12 12L4 7.5";
 
     /** Ícono de cada categoría del catálogo, por su nombre. */

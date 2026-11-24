@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Mapa ORIGEN</title>
+<!--
+  Mapa de la pantalla "Talleres cerca". Lo carga MapController en un WebView.
+  Leaflet (librería de mapas) está guardada en esta misma carpeta; solo el
+  fondo del mapa (las calles) se descarga de internet.
+
+  Java llama estas funciones con engine.executeScript(...):
+    setUser, addMarker, clearMarkers, focusMarker, fitAll, startPicking.
+  El mapa le avisa a Java con el objeto "app" (MapController.MapBridge):
+    app.locationPicked(lat, lng) y app.tilesFailed().
+-->
+<link rel="stylesheet" href="leaflet.css">
+<style>
+  html, body, #map { margin: 0; height: 100%; }
+  body { font-family: "Segoe UI", Arial, sans-serif; }
+  .leaflet-popup-content { font-size: 13px; line-height: 1.4; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+  // El navegador que trae JavaFX (WebView) dibuja mal los efectos 3D que usa
+  // Leaflet para mover el mapa: al arrastrar, partes del mapa se quedaban
+  // grises o saltaban. Esta variable le dice a Leaflet que no los use.
+  // Debe ir ANTES de cargar leaflet.js.
+  window.L_DISABLE_3D = true;
+</script>
+<script src="leaflet.js"></script>
+<script>
+  // Mapa centrado en Valledupar
+  // Sin animaciones de zoom ni inercia: en el WebView se ven entrecortadas
+  // y dejaban cuadros del mapa sin pintar.
+  var map = L.map('map', {
+    zoomAnimation: false,
+    fadeAnimation: false,
+    markerZoomAnimation: false,
+    inertia: false
+  }).setView([10.4631, -73.2532], 13);
+
+  // Fondo del mapa: calles de OpenStreetMap (gratis, sin clave de API)
+  var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  var markers = {};
+  var userMarker = null;
+  var picking = false;
+  var tileErrors = 0;
+
+  // Si varias imágenes del fondo fallan, casi seguro no hay internet
+  tiles.on('tileerror', function () {
+    tileErrors++;
+    if (tileErrors === 4 && window.app) { app.tilesFailed(); }
+  });
+
+  // Punto oscuro: "tú estás aquí"
+  function setUser(lat, lng, label) {
+    if (userMarker) { map.removeLayer(userMarker); }
+    userMarker = L.circleMarker([lat, lng], {
+      radius: 9, color: '#FFFFFF', weight: 3, fillColor: '#0F172A', fillOpacity: 1
+    }).addTo(map).bindTooltip(label);
+  }
+
+  // Pin de un almacén (azul) o de un taller (ámbar)
+  function addMarker(id, lat, lng, name, isWorkshop, info) {
+    var color = isWorkshop ? '#B45309' : '#0369A1';
+    markers[id] = L.circleMarker([lat, lng], {
+      radius: 10, color: '#FFFFFF', weight: 3, fillColor: color, fillOpacity: 1
+    }).addTo(map).bindPopup('<b>' + name + '</b><br>' + info);
+  }
+
+  function clearMarkers() {
+    for (var id in markers) { map.removeLayer(markers[id]); }
+    markers = {};
+  }
+
+  // Lleva el mapa hasta un pin y abre su ventanita
+  function focusMarker(id) {
+    var marker = markers[id];
+    if (marker) {
+      map.setView(marker.getLatLng(), 16);
+      marker.openPopup();
+    }
+  }
+
+  // Ajusta el zoom para que se vean todos los pines y el usuario
+  function fitAll() {
+    var points = [];
+    for (var id in markers) { points.push(markers[id].getLatLng()); }
+    if (userMarker) { points.push(userMarker.getLatLng()); }
+    if (points.length > 0) { map.fitBounds(L.latLngBounds(points).pad(0.25)); }
+  }
+
+  // El próximo clic en el mapa será la ubicación del usuario
+  function startPicking() {
+    picking = true;
+    document.getElementById('map').style.cursor = 'crosshair';
+  }
+
+  map.on('click', function (event) {
+    if (!picking) { return; }
+    picking = false;
+    document.getElementById('map').style.cursor = '';
+    if (window.app) { app.locationPicked(event.latlng.lat, event.latlng.lng); }
+  });
+
+  // Leaflet calcula el tamaño del mapa una sola vez, al crearlo. Si el
+  // WebView crece después, la parte nueva queda gris. Java llama esta función
+  // cada vez que el WebView cambia de tamaño para que el mapa se recalcule.
+  // La pausa corta deja que la página termine de cambiar de tamaño primero.
+  function refreshSize() {
+    setTimeout(function () { map.invalidateSize(); }, 150);
+  }
+  window.addEventListener('resize', refreshSize);
+</script>
+</body>
+</html>

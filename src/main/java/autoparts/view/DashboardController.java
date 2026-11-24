@@ -37,6 +37,7 @@ public class DashboardController {
     public static final String COMPARATOR = "Comparator.fxml";
     public static final String VEHICLES = "Vehicles.fxml";
     public static final String SERVICES = "Services.fxml";
+    public static final String MAP = "Map.fxml";
     public static final String CART = "Cart.fxml";
     public static final String PARTNERS = "Partners.fxml";
     public static final String INVENTORY = "Inventory.fxml";
@@ -61,6 +62,8 @@ public class DashboardController {
     private Button btnCatalog;
     @FXML
     private Button btnServices;
+    @FXML
+    private Button btnMap;
     @FXML
     private Button btnCart;
     @FXML
@@ -105,6 +108,15 @@ public class DashboardController {
         ComponentDetailController.setItem(item);
         if (current != null) {
             current.show(DETAIL, current.btnCatalog);
+        }
+    }
+
+    /**
+     * Abre "Talleres cerca" con el mapa. La usa la sección "Cerca de ti" de Inicio.
+     */
+    public static void openMap() {
+        if (current != null) {
+            current.goToMap();
         }
     }
 
@@ -185,6 +197,11 @@ public class DashboardController {
     @FXML
     private void goToServices() {
         show(SERVICES, btnServices);
+    }
+
+    @FXML
+    private void goToMap() {
+        show(MAP, btnMap);
     }
 
     @FXML

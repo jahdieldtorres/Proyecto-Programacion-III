@@ -34,6 +34,7 @@
                 <Button fx:id="btnHome" text="Inicio" onAction="#goToHome" styleClass="nav-button"/>
                 <Button fx:id="btnCatalog" text="Catálogo" onAction="#goToCatalog" styleClass="nav-button"/>
                 <Button fx:id="btnServices" text="Servicios" onAction="#goToServices" styleClass="nav-button"/>
+                <Button fx:id="btnMap" text="Talleres cerca" onAction="#goToMap" styleClass="nav-button"/>
 
                 <MenuButton fx:id="menuAdmin" text="Administrar" styleClass="nav-menu">
                     <items>
