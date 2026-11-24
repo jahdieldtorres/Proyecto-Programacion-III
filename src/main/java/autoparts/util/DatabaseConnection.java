@@ -5,9 +5,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+import oracle.ucp.jdbc.PoolDataSource;
+import oracle.ucp.jdbc.PoolDataSourceFactory;
 
 /**
  * Abre las conexiones a la base de datos Oracle del proyecto.
@@ -16,8 +17,12 @@ import java.util.Properties;
  * db.properties, en la raíz del proyecto. Ese archivo no se sube a GitHub:
  * cada integrante lo crea a partir de db.properties.example con sus datos.
  *
- * Cada llamada a getConnection() abre una conexión nueva. Quien la pide debe
- * cerrarla, idealmente con try-with-resources:
+ * Usa un pool de conexiones: la primera vez abre unas pocas conexiones y
+ * después las reutiliza. Cuando un DAO cierra su conexión, en realidad la
+ * devuelve al pool para que la use otro. Así no se abre una conexión nueva a
+ * Oracle Cloud en cada consulta, que era lo que hacía lenta la app.
+ *
+ * Quien pide una conexión la cierra igual que antes, con try-with-resources:
  * <pre>
  * try (Connection connection = DatabaseConnection.getConnection()) {
  *     ...
@@ -35,27 +40,59 @@ public final class DatabaseConnection {
     private static final String KEY_USER = "db.user";
     private static final String KEY_PASSWORD = "db.password";
 
+    /** Conexiones que el pool deja abiertas y listas desde el inicio. */
+    private static final int MIN_CONNECTIONS = 2;
+    /** Máximo de conexiones abiertas al mismo tiempo. */
+    private static final int MAX_CONNECTIONS = 10;
+
     /** Configuración leída del archivo; se carga una sola vez. */
     private static Properties config;
+
+    /** El pool se crea una sola vez, la primera vez que se pide una conexión. */
+    private static PoolDataSource pool;
 
     private DatabaseConnection() {
     }
 
     /**
-     * Abre una conexión nueva con los datos de db.properties.
+     * Entrega una conexión del pool, siempre con autocommit activado.
      *
-     * @return conexión abierta; quien la usa debe cerrarla
+     * Las conexiones se reutilizan: si un DAO apagó el autocommit para una
+     * transacción (por ejemplo, guardar un pedido con sus líneas), la conexión
+     * vuelve al pool así. Por eso se activa de nuevo aquí, para que el
+     * siguiente DAO no deje sus cambios sin confirmar.
+     *
+     * @return conexión lista para usar; al cerrarla vuelve al pool
      * @throws PersistenceException si falta la configuración o no se puede conectar
      */
-    public static Connection getConnection() {
-        Properties settings = loadConfig();
+    public static synchronized Connection getConnection() {
         try {
-            return DriverManager.getConnection(settings.getProperty(KEY_URL),
-                    settings.getProperty(KEY_USER), settings.getProperty(KEY_PASSWORD));
+            Connection connection = getPool().getConnection();
+            connection.setAutoCommit(true);
+            return connection;
         } catch (SQLException e) {
             throw new PersistenceException("No se pudo conectar a la base de datos. "
                     + "Revisa los datos de " + CONFIG_FILE + " y tu conexión a internet.", e);
         }
+    }
+
+    /**
+     * Crea el pool la primera vez, con los datos de db.properties.
+     */
+    private static PoolDataSource getPool() throws SQLException {
+        if (pool == null) {
+            Properties settings = loadConfig();
+            PoolDataSource newPool = PoolDataSourceFactory.getPoolDataSource();
+            newPool.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
+            newPool.setURL(settings.getProperty(KEY_URL));
+            newPool.setUser(settings.getProperty(KEY_USER));
+            newPool.setPassword(settings.getProperty(KEY_PASSWORD));
+            newPool.setInitialPoolSize(MIN_CONNECTIONS);
+            newPool.setMinPoolSize(MIN_CONNECTIONS);
+            newPool.setMaxPoolSize(MAX_CONNECTIONS);
+            pool = newPool;
+        }
+        return pool;
     }
 
     /**

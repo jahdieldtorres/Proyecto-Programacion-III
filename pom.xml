@@ -30,6 +30,12 @@
             <artifactId>javafx-fxml</artifactId>
             <version>${javafx.version}</version>
         </dependency>
+        <!-- Navegador dentro de la app (WebView), para el mapa de Talleres cerca -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-web</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
         <!-- Driver JDBC de Oracle -->
         <dependency>
             <groupId>com.oracle.database.jdbc</groupId>
@@ -40,6 +46,12 @@
         <dependency>
             <groupId>com.oracle.database.security</groupId>
             <artifactId>oraclepki</artifactId>
+            <version>${oracle.version}</version>
+        </dependency>
+        <!-- Pool de conexiones de Oracle (UCP): reutiliza conexiones en vez de abrir una por consulta -->
+        <dependency>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ucp11</artifactId>
             <version>${oracle.version}</version>
         </dependency>
     </dependencies>
