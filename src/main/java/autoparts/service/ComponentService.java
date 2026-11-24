@@ -20,6 +20,9 @@ import java.util.List;
  */
 public class ComponentService {
 
+    /** Longitud máxima de la descripción (igual que COMPONENTS.DESCRIPTION en Oracle). */
+    private static final int MAX_DESCRIPTION_LENGTH = 300;
+
     private final ComponentDAO componentDAO;
     private final BrandDAO brandDAO;
     private final CategoryDAO categoryDAO;
@@ -117,6 +120,7 @@ public class ComponentService {
         if (!"ORIGINAL".equals(origin) && !"GENERICO".equals(origin)) {
             throw new InvalidDataException("El origen debe ser ORIGINAL o GENERICO.");
         }
+        validateDescription(component);
         String reference = component.getReference().trim();
         for (Component other : componentDAO.listAll()) {
             boolean sameComponent = other.getId() == component.getId();
@@ -124,6 +128,27 @@ public class ComponentService {
                 throw new InvalidDataException("Ya existe un componente con esa referencia.");
             }
         }
+    }
+
+    /**
+     * Valida la descripción: es opcional, pero no puede pasar de 300 caracteres.
+     * Si viene vacía se guarda como null y si trae espacios sobrantes se recortan.
+     *
+     * @param component componente cuya descripción se revisa
+     * @throws InvalidDataException si la descripción supera el máximo permitido
+     */
+    private void validateDescription(Component component) {
+        String description = component.getDescription();
+        if (isBlank(description)) {
+            component.setDescription(null);
+            return;
+        }
+        description = description.trim();
+        if (description.length() > MAX_DESCRIPTION_LENGTH) {
+            throw new InvalidDataException("La descripción no puede pasar de "
+                    + MAX_DESCRIPTION_LENGTH + " caracteres (tiene " + description.length() + ").");
+        }
+        component.setDescription(description);
     }
 
     private boolean isBlank(String text) {
