@@ -87,6 +87,14 @@
     -fx-padding: 10 12;
 }
 
+/* Los puntos de la contraseña salen del tamaño de la letra: con letra más
+   pequeña se ven más finos. Más relleno arriba y abajo para que el campo
+   quede igual de alto que los demás. */
+.password-field {
+    -fx-font-size: 11px;
+    -fx-padding: 12 12;
+}
+
 .text-field:focused, .password-field:focused {
     -fx-border-color: -color-accent;
     -fx-effect: dropshadow(gaussian, rgba(14, 165, 233, 0.25), 8, 0, 0, 0);
