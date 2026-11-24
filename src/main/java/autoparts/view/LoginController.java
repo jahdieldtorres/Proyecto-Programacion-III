@@ -3,17 +3,13 @@ package autoparts.view;
 import autoparts.AppServices;
 import autoparts.exception.InvalidDataException;
 import autoparts.exception.PersistenceException;
-import javafx.animation.Animation;
-import javafx.animation.FadeTransition;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
 /**
@@ -21,7 +17,7 @@ import javafx.util.Duration;
  *
  * Envía el correo y la contraseña a UserService. Si los datos no son válidos
  * muestra el error y sacude el formulario. También deja mostrar u ocultar la
- * contraseña y anima el brillo detrás del logo.
+ * contraseña. El logo animado de la izquierda es el componente LogoTree.
  *
  * @author Jahdiel Torres
  */
@@ -39,10 +35,6 @@ public class LoginController {
     private Label lblMessage;
     @FXML
     private VBox formBox;
-    @FXML
-    private Circle glow;
-    @FXML
-    private ImageView imgLogo;
 
     /**
      * JavaFX llama este método automáticamente al cargar la pantalla.
@@ -51,26 +43,6 @@ public class LoginController {
     private void initialize() {
         // Los dos campos de contraseña comparten el mismo texto
         txtPasswordVisible.textProperty().bindBidirectional(txtPassword.textProperty());
-        animateLogo();
-    }
-
-    /**
-     * El brillo detrás del logo se enciende y se apaga, y el logo flota un poco.
-     */
-    private void animateLogo() {
-        FadeTransition pulse = new FadeTransition(Duration.seconds(2), glow);
-        pulse.setFromValue(0.35);
-        pulse.setToValue(1);
-        pulse.setAutoReverse(true);
-        pulse.setCycleCount(Animation.INDEFINITE);
-        pulse.play();
-
-        TranslateTransition floating = new TranslateTransition(Duration.seconds(3), imgLogo);
-        floating.setFromY(-4);
-        floating.setToY(4);
-        floating.setAutoReverse(true);
-        floating.setCycleCount(Animation.INDEFINITE);
-        floating.play();
     }
 
     @FXML

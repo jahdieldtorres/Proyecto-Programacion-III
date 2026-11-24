@@ -1,33 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import autoparts.view.LogoTree?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Circle?>
 
 <HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="autoparts.view.LoginController" styleClass="login-root">
 
-    <!-- Panel izquierdo: logo con brillo animado -->
+    <!-- Panel izquierdo: el árbol del logo con los nutrientes que suben (LogoTree) -->
     <StackPane prefWidth="440" minWidth="400" styleClass="login-side">
         <Label text="Valledupar, Cesar" StackPane.alignment="TOP_LEFT" styleClass="location-chip">
             <StackPane.margin><Insets top="20" left="20"/></StackPane.margin>
         </Label>
-        <VBox alignment="CENTER" spacing="18">
-            <StackPane>
-                <Circle fx:id="glow" radius="130" styleClass="logo-glow"/>
-                <ImageView fx:id="imgLogo" fitWidth="230" preserveRatio="true" smooth="true">
-                    <image><Image url="@images/logo.png"/></image>
-                </ImageView>
-            </StackPane>
+        <VBox alignment="CENTER" spacing="8">
+            <LogoTree/>
+            <Label text="ORIGEN" styleClass="login-brand"/>
             <Label text="Los repuestos de tu ciudad, conectados" styleClass="login-tagline"/>
         </VBox>
     </StackPane>
