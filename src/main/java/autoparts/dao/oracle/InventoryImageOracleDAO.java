@@ -17,10 +17,9 @@ import java.util.List;
  * llamando a las funciones del paquete PL/SQL PKG_INVENTORY_IMAGES
  * (database/05a_paquetes_catalogo.sql).
  *
- * Este DAO no escribe SELECT, INSERT, UPDATE ni DELETE: toda la consulta vive
- * en la base de datos. Todo es una función y el resultado llega por el primer
- * ? de la llamada: un cursor en las consultas, el ID nuevo en el INSERT y las
- * filas cambiadas en el UPDATE y el DELETE.
+ * Todo es una función y el resultado llega por el primer ? de la llamada: un
+ * cursor en las consultas, el ID nuevo en el INSERT y las filas cambiadas en el
+ * UPDATE y el DELETE.
  *
  * Regla que cuida el paquete: una oferta tiene como máximo una foto
  * principal. Al guardar o actualizar una foto como principal, las otras de la

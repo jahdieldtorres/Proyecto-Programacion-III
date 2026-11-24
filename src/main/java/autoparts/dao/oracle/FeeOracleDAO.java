@@ -5,41 +5,38 @@ import autoparts.exception.PersistenceException;
 import autoparts.model.Fee;
 import autoparts.model.Status;
 import autoparts.util.DatabaseConnection;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Guarda y consulta las tarifas de los servicios de los talleres en la tabla
- * FEES de la base de datos Oracle.
+ * Guarda y consulta las tarifas de los servicios de los talleres llamando a
+ * las funciones del paquete PL/SQL PKG_FEES
+ * (database/05b_paquetes_negocio.sql).
+ *
+ * Todo es una función y el resultado llega por el primer ? de la llamada: un
+ * cursor en las consultas, el ID nuevo en el INSERT y las filas cambiadas en
+ * el UPDATE.
  *
  * Implementa la misma interfaz {@link FeeDAO} que FeeFileDAO, por eso
- * FeeService no cambia: solo se cambia el DAO en AppServices. Sigue el mismo
- * patrón de UserOracleDAO.
+ * FeeService no cambia: solo se cambia el DAO en AppServices. Sigue el patrón
+ * de {@link UserOracleDAO}.
  *
  * @author Héctor Guevara
  */
 public class FeeOracleDAO implements FeeDAO {
 
-    private static final String SELECT_FEES =
-            "SELECT ID, SERVICE_ID, AMOUNT, START_DATE, STATUS FROM FEES";
-
-    private static final String FIND_ALL = SELECT_FEES + " ORDER BY ID";
-
-    private static final String FIND_BY_ID = SELECT_FEES + " WHERE ID = ?";
-
-    private static final String FIND_BY_SERVICE = SELECT_FEES + " WHERE SERVICE_ID = ? ORDER BY ID";
-
-    private static final String INSERT =
-            "INSERT INTO FEES (SERVICE_ID, AMOUNT, START_DATE, STATUS) VALUES (?, ?, ?, ?)";
-
-    private static final String UPDATE =
-            "UPDATE FEES SET SERVICE_ID = ?, AMOUNT = ?, START_DATE = ?, STATUS = ? WHERE ID = ?";
+    private static final String CALL_LIST_ALL = "{ ? = call PKG_FEES.LIST_ALL }";
+    private static final String CALL_FIND_BY_ID = "{ ? = call PKG_FEES.FIND_BY_ID(?) }";
+    private static final String CALL_LIST_BY_SERVICE = "{ ? = call PKG_FEES.LIST_BY_SERVICE(?) }";
+    private static final String CALL_INSERT = "{ ? = call PKG_FEES.INSERT_FEE(?, ?, ?, ?) }";
+    private static final String CALL_UPDATE = "{ ? = call PKG_FEES.UPDATE_FEE(?, ?, ?, ?, ?) }";
 
     /**
      * Con Oracle el ID lo genera la base (columna IDENTITY) al guardar, así que
@@ -54,41 +51,44 @@ public class FeeOracleDAO implements FeeDAO {
     }
 
     /**
-     * Guarda una tarifa nueva. Después de guardar, la tarifa recibida queda con
-     * el ID que le asignó Oracle.
+     * Guarda una tarifa nueva con PKG_FEES.INSERT_FEE. El ID lo genera Oracle
+     * (IDENTITY), la función lo devuelve y se le asigna al objeto recibido,
+     * igual que hace FeeFileDAO.
      */
     @Override
     public void save(Fee fee) {
         try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(INSERT, new String[]{"ID"})) {
-            statement.setInt(1, fee.getServiceId());
-            statement.setInt(2, fee.getAmount());
-            statement.setDate(3, Date.valueOf(fee.getStartDate()));
-            statement.setString(4, fee.getStatus().name());
-            statement.executeUpdate();
-
-            try (ResultSet keys = statement.getGeneratedKeys()) {
-                keys.next();
-                fee.setId(keys.getInt(1));
-            }
+                CallableStatement call = connection.prepareCall(CALL_INSERT)) {
+            call.registerOutParameter(1, Types.NUMERIC); // ID nuevo
+            call.setInt(2, fee.getServiceId());
+            call.setInt(3, fee.getAmount());
+            call.setDate(4, Date.valueOf(fee.getStartDate()));
+            call.setString(5, fee.getStatus().name());
+            call.execute();
+            fee.setId(call.getInt(1));
         } catch (SQLException e) {
             throw new PersistenceException("No se pudo guardar la tarifa.", e);
         }
     }
 
     /**
+     * Actualiza con PKG_FEES.UPDATE_FEE. La función devuelve cuántas filas
+     * cambió; si es 0, la tarifa no existe.
+     *
      * @return true si la tarifa existía y se actualizó
      */
     @Override
     public boolean update(Fee fee) {
         try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(UPDATE)) {
-            statement.setInt(1, fee.getServiceId());
-            statement.setInt(2, fee.getAmount());
-            statement.setDate(3, Date.valueOf(fee.getStartDate()));
-            statement.setString(4, fee.getStatus().name());
-            statement.setInt(5, fee.getId());
-            return statement.executeUpdate() > 0;
+                CallableStatement call = connection.prepareCall(CALL_UPDATE)) {
+            call.registerOutParameter(1, Types.NUMERIC); // filas cambiadas
+            call.setInt(2, fee.getId());
+            call.setInt(3, fee.getServiceId());
+            call.setInt(4, fee.getAmount());
+            call.setDate(5, Date.valueOf(fee.getStartDate()));
+            call.setString(6, fee.getStatus().name());
+            call.execute();
+            return call.getInt(1) > 0;
         } catch (SQLException e) {
             throw new PersistenceException("No se pudo actualizar la tarifa.", e);
         }
@@ -96,34 +96,46 @@ public class FeeOracleDAO implements FeeDAO {
 
     @Override
     public Optional<Fee> findById(int id) {
-        List<Fee> fees = findList(FIND_BY_ID, id);
-        return fees.isEmpty() ? Optional.empty() : Optional.of(fees.get(0));
+        try (Connection connection = DatabaseConnection.getConnection();
+                CallableStatement call = connection.prepareCall(CALL_FIND_BY_ID)) {
+            call.registerOutParameter(1, Types.REF_CURSOR);
+            call.setInt(2, id);
+            call.execute();
+            try (ResultSet result = (ResultSet) call.getObject(1)) {
+                return result.next() ? Optional.of(mapRow(result)) : Optional.empty();
+            }
+        } catch (SQLException e) {
+            throw new PersistenceException("No se pudo buscar la tarifa.", e);
+        }
     }
 
     @Override
     public List<Fee> findByService(int serviceId) {
-        return findList(FIND_BY_SERVICE, serviceId);
+        List<Fee> fees = new ArrayList<>();
+        try (Connection connection = DatabaseConnection.getConnection();
+                CallableStatement call = connection.prepareCall(CALL_LIST_BY_SERVICE)) {
+            call.registerOutParameter(1, Types.REF_CURSOR);
+            call.setInt(2, serviceId);
+            call.execute();
+            try (ResultSet result = (ResultSet) call.getObject(1)) {
+                while (result.next()) {
+                    fees.add(mapRow(result));
+                }
+            }
+        } catch (SQLException e) {
+            throw new PersistenceException("No se pudieron leer las tarifas.", e);
+        }
+        return fees;
     }
 
     @Override
     public List<Fee> findAll() {
-        return findList(FIND_ALL);
-    }
-
-    /**
-     * Ejecuta una consulta de tarifas y devuelve todas las filas como objetos.
-     *
-     * @param sql    consulta con tantos ? como valores en params
-     * @param params valores de los parámetros, en orden (puede no haber ninguno)
-     */
-    private List<Fee> findList(String sql, Object... params) {
         List<Fee> fees = new ArrayList<>();
         try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)) {
-            for (int i = 0; i < params.length; i++) {
-                statement.setObject(i + 1, params[i]);
-            }
-            try (ResultSet result = statement.executeQuery()) {
+                CallableStatement call = connection.prepareCall(CALL_LIST_ALL)) {
+            call.registerOutParameter(1, Types.REF_CURSOR);
+            call.execute();
+            try (ResultSet result = (ResultSet) call.getObject(1)) {
                 while (result.next()) {
                     fees.add(mapRow(result));
                 }

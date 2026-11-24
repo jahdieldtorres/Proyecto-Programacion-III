@@ -6,21 +6,27 @@ import autoparts.model.Order;
 import autoparts.model.OrderItem;
 import autoparts.model.OrderStatus;
 import autoparts.util.DatabaseConnection;
+import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Guarda y consulta los pedidos en Oracle.
+ * Guarda y consulta los pedidos llamando a las funciones del paquete PL/SQL
+ * PKG_ORDERS (database/05b_paquetes_negocio.sql).
+ *
+ * Todo es una función y el resultado llega por el primer ? de la llamada: un
+ * cursor en las consultas y el ID nuevo en los INSERT.
  *
  * Cada pedido ocupa dos tablas: ORDERS (el pedido) y ORDER_ITEMS (una fila por
- * línea). Por eso guardar se hace en una transacción: o se guardan el pedido y
- * todas sus líneas, o no se guarda nada. Sigue el mismo patrón de
- * {@link ComponentOracleDAO}.
+ * línea). Cada función del paquete toca una sola tabla, así que guardar sigue
+ * haciéndose aquí en una transacción (commit y rollback los maneja Java, el
+ * paquete no confirma): o se guardan el pedido y todas sus líneas, o no se
+ * guarda nada. Sigue el patrón de {@link ComponentOracleDAO}.
  *
  * Este DAO no resta el stock: lo hace el disparador TRG_ORDER_ITEMS_STOCK al
  * insertar cada línea (database/03_disparadores.sql). Si no alcanza el stock,
@@ -34,29 +40,17 @@ public class OrderOracleDAO implements OrderDAO {
     /** Código que recibe Java cuando el disparador responde ORA-20001 (sin stock). */
     private static final int NOT_ENOUGH_STOCK = 20001;
 
-    private static final String INSERT_ORDER =
-            "INSERT INTO ORDERS (USER_ID, ORDER_DATE, STATUS, TOTAL) VALUES (?, ?, ?, ?)";
-
-    private static final String INSERT_ITEM =
-            "INSERT INTO ORDER_ITEMS (ORDER_ID, INVENTORY_ID, QUANTITY, UNIT_PRICE, SHIPPING_COST) "
-            + "VALUES (?, ?, ?, ?, ?)";
-
-    private static final String SELECT_ORDERS =
-            "SELECT ID, USER_ID, ORDER_DATE, STATUS FROM ORDERS";
-
-    private static final String FIND_BY_ID = SELECT_ORDERS + " WHERE ID = ?";
-
-    private static final String FIND_BY_USER = SELECT_ORDERS + " WHERE USER_ID = ? ORDER BY ID DESC";
-
-    private static final String FIND_ITEMS =
-            "SELECT ID, ORDER_ID, INVENTORY_ID, QUANTITY, UNIT_PRICE, SHIPPING_COST "
-            + "FROM ORDER_ITEMS WHERE ORDER_ID = ? ORDER BY ID";
+    private static final String CALL_FIND_BY_ID = "{ ? = call PKG_ORDERS.FIND_BY_ID(?) }";
+    private static final String CALL_LIST_BY_USER = "{ ? = call PKG_ORDERS.LIST_BY_USER(?) }";
+    private static final String CALL_LIST_ITEMS = "{ ? = call PKG_ORDERS.LIST_ITEMS(?) }";
+    private static final String CALL_INSERT_ORDER = "{ ? = call PKG_ORDERS.INSERT_ORDER(?, ?, ?, ?) }";
+    private static final String CALL_INSERT_ITEM = "{ ? = call PKG_ORDERS.INSERT_ORDER_ITEM(?, ?, ?, ?, ?) }";
 
     /**
-     * Guarda el pedido con una transacción: inserta en ORDERS, toma el ID que
-     * genera Oracle e inserta cada línea en ORDER_ITEMS con la misma conexión.
-     * Si algo falla, se deshace todo. El objeto recibido no se modifica: el
-     * servicio es quien le pone el ID que devuelve este método.
+     * Guarda el pedido con una transacción: llama a INSERT_ORDER, toma el ID
+     * que devuelve la función y llama a INSERT_ORDER_ITEM por cada línea con la
+     * misma conexión. Si algo falla, se deshace todo. El objeto recibido no se
+     * modifica: el servicio es quien le pone el ID que devuelve este método.
      *
      * @throws PersistenceException si no hay stock suficiente o falla la base
      */
@@ -87,16 +81,19 @@ public class OrderOracleDAO implements OrderDAO {
     @Override
     public Order findById(int id) {
         try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(FIND_BY_ID)) {
-            statement.setInt(1, id);
-            try (ResultSet result = statement.executeQuery()) {
+                CallableStatement call = connection.prepareCall(CALL_FIND_BY_ID)) {
+            call.registerOutParameter(1, Types.REF_CURSOR);
+            call.setInt(2, id);
+            call.execute();
+            Order order;
+            try (ResultSet result = (ResultSet) call.getObject(1)) {
                 if (!result.next()) {
                     return null;
                 }
-                Order order = mapRow(result);
-                loadItems(connection, order);
-                return order;
+                order = mapRow(result);
             }
+            loadItems(connection, order);
+            return order;
         } catch (SQLException e) {
             throw new PersistenceException("No se pudo buscar el pedido.", e);
         }
@@ -106,9 +103,11 @@ public class OrderOracleDAO implements OrderDAO {
     public List<Order> findByUser(int userId) {
         List<Order> orders = new ArrayList<>();
         try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(FIND_BY_USER)) {
-            statement.setInt(1, userId);
-            try (ResultSet result = statement.executeQuery()) {
+                CallableStatement call = connection.prepareCall(CALL_LIST_BY_USER)) {
+            call.registerOutParameter(1, Types.REF_CURSOR);
+            call.setInt(2, userId);
+            call.execute();
+            try (ResultSet result = (ResultSet) call.getObject(1)) {
                 while (result.next()) {
                     orders.add(mapRow(result));
                 }
@@ -124,44 +123,47 @@ public class OrderOracleDAO implements OrderDAO {
     }
 
     /**
-     * Inserta la fila de ORDERS (con el total calculado por el pedido) y
-     * devuelve el ID que generó Oracle.
+     * Llama a INSERT_ORDER (con el total calculado por el pedido) y devuelve el
+     * ID que generó Oracle.
      */
     private int insertOrder(Connection connection, Order order) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(INSERT_ORDER, new String[]{"ID"})) {
-            statement.setInt(1, order.getUserId());
-            statement.setTimestamp(2, Timestamp.valueOf(order.getOrderDate()));
-            statement.setString(3, order.getStatus().name());
-            statement.setInt(4, order.getTotal());
-            statement.executeUpdate();
-            try (ResultSet keys = statement.getGeneratedKeys()) {
-                keys.next();
-                return keys.getInt(1);
-            }
+        try (CallableStatement call = connection.prepareCall(CALL_INSERT_ORDER)) {
+            call.registerOutParameter(1, Types.NUMERIC); // ID nuevo
+            call.setInt(2, order.getUserId());
+            call.setTimestamp(3, Timestamp.valueOf(order.getOrderDate()));
+            call.setString(4, order.getStatus().name());
+            call.setInt(5, order.getTotal());
+            call.execute();
+            return call.getInt(1);
         }
     }
 
     /**
-     * Inserta una línea en ORDER_ITEMS. Aquí el disparador revisa y resta el stock.
+     * Llama a INSERT_ORDER_ITEM con una línea del pedido. Aquí el disparador
+     * revisa y resta el stock. La función devuelve el ID de la línea, pero el
+     * pedido no lo necesita.
      */
     private void insertItem(Connection connection, int orderId, OrderItem item) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(INSERT_ITEM)) {
-            statement.setInt(1, orderId);
-            statement.setInt(2, item.getInventoryId());
-            statement.setInt(3, item.getQuantity());
-            statement.setInt(4, item.getUnitPrice());
-            statement.setInt(5, item.getShippingCost());
-            statement.executeUpdate();
+        try (CallableStatement call = connection.prepareCall(CALL_INSERT_ITEM)) {
+            call.registerOutParameter(1, Types.NUMERIC); // ID nuevo de la línea
+            call.setInt(2, orderId);
+            call.setInt(3, item.getInventoryId());
+            call.setInt(4, item.getQuantity());
+            call.setInt(5, item.getUnitPrice());
+            call.setInt(6, item.getShippingCost());
+            call.execute();
         }
     }
 
     /**
-     * Lee las líneas del pedido y las agrega a él.
+     * Lee las líneas del pedido con LIST_ITEMS y las agrega a él.
      */
     private void loadItems(Connection connection, Order order) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(FIND_ITEMS)) {
-            statement.setInt(1, order.getId());
-            try (ResultSet result = statement.executeQuery()) {
+        try (CallableStatement call = connection.prepareCall(CALL_LIST_ITEMS)) {
+            call.registerOutParameter(1, Types.REF_CURSOR);
+            call.setInt(2, order.getId());
+            call.execute();
+            try (ResultSet result = (ResultSet) call.getObject(1)) {
                 while (result.next()) {
                     order.addItem(mapItemRow(result));
                 }

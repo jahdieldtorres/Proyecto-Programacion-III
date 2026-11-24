@@ -7,68 +7,62 @@ import autoparts.model.Status;
 import autoparts.model.Supplier;
 import autoparts.model.Workshop;
 import autoparts.util.DatabaseConnection;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Guarda y consulta los socios (proveedores y talleres) en la base de datos Oracle.
+ * Guarda y consulta los socios (proveedores y talleres) llamando a las
+ * funciones del paquete PL/SQL PKG_PARTNERS
+ * (database/05b_paquetes_negocio.sql).
  *
- * Implementa la misma interfaz {@link PartnerDAO} que PartnerFileDAO, por eso
- * PartnerService no cambia: solo se cambia el DAO en AppServices.
+ * Todo es una función y el resultado llega por el primer ? de la llamada: un
+ * cursor en las consultas, el ID nuevo en INSERT_PARTNER y las filas afectadas
+ * en las demás.
  *
  * Los socios usan "una tabla por subclase" (ver database/base-de-datos-info.md):
  * PARTNERS guarda lo común y una columna de tipo; SUPPLIERS y WORKSHOPS guardan
  * lo propio de cada tipo, con el mismo ID del socio. Por eso:
  * <ul>
- *   <li>Leer es un LEFT JOIN de PARTNERS con las dos subtablas.</li>
- *   <li>Guardar y actualizar son dos sentencias dentro de una transacción:
- *       o se guardan las dos o no se guarda ninguna (rollback).</li>
+ *   <li>Leer es una sola consulta del paquete, con un LEFT JOIN de PARTNERS
+ *       con las dos subtablas.</li>
+ *   <li>Cada función de escritura toca una sola tabla, así que guardar y
+ *       actualizar siguen haciéndose aquí en una transacción (commit y
+ *       rollback los maneja Java, el paquete no confirma): o se guardan las
+ *       dos filas o no se guarda ninguna.</li>
  * </ul>
+ *
+ * Implementa la misma interfaz {@link PartnerDAO} que PartnerFileDAO, por eso
+ * PartnerService no cambia: solo se cambia el DAO en AppServices. Sigue el
+ * patrón de {@link UserOracleDAO}.
  *
  * @author Héctor Guevara
  */
 public class PartnerOracleDAO implements PartnerDAO {
 
-    private static final String SELECT_PARTNERS =
-            "SELECT p.ID, p.PARTNER_TYPE, p.COMPANY_NAME, p.TAX_ID, p.PHONE, p.STATUS, "
-            + "p.REGISTRATION_DATE, p.ADDRESS, p.LATITUDE, p.LONGITUDE, "
-            + "s.DELIVERY_DAYS, w.SPECIALTY, w.BAY_COUNT "
-            + "FROM PARTNERS p "
-            + "LEFT JOIN SUPPLIERS s ON s.PARTNER_ID = p.ID "
-            + "LEFT JOIN WORKSHOPS w ON w.PARTNER_ID = p.ID";
+    // Consultas: el primer ? es el cursor que devuelve la función
+    private static final String CALL_LIST_ALL = "{ ? = call PKG_PARTNERS.LIST_ALL }";
+    private static final String CALL_FIND_BY_ID = "{ ? = call PKG_PARTNERS.FIND_BY_ID(?) }";
+    private static final String CALL_FIND_BY_TAX_ID = "{ ? = call PKG_PARTNERS.FIND_BY_TAX_ID(?) }";
 
-    private static final String FIND_ALL = SELECT_PARTNERS + " ORDER BY p.ID";
+    // Socio: INSERT devuelve el ID nuevo; UPDATE, las filas cambiadas
+    private static final String CALL_INSERT_PARTNER =
+            "{ ? = call PKG_PARTNERS.INSERT_PARTNER(?, ?, ?, ?, ?, ?, ?, ?, ?) }";
+    private static final String CALL_UPDATE_PARTNER =
+            "{ ? = call PKG_PARTNERS.UPDATE_PARTNER(?, ?, ?, ?, ?, ?, ?, ?, ?) }";
 
-    private static final String FIND_BY_ID = SELECT_PARTNERS + " WHERE p.ID = ?";
-
-    private static final String FIND_BY_TAX_ID = SELECT_PARTNERS + " WHERE UPPER(p.TAX_ID) = UPPER(?)";
-
-    private static final String INSERT_PARTNER =
-            "INSERT INTO PARTNERS (PARTNER_TYPE, COMPANY_NAME, TAX_ID, PHONE, STATUS, "
-            + "REGISTRATION_DATE, ADDRESS, LATITUDE, LONGITUDE) "
-            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-    private static final String INSERT_SUPPLIER =
-            "INSERT INTO SUPPLIERS (PARTNER_ID, DELIVERY_DAYS) VALUES (?, ?)";
-
-    private static final String INSERT_WORKSHOP =
-            "INSERT INTO WORKSHOPS (PARTNER_ID, SPECIALTY, BAY_COUNT) VALUES (?, ?, ?)";
-
-    private static final String UPDATE_PARTNER =
-            "UPDATE PARTNERS SET COMPANY_NAME = ?, TAX_ID = ?, PHONE = ?, STATUS = ?, "
-            + "REGISTRATION_DATE = ?, ADDRESS = ?, LATITUDE = ?, LONGITUDE = ? WHERE ID = ?";
-
-    private static final String UPDATE_SUPPLIER =
-            "UPDATE SUPPLIERS SET DELIVERY_DAYS = ? WHERE PARTNER_ID = ?";
-
-    private static final String UPDATE_WORKSHOP =
-            "UPDATE WORKSHOPS SET SPECIALTY = ?, BAY_COUNT = ? WHERE PARTNER_ID = ?";
+    // Subtipos: devuelven las filas afectadas. El ID del socio va de último,
+    // así INSERT y UPDATE de cada subtipo usan los mismos parámetros.
+    private static final String CALL_INSERT_SUPPLIER = "{ ? = call PKG_PARTNERS.INSERT_SUPPLIER(?, ?) }";
+    private static final String CALL_UPDATE_SUPPLIER = "{ ? = call PKG_PARTNERS.UPDATE_SUPPLIER(?, ?) }";
+    private static final String CALL_INSERT_WORKSHOP = "{ ? = call PKG_PARTNERS.INSERT_WORKSHOP(?, ?, ?) }";
+    private static final String CALL_UPDATE_WORKSHOP = "{ ? = call PKG_PARTNERS.UPDATE_WORKSHOP(?, ?, ?) }";
 
     /**
      * Con Oracle el ID lo genera la base (columna IDENTITY) al guardar, así que
@@ -83,8 +77,10 @@ public class PartnerOracleDAO implements PartnerDAO {
     }
 
     /**
-     * Guarda un socio nuevo en PARTNERS y en su subtabla, en una transacción.
-     * Después de guardar, el socio recibido queda con el ID que le asignó Oracle.
+     * Guarda un socio nuevo con una transacción: llama a INSERT_PARTNER, toma el
+     * ID que devuelve la función y llama a la de SUPPLIERS o WORKSHOPS. Si algo
+     * falla, se deshace todo. Al terminar, el socio recibido queda con el ID que
+     * le asignó Oracle.
      */
     @Override
     public void save(Partner partner) {
@@ -92,11 +88,11 @@ public class PartnerOracleDAO implements PartnerDAO {
             connection.setAutoCommit(false);
             try {
                 int id = insertPartner(connection, partner);
-                insertSubtype(connection, id, partner);
+                writeSubtype(connection, id, partner, CALL_INSERT_SUPPLIER, CALL_INSERT_WORKSHOP);
                 connection.commit();
                 partner.setId(id);
             } catch (SQLException | RuntimeException e) {
-                connection.rollback();
+                rollback(connection);
                 throw e;
             }
         } catch (SQLException e) {
@@ -105,7 +101,7 @@ public class PartnerOracleDAO implements PartnerDAO {
     }
 
     /**
-     * Actualiza el socio en PARTNERS y en su subtabla, en una transacción.
+     * Actualiza PARTNERS y la tabla de su subtipo en una sola transacción.
      *
      * @return true si el socio existía y se actualizó
      */
@@ -116,12 +112,13 @@ public class PartnerOracleDAO implements PartnerDAO {
             try {
                 boolean updated = updatePartner(connection, partner);
                 if (updated) {
-                    updateSubtype(connection, partner);
+                    writeSubtype(connection, partner.getId(), partner,
+                            CALL_UPDATE_SUPPLIER, CALL_UPDATE_WORKSHOP);
                 }
                 connection.commit();
                 return updated;
             } catch (SQLException | RuntimeException e) {
-                connection.rollback();
+                rollback(connection);
                 throw e;
             }
         } catch (SQLException e) {
@@ -131,7 +128,17 @@ public class PartnerOracleDAO implements PartnerDAO {
 
     @Override
     public Optional<Partner> findById(int id) {
-        return findOne(FIND_BY_ID, id);
+        try (Connection connection = DatabaseConnection.getConnection();
+                CallableStatement call = connection.prepareCall(CALL_FIND_BY_ID)) {
+            call.registerOutParameter(1, Types.REF_CURSOR);
+            call.setInt(2, id);
+            call.execute();
+            try (ResultSet result = (ResultSet) call.getObject(1)) {
+                return result.next() ? Optional.of(mapRow(result)) : Optional.empty();
+            }
+        } catch (SQLException e) {
+            throw new PersistenceException("No se pudo buscar el socio.", e);
+        }
     }
 
     @Override
@@ -139,17 +146,30 @@ public class PartnerOracleDAO implements PartnerDAO {
         if (taxId == null) {
             return Optional.empty();
         }
-        return findOne(FIND_BY_TAX_ID, taxId.trim());
+        try (Connection connection = DatabaseConnection.getConnection();
+                CallableStatement call = connection.prepareCall(CALL_FIND_BY_TAX_ID)) {
+            call.registerOutParameter(1, Types.REF_CURSOR);
+            call.setString(2, taxId.trim());
+            call.execute();
+            try (ResultSet result = (ResultSet) call.getObject(1)) {
+                return result.next() ? Optional.of(mapRow(result)) : Optional.empty();
+            }
+        } catch (SQLException e) {
+            throw new PersistenceException("No se pudo buscar el socio.", e);
+        }
     }
 
     @Override
     public List<Partner> findAll() {
         List<Partner> partners = new ArrayList<>();
         try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(FIND_ALL);
-                ResultSet result = statement.executeQuery()) {
-            while (result.next()) {
-                partners.add(mapRow(result));
+                CallableStatement call = connection.prepareCall(CALL_LIST_ALL)) {
+            call.registerOutParameter(1, Types.REF_CURSOR);
+            call.execute();
+            try (ResultSet result = (ResultSet) call.getObject(1)) {
+                while (result.next()) {
+                    partners.add(mapRow(result));
+                }
             }
         } catch (SQLException e) {
             throw new PersistenceException("No se pudieron leer los socios.", e);
@@ -158,106 +178,87 @@ public class PartnerOracleDAO implements PartnerDAO {
     }
 
     /**
-     * Ejecuta una consulta que devuelve como máximo un socio.
-     *
-     * @param sql   consulta con un solo parámetro (?)
-     * @param value valor del parámetro (el ID o el NIT)
-     * @return el socio encontrado, o vacío si no existe
-     */
-    private Optional<Partner> findOne(String sql, Object value) {
-        try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setObject(1, value);
-            try (ResultSet result = statement.executeQuery()) {
-                return result.next() ? Optional.of(mapRow(result)) : Optional.empty();
-            }
-        } catch (SQLException e) {
-            throw new PersistenceException("No se pudo buscar el socio.", e);
-        }
-    }
-
-    /**
-     * Inserta la fila común en PARTNERS con la conexión de la transacción.
-     *
-     * @return el ID que Oracle le asignó al socio
+     * Llama a INSERT_PARTNER con la conexión de la transacción y devuelve el ID
+     * que Oracle le asignó al socio.
      */
     private int insertPartner(Connection connection, Partner partner) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(INSERT_PARTNER, new String[]{"ID"})) {
-            statement.setString(1, typeOf(partner));
-            statement.setString(2, partner.getCompanyName());
-            statement.setString(3, partner.getTaxId());
-            statement.setString(4, partner.getPhone());
-            statement.setString(5, partner.getStatus().name());
-            statement.setDate(6, Date.valueOf(partner.getRegistrationDate()));
-            statement.setString(7, partner.getAddress());
-            statement.setDouble(8, partner.getLatitude());
-            statement.setDouble(9, partner.getLongitude());
-            statement.executeUpdate();
-
-            try (ResultSet keys = statement.getGeneratedKeys()) {
-                keys.next();
-                return keys.getInt(1);
-            }
+        try (CallableStatement call = connection.prepareCall(CALL_INSERT_PARTNER)) {
+            call.registerOutParameter(1, Types.NUMERIC); // ID nuevo
+            call.setString(2, typeOf(partner));
+            call.setString(3, partner.getCompanyName());
+            call.setString(4, partner.getTaxId());
+            call.setString(5, partner.getPhone());
+            call.setString(6, partner.getStatus().name());
+            call.setDate(7, Date.valueOf(partner.getRegistrationDate()));
+            call.setString(8, partner.getAddress());
+            call.setDouble(9, partner.getLatitude());
+            call.setDouble(10, partner.getLongitude());
+            call.execute();
+            return call.getInt(1);
         }
     }
 
     /**
-     * Inserta la fila propia del tipo (SUPPLIERS o WORKSHOPS) con el ID del socio.
-     */
-    private void insertSubtype(Connection connection, int id, Partner partner) throws SQLException {
-        if (partner instanceof Supplier supplier) {
-            try (PreparedStatement statement = connection.prepareStatement(INSERT_SUPPLIER)) {
-                statement.setInt(1, id);
-                statement.setInt(2, supplier.getDeliveryDays());
-                statement.executeUpdate();
-            }
-        } else if (partner instanceof Workshop workshop) {
-            try (PreparedStatement statement = connection.prepareStatement(INSERT_WORKSHOP)) {
-                statement.setInt(1, id);
-                statement.setString(2, workshop.getSpecialty());
-                statement.setInt(3, workshop.getBayCount());
-                statement.executeUpdate();
-            }
-        }
-    }
-
-    /**
-     * Actualiza la fila común en PARTNERS.
+     * Llama a UPDATE_PARTNER. El tipo del socio no se cambia.
      *
-     * @return true si existía una fila con ese ID
+     * @return true si cambió una fila (el socio existe)
      */
     private boolean updatePartner(Connection connection, Partner partner) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement(UPDATE_PARTNER)) {
-            statement.setString(1, partner.getCompanyName());
-            statement.setString(2, partner.getTaxId());
-            statement.setString(3, partner.getPhone());
-            statement.setString(4, partner.getStatus().name());
-            statement.setDate(5, Date.valueOf(partner.getRegistrationDate()));
-            statement.setString(6, partner.getAddress());
-            statement.setDouble(7, partner.getLatitude());
-            statement.setDouble(8, partner.getLongitude());
-            statement.setInt(9, partner.getId());
-            return statement.executeUpdate() > 0;
+        try (CallableStatement call = connection.prepareCall(CALL_UPDATE_PARTNER)) {
+            call.registerOutParameter(1, Types.NUMERIC); // filas cambiadas
+            call.setString(2, partner.getCompanyName());
+            call.setString(3, partner.getTaxId());
+            call.setString(4, partner.getPhone());
+            call.setString(5, partner.getStatus().name());
+            call.setDate(6, Date.valueOf(partner.getRegistrationDate()));
+            call.setString(7, partner.getAddress());
+            call.setDouble(8, partner.getLatitude());
+            call.setDouble(9, partner.getLongitude());
+            call.setInt(10, partner.getId());
+            call.execute();
+            return call.getInt(1) > 0;
         }
     }
 
     /**
-     * Actualiza la fila propia del tipo (SUPPLIERS o WORKSHOPS).
+     * Llama a la función INSERT o UPDATE de la tabla del subtipo (SUPPLIERS o
+     * WORKSHOPS) con el ID del socio de último parámetro.
+     *
+     * @return filas afectadas
      */
-    private void updateSubtype(Connection connection, Partner partner) throws SQLException {
+    private int writeSubtype(Connection connection, int id, Partner partner,
+            String supplierCall, String workshopCall) throws SQLException {
         if (partner instanceof Supplier supplier) {
-            try (PreparedStatement statement = connection.prepareStatement(UPDATE_SUPPLIER)) {
-                statement.setInt(1, supplier.getDeliveryDays());
-                statement.setInt(2, supplier.getId());
-                statement.executeUpdate();
+            try (CallableStatement call = connection.prepareCall(supplierCall)) {
+                call.registerOutParameter(1, Types.NUMERIC);
+                call.setInt(2, supplier.getDeliveryDays());
+                call.setInt(3, id);
+                call.execute();
+                return call.getInt(1);
             }
-        } else if (partner instanceof Workshop workshop) {
-            try (PreparedStatement statement = connection.prepareStatement(UPDATE_WORKSHOP)) {
-                statement.setString(1, workshop.getSpecialty());
-                statement.setInt(2, workshop.getBayCount());
-                statement.setInt(3, workshop.getId());
-                statement.executeUpdate();
+        }
+        if (partner instanceof Workshop workshop) {
+            try (CallableStatement call = connection.prepareCall(workshopCall)) {
+                call.registerOutParameter(1, Types.NUMERIC);
+                call.setString(2, workshop.getSpecialty());
+                call.setInt(3, workshop.getBayCount());
+                call.setInt(4, id);
+                call.execute();
+                return call.getInt(1);
             }
+        }
+        return 0;
+    }
+
+    /**
+     * Deshace la transacción. Es importante: Oracle confirma lo pendiente al
+     * cerrar la conexión, así que sin rollback quedaría guardada a medias.
+     */
+    private void rollback(Connection connection) {
+        try {
+            connection.rollback();
+        } catch (SQLException ignored) {
+            // Si el rollback falla, la excepción original es la que importa.
         }
     }
 
