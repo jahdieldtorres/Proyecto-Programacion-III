@@ -5,15 +5,12 @@ import autoparts.util.FileUtil;
 /**
  * Representa la categoría a la que pertenece un componente o autoparte.
  * 
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class Category {
 
     private int id;
     private String name;
-
-    public Category() {
-    }
 
     /**
      * Crea una nueva instancia de Category con los valores especificados.
@@ -48,5 +45,10 @@ public class Category {
 
     public void setName(String name) {
         this.name = name;
+    }
+    
+    @Override
+    public String toString() {
+        return id + " - " + name;
     }
 }

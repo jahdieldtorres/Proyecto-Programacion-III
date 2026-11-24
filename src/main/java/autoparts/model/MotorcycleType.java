@@ -1,8 +1,10 @@
 package autoparts.model;
 
 /**
- *
- * @author ALVARO
+ * Tipo de motocicleta. Cada constante guarda el texto que se
+ * escribe en el campo MotorcycleType de un regsitro tipo Motocicleta en vehicles.csv.
+ * 
+ * @author Alvaro Aramendiz
  */
 public enum MotorcycleType {
     SCOOTER("SCOOTER", "Scooter"),

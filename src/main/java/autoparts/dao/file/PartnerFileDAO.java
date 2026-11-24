@@ -12,7 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
+/**
+ * Implementación de {@link PartnerDAO} con archivos planos: guarda los socios en
+ * {@code partners.csv}, una línea por socio (el primer campo indica si es
+ * proveedor o taller). Es la única clase que toca ese archivo.
+ *
+ * Cuando se pase a base de datos, esta clase se reemplaza por otra que
+ * implemente la misma interfaz y los servicios no cambian.
+ *
+ * @author Héctor Guevara
+ */
 public class PartnerFileDAO implements PartnerDAO {
 
     private static final String PATH = FlatFiles.PARTNERS;

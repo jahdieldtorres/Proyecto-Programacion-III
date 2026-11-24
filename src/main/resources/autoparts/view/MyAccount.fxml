@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Pantalla Mi cuenta: datos del usuario de la sesión y cambio de contraseña. -->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="autoparts.view.MyAccountController" spacing="16">
+
+    <!-- Encabezado -->
+    <VBox spacing="4">
+        <Label text="Mi cuenta" styleClass="page-title"/>
+        <Label text="Revisa tus datos y cambia tu contraseña." styleClass="secondary-text"/>
+    </VBox>
+
+    <HBox spacing="18">
+        <!-- Mis datos -->
+        <VBox spacing="12" HBox.hgrow="ALWAYS" styleClass="card" maxWidth="460">
+            <padding><Insets top="22" right="24" bottom="22" left="24"/></padding>
+            <Label text="Mis datos" styleClass="section-title"/>
+            <VBox spacing="4">
+                <Label text="Nombre" styleClass="field-label"/>
+                <TextField fx:id="txtName"/>
+            </VBox>
+            <VBox spacing="2">
+                <Label text="Correo" styleClass="field-label"/>
+                <Label fx:id="lblEmail" styleClass="secondary-text"/>
+            </VBox>
+            <VBox spacing="2">
+                <Label text="Rol" styleClass="field-label"/>
+                <Label fx:id="lblRole" styleClass="secondary-text"/>
+            </VBox>
+            <VBox spacing="2">
+                <Label text="Miembro desde" styleClass="field-label"/>
+                <Label fx:id="lblSince" styleClass="secondary-text"/>
+            </VBox>
+            <Label fx:id="lblProfileMessage" wrapText="true"/>
+            <Button text="Guardar nombre" onAction="#saveName" styleClass="primary-button"/>
+        </VBox>
+
+        <!-- Cambiar contraseña -->
+        <VBox spacing="12" HBox.hgrow="ALWAYS" styleClass="card" maxWidth="460">
+            <padding><Insets top="22" right="24" bottom="22" left="24"/></padding>
+            <Label text="Cambiar contraseña" styleClass="section-title"/>
+            <VBox spacing="4">
+                <Label text="Contraseña actual" styleClass="field-label"/>
+                <PasswordField fx:id="txtCurrent"/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Nueva contraseña (mínimo 8 caracteres)" styleClass="field-label"/>
+                <PasswordField fx:id="txtNew"/>
+            </VBox>
+            <VBox spacing="4">
+                <Label text="Confirmar nueva contraseña" styleClass="field-label"/>
+                <PasswordField fx:id="txtConfirm" onAction="#changePassword"/>
+            </VBox>
+            <Label fx:id="lblPasswordMessage" wrapText="true"/>
+            <Button text="Cambiar contraseña" onAction="#changePassword" styleClass="primary-button"/>
+        </VBox>
+    </HBox>
+</VBox>

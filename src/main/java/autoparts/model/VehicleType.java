@@ -1,10 +1,10 @@
 package autoparts.model;
 
 /**
- * Tipo de caja de una transmisión. Cada constante guarda el texto que se
- * escribe en el campo tipo_caja de components.csv.
+ * Tipo de vehículo. Cada constante guarda el texto que se
+ * escribe en el campo VehicleType de un registro en vehicles.csv.
  *
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public enum VehicleType {
 

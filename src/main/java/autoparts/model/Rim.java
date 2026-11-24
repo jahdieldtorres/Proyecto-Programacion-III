@@ -4,7 +4,7 @@ import autoparts.util.FileUtil;
 
 /**
  * Clase que describe el componente rin de vehículos
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class Rim extends Component {
     private int diameterInches;
@@ -28,7 +28,7 @@ public class Rim extends Component {
      * @param pcd patrón de pernos del rin
      * @param material material del rin
      */
-    public Rim(int id, String name, String reference, Brand brand, Category category, String origin, String status, int diameterInches, double widthInches, String pcd, RimMaterial material) {
+    public Rim(int id, String name, String reference, Brand brand, Category category, String origin, Status status, int diameterInches, double widthInches, String pcd, RimMaterial material) {
         super(ComponentType.RIM, id, name, reference, brand, category, origin, status);
         this.diameterInches = diameterInches;
         this.widthInches = widthInches;

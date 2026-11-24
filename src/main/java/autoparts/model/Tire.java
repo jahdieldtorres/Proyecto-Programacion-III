@@ -5,7 +5,7 @@ import autoparts.util.FileUtil;
 /**
  * Representa el componente de llanta de un vehículo, detallando sus medidas e índices.
  * 
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class Tire extends Component {
 
@@ -31,7 +31,7 @@ public class Tire extends Component {
      * @param loadIndex índice de carga de la llanta
      * @param speedIndex índice de velocidad de la llanta
      */
-    public Tire(int id, String name, String reference, Brand brand, Category category, String origin, String status, int widthMm, int profile, int diameterInches, int loadIndex, String speedIndex) {
+    public Tire(int id, String name, String reference, Brand brand, Category category, String origin, Status status, int widthMm, int profile, int diameterInches, int loadIndex, String speedIndex) {
         super(ComponentType.TIRE, id, name, reference, brand, category, origin, status);
         this.widthMm = widthMm;
         this.profile = profile;

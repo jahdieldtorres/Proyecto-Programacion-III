@@ -2,51 +2,126 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Text?>
-<?import javafx.scene.text.TextFlow?>
 
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="autoparts.view.HomeController" spacing="22">
+<!-- Inicio: se baja con la rueda del mouse (ScrollPane) -->
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="autoparts.view.HomeController" fitToWidth="true" styleClass="clear-scroll">
 
-    <!-- Encabezado con buscador -->
-    <VBox spacing="12" styleClass="card, hero">
-        <padding><Insets top="32" right="36" bottom="32" left="36"/></padding>
-        <TextFlow>
-            <Text text="El repuesto que necesitas,&#10;" styleClass="hero-title"/>
-            <Text text="al mejor precio" styleClass="hero-title, hero-title-accent"/>
-            <Text text=" y cerca de ti." styleClass="hero-title"/>
-        </TextFlow>
-        <Label text="Compara en un solo lugar lo que ofrecen los almacenes de repuestos de tu ciudad: precio, disponibilidad y procedencia."
-               wrapText="true" styleClass="secondary-text" maxWidth="640"/>
-        <HBox spacing="10" maxWidth="720">
-            <padding><Insets top="8"/></padding>
-            <TextField fx:id="txtSearch" promptText="Buscar repuestos, marcas o referencias..."
-                       HBox.hgrow="ALWAYS" onAction="#search" styleClass="search-field"/>
-            <Button text="Buscar" onAction="#search" styleClass="primary-button"/>
+    <VBox>
+    <VBox spacing="22">
+        <padding><Insets top="24" right="28" bottom="28" left="28"/></padding>
+
+        <!-- 1. Banner con imágenes que pasan solas + recuadro de talleres -->
+        <HBox spacing="16" prefHeight="300" minHeight="300">
+            <StackPane fx:id="bannerBox" HBox.hgrow="ALWAYS" styleClass="banner">
+                <ImageView fx:id="imgBanner" preserveRatio="true"/>
+                <Region styleClass="banner-overlay"/>
+                <VBox spacing="10" StackPane.alignment="CENTER_LEFT" maxWidth="480" styleClass="banner-text-box">
+                    <Label fx:id="lblBannerTitle" styleClass="banner-title" wrapText="true"/>
+                    <Label fx:id="lblBannerText" styleClass="banner-text" wrapText="true"/>
+                </VBox>
+                <HBox fx:id="dotsBox" spacing="8" StackPane.alignment="BOTTOM_CENTER" maxHeight="-Infinity"
+                      maxWidth="-Infinity" styleClass="banner-dots"/>
+            </StackPane>
+
+            <VBox spacing="10" prefWidth="280" minWidth="260" styleClass="promo-tile">
+                <Label text="TALLERES ALIADOS" styleClass="promo-caption"/>
+                <Label text="Instala tu repuesto con tarifa publicada" styleClass="promo-title" wrapText="true"/>
+                <Label text="Pronto podrás agendar la cita desde la app." styleClass="promo-text" wrapText="true"/>
+                <Region VBox.vgrow="ALWAYS"/>
+                <Button text="Ver servicios" onAction="#goToServices" styleClass="promo-button"/>
+            </VBox>
         </HBox>
-        <Label fx:id="lblMessage" styleClass="secondary-text"/>
+
+        <!-- 2. Elige tu vehículo -->
+        <VBox spacing="10">
+            <Label text="ELIGE TU VEHÍCULO" styleClass="band-title" maxWidth="Infinity"/>
+            <HBox spacing="14" alignment="CENTER_LEFT" styleClass="vehicle-band">
+                <ComboBox fx:id="cmbBrand" promptText="Marca" onAction="#brandChosen" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                <ComboBox fx:id="cmbModel" promptText="Modelo" onAction="#modelChosen" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                <ComboBox fx:id="cmbYear" promptText="Año" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                <Button text="Buscar repuestos" onAction="#searchByVehicle" styleClass="band-button"/>
+            </HBox>
+            <Label fx:id="lblVehicleHint" styleClass="secondary-text"/>
+        </VBox>
+
+        <!-- 3. Franja de confianza -->
+        <HBox fx:id="trustStrip" spacing="20" alignment="CENTER" styleClass="trust-strip"/>
+
+        <!-- 4. Categorías -->
+        <VBox spacing="12">
+            <HBox alignment="BASELINE_LEFT">
+                <Label text="Categorías" styleClass="section-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Ver todo el catálogo" onAction="#goToCatalog" styleClass="link-button"/>
+            </HBox>
+            <FlowPane fx:id="categoriesBox" hgap="12" vgap="12"/>
+        </VBox>
+
+        <!-- 5. Destacados -->
+        <VBox spacing="12">
+            <VBox spacing="2">
+                <Label text="Repuestos destacados" styleClass="section-title"/>
+                <Label text="Los que más almacenes ofrecen: aquí es donde más ahorras comparando."
+                       styleClass="secondary-text"/>
+            </VBox>
+            <FlowPane fx:id="featuredBox" hgap="16" vgap="16"/>
+            <Label fx:id="lblMessage" styleClass="error-message" wrapText="true"/>
+        </VBox>
+
+        <!-- 6. Talleres aliados y Cerca de ti -->
+        <HBox spacing="24">
+            <VBox spacing="12" HBox.hgrow="ALWAYS" prefWidth="100">
+                <HBox alignment="BASELINE_LEFT">
+                    <Label text="Instálalo con un taller aliado" styleClass="section-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Ver servicios" onAction="#goToServices" styleClass="link-button"/>
+                </HBox>
+                <VBox fx:id="workshopsBox" spacing="10"/>
+            </VBox>
+            <VBox spacing="12" HBox.hgrow="ALWAYS" prefWidth="100">
+                <HBox alignment="BASELINE_LEFT">
+                    <Label text="Cerca de ti" styleClass="section-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Ver mapa" onAction="#goToMap" styleClass="link-button"/>
+                </HBox>
+                <Label fx:id="lblNearFrom" styleClass="secondary-text"/>
+                <VBox fx:id="nearbyBox" spacing="10"/>
+            </VBox>
+        </HBox>
+
+        <!-- 7. Marcas que se desplazan solas -->
+        <VBox spacing="12">
+            <Label text="MARCAS EN ORIGEN" styleClass="band-caption"/>
+            <Pane fx:id="brandsViewport" minHeight="44" prefHeight="44">
+                <HBox fx:id="brandsRow" spacing="64" alignment="CENTER_LEFT" prefHeight="44"/>
+            </Pane>
+        </VBox>
     </VBox>
 
-    <!-- Contadores -->
-    <HBox spacing="18">
-        <VBox spacing="4" HBox.hgrow="ALWAYS" styleClass="card, counter">
-            <Label fx:id="lblParts" styleClass="counter-number"/>
-            <Label text="repuestos en catálogo" styleClass="secondary-text"/>
+    <!-- 8. Pie de página -->
+    <HBox alignment="TOP_LEFT" styleClass="footer">
+        <VBox spacing="6">
+            <Label text="ORIGEN" styleClass="footer-brand"/>
+            <Label text="Proyecto de Programación III · Universidad Popular del Cesar" styleClass="footer-text"/>
+            <Label text="Jahdiel Torres · Álvaro Aramendiz · Héctor Guevara" styleClass="footer-muted"/>
         </VBox>
-        <VBox spacing="4" HBox.hgrow="ALWAYS" styleClass="card, counter">
-            <Label fx:id="lblStores" styleClass="counter-number"/>
-            <Label text="locales verificados" styleClass="secondary-text"/>
-        </VBox>
-        <VBox spacing="4" HBox.hgrow="ALWAYS" styleClass="card, counter">
-            <Label fx:id="lblWorkshops" styleClass="counter-number"/>
-            <Label text="talleres aliados" styleClass="secondary-text"/>
-        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <HBox spacing="22">
+            <Button text="Servicios" onAction="#goToServices" styleClass="footer-link"/>
+            <Button text="Talleres cerca" onAction="#goToMap" styleClass="footer-link"/>
+            <Button text="Catálogo" onAction="#goToCatalog" styleClass="footer-link"/>
+        </HBox>
     </HBox>
-
-    <Region VBox.vgrow="ALWAYS"/>
-</VBox>
+    </VBox>
+</ScrollPane>

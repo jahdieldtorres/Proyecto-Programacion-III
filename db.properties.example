@@ -1,0 +1,9 @@
+# Datos de conexión a la base de datos Oracle del proyecto.
+# 1. Copia este archivo con el nombre db.properties (en la misma carpeta).
+# 2. Cambia la ruta del wallet si lo guardaste en otra carpeta (usa / en vez de \).
+# 3. Escribe la clave del usuario ORIGEN.
+# db.properties NO se sube a GitHub (está en .gitignore).
+
+db.url=jdbc:oracle:thin:@origen_tp?TNS_ADMIN=C:/oracle/wallet_origen
+db.user=ORIGEN
+db.password=ESCRIBE_AQUI_LA_CLAVE

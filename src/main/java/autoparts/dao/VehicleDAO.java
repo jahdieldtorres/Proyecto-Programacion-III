@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Interfaz que define las operaciones de acceso a datos para los vehículos.
  * 
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public interface VehicleDAO {
     

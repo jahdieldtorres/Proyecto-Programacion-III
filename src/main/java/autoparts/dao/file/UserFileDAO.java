@@ -34,10 +34,20 @@ public class UserFileDAO implements UserDAO {
     }
 
     @Override
+    public User findById(int id) {
+        for (User user : findAll()) {
+            if (user.getId() == id) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public int save(User user) {
         int id = FileUtil.nextId(FlatFiles.USERS, 0);
         User newUser = new User(id, user.getName(), user.getEmail(), user.getPasswordHash(),
-                user.getRole(), user.getStatus(), user.getRegistrationDate(), user.getPartnerId());
+                user.getRole(), user.getStatus(), user.getRegistrationDate());
         FileUtil.append(FlatFiles.USERS, newUser.toLine());
         return id;
     }

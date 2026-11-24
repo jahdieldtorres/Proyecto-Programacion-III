@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * Implementación basada en archivos planos para el acceso a datos de componentes.
  * 
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class ComponentFileDAO implements ComponentDAO {
 
@@ -46,8 +46,8 @@ public class ComponentFileDAO implements ComponentDAO {
     public void save(Component component) {
         int nextId = FileUtil.nextId(FlatFiles.COMPONENTS, 1);
         component.setId(nextId);
-        if (component.getStatus() == null || component.getStatus().isBlank()) {
-            component.setStatus("ACTIVO");
+        if (component.getStatus() == null) {
+            component.setStatus(Status.ACTIVO);
         }
         FileUtil.append(FlatFiles.COMPONENTS, component.toLine());
     }
@@ -70,7 +70,7 @@ public class ComponentFileDAO implements ComponentDAO {
         List<String> lines = new ArrayList<>();
         for (String[] fields : FileUtil.readFields(FlatFiles.COMPONENTS)) {
             if (Integer.parseInt(fields[1].trim()) == id) {
-                fields[7] = "INACTIVO";
+                fields[7] = Status.INACTIVO.name();
                 lines.add(FileUtil.join((Object[]) fields));
             } else {
                 lines.add(FileUtil.join((Object[]) fields));
@@ -118,7 +118,7 @@ public class ComponentFileDAO implements ComponentDAO {
         Category category = categoriesMap.getOrDefault(categoryId, new Category(categoryId, "Desconocida"));
         
         String origin = fields[6].trim();
-        String status = fields[7].trim();
+        Status status = Status.valueOf(fields[7].trim());
 
         ComponentType type = ComponentType.fromFileValue(typeStr);
 

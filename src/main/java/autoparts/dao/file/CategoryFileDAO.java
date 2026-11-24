@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Implementación basada en archivos planos para el acceso a datos de categorías.
  * 
- * @author ALVARO
+ * @author Alvaro Aramendiz
  */
 public class CategoryFileDAO implements CategoryDAO {
 

@@ -23,11 +23,15 @@ public class Supplier extends Partner {
      * @param phone            teléfono de contacto
      * @param status           estado del socio
      * @param registrationDate fecha de registro
+     * @param address          dirección del proveedor
+     * @param latitude         latitud en grados
+     * @param longitude        longitud en grados
      * @param deliveryDays     días de entrega
      */
     public Supplier(int id, String companyName, String taxId, String phone,
-            Status status, LocalDate registrationDate, int deliveryDays) {
-        super(id, companyName, taxId, phone, status, registrationDate);
+            Status status, LocalDate registrationDate,
+            String address, double latitude, double longitude, int deliveryDays) {
+        super(id, companyName, taxId, phone, status, registrationDate, address, latitude, longitude);
         this.deliveryDays = deliveryDays;
     }
 
@@ -45,7 +49,7 @@ public class Supplier extends Partner {
         if (fields.length != COMMON_FIELDS + 1) {
             throw new IllegalArgumentException("Un proveedor tiene " + (COMMON_FIELDS + 1) + " campos.");
         }
-        this.deliveryDays = Integer.parseInt(fields[7].trim());
+        this.deliveryDays = Integer.parseInt(fields[COMMON_FIELDS].trim());
     }
 
     @Override

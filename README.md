@@ -22,6 +22,17 @@ Aplicación de escritorio en Java que reúne en un solo lugar lo que ofrecen dis
 
 La primera vez Maven descarga JavaFX, así que necesita internet.
 
+## Base de datos (Oracle Cloud)
+
+La app se conecta a una Oracle Autonomous Database con el usuario `ORIGEN`. Para configurarla en tu PC:
+
+1. Pide al líder técnico el archivo `Wallet_origen.zip` y la clave de `ORIGEN` (por privado, nunca por GitHub).
+2. Descomprime el wallet en `C:\oracle\wallet_origen` (o en otra carpeta, fuera del proyecto).
+3. Copia `db.properties.example` con el nombre `db.properties` y escribe la clave. Si usaste otra carpeta, cambia la ruta de `TNS_ADMIN`.
+4. Prueba la conexión: clic derecho en `autoparts.util.DatabaseCheck` → Run File. Debe decir `Conexión correcta. Usuario conectado: ORIGEN`.
+
+Las conexiones se piden con `DatabaseConnection.getConnection()` y se cierran con try-with-resources.
+
 ## Estructura
 
 ```
@@ -62,6 +73,24 @@ Todas las pantallas de listado parten de la misma plantilla, para que se vean ig
 - Los errores se muestran en `lblMessage` (capturando `InvalidDataException` y `PersistenceException`), no en ventanas emergentes.
 
 Si usan IA para hacer su pantalla, el prompt está en `docs/prompt-pantallas.md`.
+
+### Crear un formulario (plantilla)
+
+1. Copiar `FormTemplate.fxml` y `FormTemplateController.java` con el nombre del formulario (por ejemplo `ComponentForm.fxml` y `ComponentFormController`) y cambiar `fx:controller`.
+2. Cambiar los campos siguiendo los comentarios `REEMPLAZAR:`. El método público que recibe los datos (por ejemplo `setComponent`) recibe `null` para crear y un objeto para editar.
+3. Abrirlo desde la pantalla de lista y recargar la tabla al cerrarse:
+
+```java
+Navigator.openForm("ComponentForm.fxml", "Editar componente",
+        (ComponentFormController form) -> form.setComponent(selected));
+search();
+```
+
+4. En el formulario, Guardar llama al servicio dentro de un `try`; si llega `InvalidDataException` el mensaje se muestra en `lblMessage` y el formulario sigue abierto. Si todo sale bien se cierra con `Navigator.closeForm(btnSave)`.
+
+### Menú y roles
+
+Las secciones del menú se conectan por nombre en `DashboardController`: `Vehicles.fxml`, `Inventory.fxml`, `Fees.fxml`, `Affiliations.fxml`, `Users.fxml` y `MyAccount.fxml`, además de las que ya existían. Solo hay dos roles (enum `Role`): `ADMIN` y `CLIENTE`. El cliente no ve Socios, Inventario, Tarifas, Afiliaciones ni Usuarios. Para preguntar el rol en cualquier pantalla: `Session.isAdmin()`.
 
 ## Convenciones
 
