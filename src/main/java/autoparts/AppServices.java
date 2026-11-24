@@ -1,9 +1,11 @@
 package autoparts;
 
+import autoparts.dao.local.UserLocationPreferencesDAO;
 import autoparts.dao.oracle.AffiliationOracleDAO;
 import autoparts.dao.oracle.BrandOracleDAO;
 import autoparts.dao.oracle.CategoryOracleDAO;
 import autoparts.dao.oracle.CompatibilityOracleDAO;
+import autoparts.dao.oracle.ComponentImageOracleDAO;
 import autoparts.dao.oracle.ComponentOracleDAO;
 import autoparts.dao.oracle.FeeOracleDAO;
 import autoparts.dao.oracle.InventoryOracleDAO;
@@ -11,11 +13,14 @@ import autoparts.dao.oracle.PartnerOracleDAO;
 import autoparts.dao.oracle.UserOracleDAO;
 import autoparts.dao.oracle.VehicleOracleDAO;
 import autoparts.service.AffiliationService;
+import autoparts.service.CatalogService;
 import autoparts.service.ComparatorService;
+import autoparts.service.ComponentImageService;
 import autoparts.service.ComponentService;
 import autoparts.service.FeeService;
 import autoparts.service.InventoryService;
 import autoparts.service.PartnerService;
+import autoparts.service.UserLocationService;
 import autoparts.service.UserService;
 import autoparts.service.VehicleService;
 
@@ -27,7 +32,8 @@ import autoparts.service.VehicleService;
  * persistencia solo se cambia esta clase. Los servicios no cambian.
  *
  * Todos los módulos usan Oracle (paquete dao.oracle). Las versiones con
- * archivos (paquete dao.file) se conservan como respaldo.
+ * archivos (paquete dao.file) se conservan como respaldo. La ubicación de
+ * cada cliente se guarda en el computador (paquete dao.local).
  *
  * @author Jahdiel Torres
  */
@@ -46,6 +52,12 @@ public class AppServices {
             new InventoryService(new InventoryOracleDAO(), new PartnerOracleDAO());
     private static final VehicleService VEHICLE_SERVICE = new VehicleService(
             new VehicleOracleDAO(), new CompatibilityOracleDAO(), new ComponentOracleDAO());
+    private static final ComponentImageService IMAGE_SERVICE =
+            new ComponentImageService(new ComponentImageOracleDAO());
+    private static final CatalogService CATALOG_SERVICE = new CatalogService(
+            COMPONENT_SERVICE, IMAGE_SERVICE, new InventoryOracleDAO(), new CompatibilityOracleDAO());
+    private static final UserLocationService LOCATION_SERVICE =
+            new UserLocationService(new UserLocationPreferencesDAO());
 
     public static UserService users() {
         return USER_SERVICE;
@@ -77,5 +89,17 @@ public class AppServices {
 
     public static VehicleService vehicles() {
         return VEHICLE_SERVICE;
+    }
+
+    public static ComponentImageService images() {
+        return IMAGE_SERVICE;
+    }
+
+    public static CatalogService catalog() {
+        return CATALOG_SERVICE;
+    }
+
+    public static UserLocationService locations() {
+        return LOCATION_SERVICE;
     }
 }

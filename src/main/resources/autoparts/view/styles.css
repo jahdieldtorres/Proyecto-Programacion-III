@@ -1,22 +1,31 @@
 /*
  * Estilos globales de ORIGEN - Portal de Repuestos.
- * Todas las vistas usan estas clases; si necesitan un estilo nuevo, agréguenlo aquí
- * en la sección de su módulo para no duplicar colores.
+ *
+ * Todas las vistas usan estas clases. Los colores están definidos una sola vez
+ * como variables en .root: para cambiar el tema de la app basta con cambiar
+ * esos valores, sin tocar las pantallas.
+ *
+ * Letras: Manrope (títulos y precios), Inter (interfaz) e IBM Plex Mono
+ * (referencias). Se cargan en Navigator.init().
  */
 
-/* ---------- Colores (basados en los mockups) ---------- */
+/* ---------- Colores (tema V3: blanco y negro con energía azul) ---------- */
 .root {
-    -color-dark-blue: #0C2B4B;
-    -color-blue: #0B5CAD;
-    -color-light-blue: #E3EEF9;
-    -color-background: #EEF3F8;
+    -color-primary: #0F172A;        /* grafito: barra oscura, títulos, botón principal */
+    -color-action: #0369A1;         /* azul de acción: enlaces y botones de comprar */
+    -color-accent: #0EA5E9;         /* azul eléctrico: foco, brillo y detalles */
+    -color-accent-soft: #E0F2FE;    /* fondo suave de etiquetas azules */
+    -color-amber: #F59E0B;          /* ámbar: raíces del logo y avisos */
+    -color-background: #F8FAFC;
+    -color-surface: #F1F5F9;        /* fondos grises de íconos y franjas */
     -color-card: #FFFFFF;
-    -color-text: #14213D;
-    -color-muted-text: #5B6B7F;
-    -color-border: #D6E0EA;
-    -color-error: #C0392B;
+    -color-text: #111827;
+    -color-muted-text: #475569;
+    -color-border: #E2E8F0;
+    -color-error: #B91C1C;
+    -color-success: #15803D;
 
-    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    -fx-font-family: "Inter", "Segoe UI", Arial, sans-serif;
     -fx-font-size: 14px;
     -fx-background-color: -color-background;
 }
@@ -32,10 +41,9 @@
 
 .card {
     -fx-background-color: -color-card;
-    -fx-background-radius: 16;
+    -fx-background-radius: 14;
     -fx-border-color: -color-border;
-    -fx-border-radius: 16;
-    -fx-effect: dropshadow(gaussian, rgba(12, 43, 75, 0.08), 18, 0, 0, 4);
+    -fx-border-radius: 14;
 }
 
 .secondary-text {
@@ -54,30 +62,46 @@
 }
 
 .success-message {
-    -fx-text-fill: #1E7B4A;
+    -fx-text-fill: -color-success;
     -fx-font-size: 13px;
 }
 
 .section-title {
+    -fx-font-family: "Manrope";
     -fx-font-size: 22px;
     -fx-font-weight: bold;
+}
+
+.reference-text {
+    -fx-font-family: "IBM Plex Mono Medium";
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-muted-text;
 }
 
 /* ---------- Campos y botones ---------- */
 .text-field, .password-field {
     -fx-background-color: white;
     -fx-background-radius: 10;
-    -fx-border-color: -color-border;
+    -fx-border-color: #CBD5E1;
     -fx-border-radius: 10;
     -fx-padding: 10 12;
 }
 
+/* Los puntos de la contraseña salen del tamaño de la letra: con letra más
+   pequeña se ven más finos. Más relleno arriba y abajo para que el campo
+   quede igual de alto que los demás. */
+.password-field {
+    -fx-font-size: 11px;
+    -fx-padding: 12 12;
+}
+
 .text-field:focused, .password-field:focused {
-    -fx-border-color: -color-blue;
+    -fx-border-color: -color-accent;
+    -fx-effect: dropshadow(gaussian, rgba(14, 165, 233, 0.25), 8, 0, 0, 0);
 }
 
 .primary-button {
-    -fx-background-color: linear-gradient(to right, #0B4A8F, #0B6FD1);
+    -fx-background-color: -color-primary;
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-background-radius: 10;
@@ -86,13 +110,26 @@
 }
 
 .primary-button:hover {
-    -fx-background-color: -color-dark-blue;
+    -fx-background-color: -color-action;
+}
+
+.action-button {
+    -fx-background-color: -color-action;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-padding: 11 22;
+    -fx-cursor: hand;
+}
+
+.action-button:hover {
+    -fx-background-color: #075985;
 }
 
 .secondary-button {
     -fx-background-color: white;
-    -fx-text-fill: -color-dark-blue;
-    -fx-border-color: -color-border;
+    -fx-text-fill: -color-text;
+    -fx-border-color: #CBD5E1;
     -fx-border-radius: 10;
     -fx-background-radius: 10;
     -fx-padding: 11 22;
@@ -100,35 +137,202 @@
 }
 
 .secondary-button:hover {
-    -fx-background-color: -color-light-blue;
+    -fx-background-color: -color-surface;
 }
 
 .hyperlink {
-    -fx-text-fill: -color-blue;
+    -fx-text-fill: -color-action;
     -fx-border-color: transparent;
 }
 
-/* ---------- Login ---------- */
-.login-background {
-    -fx-background-color: linear-gradient(to bottom right, #F4F8FC, #DCE8F4);
+/* ---------- Barra superior (Dashboard) ---------- */
+.topbar {
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent -color-border transparent;
+    -fx-padding: 0 28;
+}
+
+.brand {
+    -fx-cursor: hand;
+}
+
+.brand-name {
+    -fx-font-family: "Manrope";
+    -fx-font-weight: bold;
+    -fx-font-size: 20px;
+    -fx-text-fill: -color-primary;
+}
+
+.topbar-search {
+    -fx-background-color: -color-background;
+    -fx-background-radius: 21;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 21;
+    -fx-padding: 9 18;
+}
+
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #334155;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 8 4;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 2 0;
+    -fx-cursor: hand;
+}
+
+.nav-button:hover {
+    -fx-text-fill: -color-primary;
+    -fx-border-color: transparent transparent #BAE6FD transparent;
+}
+
+.nav-active {
+    -fx-text-fill: -color-primary;
+    -fx-border-color: transparent transparent -color-accent transparent;
+}
+
+.nav-active:hover {
+    -fx-border-color: transparent transparent -color-accent transparent;
+}
+
+/* Texto del botón Carrito (va dentro del botón junto al contador) */
+.nav-button .nav-button-text {
+    -fx-text-fill: #334155;
+    -fx-font-weight: bold;
+}
+
+.nav-active .nav-button-text, .nav-button:hover .nav-button-text {
+    -fx-text-fill: -color-primary;
+}
+
+/* Menús desplegables de la barra: Administrar y el usuario */
+.nav-menu {
+    -fx-background-color: transparent;
+    -fx-padding: 6 4;
+    -fx-cursor: hand;
+}
+
+.nav-menu > .label {
+    -fx-text-fill: #334155;
+    -fx-font-weight: bold;
+}
+
+.nav-menu:hover > .label {
+    -fx-text-fill: -color-primary;
+}
+
+.nav-menu.nav-active > .label {
+    -fx-text-fill: -color-primary;
+}
+
+.nav-menu > .arrow-button > .arrow {
+    -fx-background-color: #334155;
+}
+
+.user-menu {
+    -fx-background-color: -color-primary;
+    -fx-background-radius: 18;
+    -fx-padding: 6 12;
+    -fx-cursor: hand;
+}
+
+.user-menu > .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.user-menu > .arrow-button > .arrow {
+    -fx-background-color: white;
+}
+
+.context-menu {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 10;
+    -fx-padding: 6;
+}
+
+.context-menu .menu-item {
+    -fx-padding: 8 14;
+    -fx-background-radius: 6;
+}
+
+.context-menu .menu-item:focused {
+    -fx-background-color: -color-surface;
+}
+
+.context-menu .menu-item .label {
+    -fx-text-fill: -color-text;
+}
+
+.cart-badge {
+    -fx-background-color: -color-primary;
+    -fx-background-radius: 10;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 1 7;
+}
+
+/* ---------- Login y registro ---------- */
+.login-root {
+    -fx-background-color: white;
+}
+
+/* Panel oscuro del logo: así se ven los nutrientes blancos que suben (LogoTree) */
+.login-side {
+    -fx-background-color: radial-gradient(center 50% 42%, radius 70%, #16233B 0%, #0B1120 100%);
+}
+
+.login-form-side {
+    -fx-background-color: white;
 }
 
 .login-brand {
-    -fx-padding: 40;
+    -fx-font-family: "Manrope";
+    -fx-font-weight: bold;
+    -fx-font-size: 34px;
+    -fx-text-fill: white;
+}
+
+.login-tagline {
+    -fx-font-size: 15px;
+    -fx-text-fill: #CBD5E1;
+    -fx-text-alignment: center;
+}
+
+.location-chip {
+    -fx-background-color: transparent;
+    -fx-background-radius: 14;
+    -fx-border-color: #334155;
+    -fx-border-radius: 14;
+    -fx-padding: 4 12;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #CBD5E1;
+}
+
+.login-background {
+    -fx-background-color: linear-gradient(to bottom right, #F8FAFC, #E2E8F0);
 }
 
 .logo-large {
+    -fx-font-family: "Manrope";
     -fx-font-size: 64px;
     -fx-font-weight: bold;
-    -fx-text-fill: -color-dark-blue;
+    -fx-text-fill: -color-primary;
 }
 
 .brand-title {
+    -fx-font-family: "Manrope";
     -fx-font-size: 26px;
     -fx-font-weight: bold;
 }
 
 .card-title {
+    -fx-font-family: "Manrope";
     -fx-font-size: 28px;
     -fx-font-weight: bold;
 }
@@ -137,75 +341,25 @@
     -fx-background-color: white;
     -fx-background-radius: 12;
     -fx-padding: 10 14;
-    -fx-text-fill: -color-dark-blue;
-    -fx-effect: dropshadow(gaussian, rgba(12, 43, 75, 0.08), 10, 0, 0, 2);
+    -fx-text-fill: -color-primary;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 12;
 }
 
-/* ---------- Menú lateral ---------- */
-.sidebar {
-    -fx-background-color: -color-dark-blue;
-}
-
-.sidebar-logo {
-    -fx-text-fill: white;
-    -fx-font-size: 26px;
-    -fx-font-weight: bold;
-    -fx-padding: 0 0 0 10;
-}
-
-.sidebar-user {
-    -fx-text-fill: white;
-    -fx-font-size: 13px;
-    -fx-padding: 0 0 0 10;
-}
-
-.sidebar-subtitle {
-    -fx-text-fill: #9FB6CF;
-    -fx-font-size: 12px;
-    -fx-padding: 0 0 0 10;
-}
-
-.menu-button {
-    -fx-background-color: transparent;
-    -fx-text-fill: #DCE6F2;
-    -fx-font-size: 15px;
-    -fx-alignment: center-left;
-    -fx-padding: 12 16;
-    -fx-background-radius: 10;
-    -fx-cursor: hand;
-}
-
-.menu-button:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.08);
-}
-
-.menu-active {
-    -fx-background-color: -color-blue;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-}
-
-.menu-active:hover {
-    -fx-background-color: -color-blue;
-}
-
-.menu-separator .line {
-    -fx-border-color: rgba(255, 255, 255, 0.15);
-}
-
-/* ---------- Inicio ---------- */
+/* ---------- Inicio (clases antiguas que aún usan otras pantallas) ---------- */
 .hero {
-    -fx-background-color: linear-gradient(to right, #FFFFFF, #E3EEF9);
+    -fx-background-color: linear-gradient(to right, #FFFFFF, -color-accent-soft);
 }
 
 .hero-title {
+    -fx-font-family: "Manrope";
     -fx-font-size: 38px;
     -fx-font-weight: bold;
     -fx-fill: -color-text;
 }
 
 .hero-title-accent {
-    -fx-fill: -color-blue;
+    -fx-fill: -color-action;
 }
 
 .search-field {
@@ -217,16 +371,18 @@
 }
 
 .counter-number {
+    -fx-font-family: "Manrope";
     -fx-font-size: 30px;
     -fx-font-weight: bold;
-    -fx-text-fill: -color-dark-blue;
+    -fx-text-fill: -color-primary;
 }
 
 /* ---------- Pantallas de listado (plantilla) ----------
  * Usadas por ListTemplate.fxml y todas las pantallas copiadas de ella
- * (catálogo, socios, comparador...).
+ * (socios, inventario, tarifas, afiliaciones, usuarios...).
  */
 .page-title {
+    -fx-font-family: "Manrope";
     -fx-font-size: 24px;
     -fx-font-weight: bold;
 }
@@ -238,9 +394,13 @@
 .combo-box {
     -fx-background-color: white;
     -fx-background-radius: 10;
-    -fx-border-color: -color-border;
+    -fx-border-color: #CBD5E1;
     -fx-border-radius: 10;
     -fx-padding: 4 6;
+}
+
+.combo-box:focused {
+    -fx-border-color: -color-accent;
 }
 
 .table-view {
@@ -252,7 +412,7 @@
 }
 
 .table-view .column-header-background {
-    -fx-background-color: -color-light-blue;
+    -fx-background-color: -color-surface;
     -fx-background-radius: 10 10 0 0;
 }
 
@@ -262,7 +422,7 @@
 }
 
 .table-view .column-header .label {
-    -fx-text-fill: -color-dark-blue;
+    -fx-text-fill: -color-primary;
     -fx-font-weight: bold;
     -fx-alignment: center-left;
 }
@@ -273,11 +433,11 @@
 }
 
 .table-view .table-row-cell:odd {
-    -fx-background-color: #F6F9FC;
+    -fx-background-color: #F8FAFC;
 }
 
 .table-view .table-row-cell:selected {
-    -fx-background-color: -color-blue;
+    -fx-background-color: -color-primary;
 }
 
 .table-view .table-row-cell:selected .text {
@@ -291,20 +451,533 @@
 
 /* Fila resaltada, por ejemplo la mejor oferta del comparador */
 .table-view .table-row-cell.highlight-row {
-    -fx-background-color: #E3F6EC;
+    -fx-background-color: #DCFCE7;
 }
 
 .table-view .table-row-cell.highlight-row .text {
     -fx-font-weight: bold;
-    -fx-fill: #1E7B4A;
+    -fx-fill: #166534;
 }
 
 .table-view .table-row-cell.highlight-row:selected {
-    -fx-background-color: -color-blue;
+    -fx-background-color: -color-primary;
 }
 
 .table-view .table-row-cell.highlight-row:selected .text {
     -fx-fill: white;
+}
+
+/* ---------- Comunes de las pantallas nuevas ---------- */
+.clear-scroll, .clear-scroll > .viewport {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.icon {
+    -fx-fill: transparent;
+    -fx-stroke: -color-primary;
+    -fx-stroke-width: 1.7;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+}
+
+.link-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-action;
+    -fx-font-weight: bold;
+    -fx-padding: 4 0;
+    -fx-cursor: hand;
+}
+
+.link-button:hover {
+    -fx-underline: true;
+}
+
+.link-button-light {
+    -fx-background-color: transparent;
+    -fx-text-fill: #7DD3FC;
+    -fx-font-weight: bold;
+    -fx-padding: 2 0;
+    -fx-cursor: hand;
+}
+
+.link-button-danger {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-error;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.notice {
+    -fx-text-fill: -color-muted-text;
+    -fx-font-size: 12px;
+}
+
+/* Etiquetas pequeñas de color */
+.badge-blue, .badge-gray, .badge-dark, .badge-green {
+    -fx-background-radius: 6;
+    -fx-padding: 2 8;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.badge-blue { -fx-background-color: -color-accent-soft; -fx-text-fill: #075985; }
+.badge-gray { -fx-background-color: -color-surface; -fx-text-fill: -color-muted-text; }
+.badge-dark { -fx-background-color: -color-primary; -fx-text-fill: white; }
+.badge-green { -fx-background-color: #DCFCE7; -fx-text-fill: #166534; }
+
+.pill {
+    -fx-background-color: -color-accent-soft;
+    -fx-background-radius: 12;
+    -fx-padding: 3 10;
+    -fx-text-fill: #075985;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+/* ---------- Tarjeta de repuesto (ComponentCard) ---------- */
+.product-card {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 14;
+    -fx-cursor: hand;
+}
+
+.product-card:hover {
+    -fx-border-color: -color-accent;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.12), 18, 0, 0, 6);
+}
+
+.product-card-info {
+    -fx-padding: 12;
+}
+
+.product-photo {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 14 14 0 0;
+}
+
+.product-brand {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-muted-text;
+}
+
+.product-name {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.product-price {
+    -fx-font-family: "Manrope";
+    -fx-font-weight: bold;
+    -fx-font-size: 19px;
+    -fx-text-fill: -color-primary;
+}
+
+.product-price-empty {
+    -fx-text-fill: -color-muted-text;
+    -fx-font-size: 15px;
+}
+
+/* ---------- Catálogo (Shop) ---------- */
+.vehicle-card {
+    -fx-background-color: -color-primary;
+    -fx-background-radius: 14;
+    -fx-padding: 14 16;
+}
+
+.vehicle-card-caption {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.vehicle-card-title {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+}
+
+.chip-toggle {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-border-color: #CBD5E1;
+    -fx-border-radius: 16;
+    -fx-padding: 6 12;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-text;
+    -fx-cursor: hand;
+}
+
+.chip-toggle:hover {
+    -fx-border-color: -color-accent;
+}
+
+.chip-toggle:selected {
+    -fx-background-color: -color-primary;
+    -fx-border-color: -color-primary;
+    -fx-text-fill: white;
+}
+
+/* ---------- Detalle del repuesto ---------- */
+.reference-chip {
+    -fx-font-family: "IBM Plex Mono Medium";
+    -fx-font-size: 13px;
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 6;
+    -fx-padding: 3 8;
+}
+
+.offer-row {
+    -fx-padding: 14 18;
+}
+
+.offer-best {
+    -fx-border-color: -color-accent;
+    -fx-border-width: 2;
+}
+
+.offer-supplier {
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+}
+
+/* ---------- Carrito ---------- */
+.cart-group-header {
+    -fx-background-color: -color-background;
+    -fx-background-radius: 14 14 0 0;
+    -fx-border-color: transparent transparent -color-border transparent;
+    -fx-padding: 12 18;
+}
+
+.cart-row {
+    -fx-padding: 14 18;
+}
+
+.total-price {
+    -fx-font-family: "Manrope";
+    -fx-font-weight: bold;
+    -fx-font-size: 26px;
+    -fx-text-fill: -color-primary;
+}
+
+/* ---------- Inicio ---------- */
+.banner {
+    -fx-background-color: -color-primary;
+    -fx-background-radius: 14;
+}
+
+.banner-overlay {
+    -fx-background-color: linear-gradient(to right, rgba(15, 23, 42, 0.92) 0%, rgba(15, 23, 42, 0.65) 45%, rgba(15, 23, 42, 0.05) 100%);
+}
+
+.banner-text-box {
+    -fx-padding: 0 0 0 40;
+}
+
+.banner-title {
+    -fx-font-family: "Manrope";
+    -fx-font-weight: bold;
+    -fx-font-size: 30px;
+    -fx-text-fill: white;
+}
+
+.banner-text {
+    -fx-font-size: 15px;
+    -fx-text-fill: #CBD5E1;
+}
+
+.banner-dots {
+    -fx-padding: 0 0 14 0;
+}
+
+.banner-dot {
+    -fx-background-color: rgba(255, 255, 255, 0.45);
+    -fx-background-radius: 5;
+    -fx-min-width: 10;
+    -fx-min-height: 10;
+    -fx-pref-width: 10;
+    -fx-pref-height: 10;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+}
+
+.banner-dot-active {
+    -fx-background-color: -color-amber;
+    -fx-pref-width: 26;
+}
+
+.promo-tile {
+    -fx-background-color: linear-gradient(to bottom, #16233B, -color-primary);
+    -fx-background-radius: 14;
+    -fx-padding: 22;
+}
+
+.promo-caption {
+    -fx-text-fill: #7DD3FC;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.promo-title {
+    -fx-font-family: "Manrope";
+    -fx-font-weight: bold;
+    -fx-font-size: 22px;
+    -fx-text-fill: white;
+}
+
+.promo-text {
+    -fx-text-fill: #CBD5E1;
+}
+
+.promo-button {
+    -fx-background-color: -color-amber;
+    -fx-text-fill: -color-primary;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-padding: 10 18;
+    -fx-cursor: hand;
+}
+
+.promo-button:hover {
+    -fx-background-color: #FBBF24;
+}
+
+.band-title {
+    -fx-font-family: "Manrope";
+    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+    -fx-alignment: center;
+    -fx-text-fill: -color-primary;
+}
+
+.vehicle-band {
+    -fx-background-color: -color-action;
+    -fx-background-radius: 14;
+    -fx-padding: 22 26;
+}
+
+.vehicle-band .combo-box {
+    -fx-pref-height: 44;
+    -fx-border-color: transparent;
+}
+
+.band-button {
+    -fx-background-color: white;
+    -fx-text-fill: -color-primary;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-padding: 12 24;
+    -fx-cursor: hand;
+}
+
+.band-button:hover {
+    -fx-background-color: -color-accent-soft;
+}
+
+.trust-strip {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 14;
+    -fx-padding: 18 26;
+}
+
+.trust-icon {
+    -fx-background-color: white;
+    -fx-background-radius: 22;
+    -fx-min-width: 44;
+    -fx-min-height: 44;
+}
+
+.trust-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+}
+
+.category-tile {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 14;
+    -fx-pref-width: 140;
+    -fx-padding: 16 8;
+    -fx-cursor: hand;
+}
+
+.category-tile:hover {
+    -fx-border-color: -color-accent;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.10), 14, 0, 0, 4);
+}
+
+.category-icon {
+    -fx-background-color: -color-surface;
+    -fx-background-radius: 12;
+    -fx-min-width: 50;
+    -fx-min-height: 50;
+    -fx-max-width: 50;
+    -fx-max-height: 50;
+}
+
+.category-name {
+    -fx-font-weight: bold;
+}
+
+.band-caption {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-muted-text;
+}
+
+.brand-word {
+    -fx-font-family: "Manrope";
+    -fx-font-weight: bold;
+    -fx-font-size: 24px;
+    -fx-text-fill: #94A3B8;
+}
+
+.mini-row {
+    -fx-padding: 14 16;
+    -fx-cursor: hand;
+}
+
+.mini-row:hover {
+    -fx-border-color: -color-accent;
+}
+
+.footer {
+    -fx-background-color: #0B1120;
+    -fx-padding: 26 28;
+}
+
+.footer-brand {
+    -fx-font-family: "Manrope";
+    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+    -fx-text-fill: white;
+}
+
+.footer-text {
+    -fx-text-fill: #CBD5E1;
+    -fx-font-size: 13px;
+}
+
+.footer-muted {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 13px;
+}
+
+.footer-link {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 2 0;
+}
+
+.footer-link:hover {
+    -fx-underline: true;
+}
+
+/* ---------- Servicios ---------- */
+.construction-notice {
+    -fx-background-color: #FFF4EA;
+    -fx-background-radius: 12;
+    -fx-border-color: #F0B98A;
+    -fx-border-radius: 12;
+    -fx-padding: 12 16;
+}
+
+.construction-title {
+    -fx-font-weight: bold;
+    -fx-text-fill: #9A3409;
+}
+
+.construction-text {
+    -fx-text-fill: #6B2A07;
+}
+
+.workshop-card {
+    -fx-padding: 18;
+}
+
+/* ---------- Talleres cerca (mapa) ---------- */
+.map-box {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-border-color: -color-border;
+    -fx-border-radius: 14;
+}
+
+.map-overlay {
+    -fx-background-color: -color-background;
+    -fx-background-radius: 14;
+    -fx-padding: 24;
+}
+
+.map-overlay-dim {
+    -fx-background-color: rgba(15, 23, 42, 0.45);
+    -fx-background-radius: 14;
+}
+
+.map-hint {
+    -fx-background-color: -color-primary;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 16;
+    -fx-padding: 8 16;
+}
+
+.progress-bar > .bar {
+    -fx-background-color: -color-accent;
+    -fx-background-radius: 6;
+}
+
+.progress-bar > .track {
+    -fx-background-color: -color-border;
+    -fx-background-radius: 6;
+}
+
+.partner-card {
+    -fx-padding: 14 16;
+    -fx-cursor: hand;
+}
+
+.partner-card:hover {
+    -fx-border-color: -color-accent;
+}
+
+.badge-amber {
+    -fx-background-color: #FEF3C7;
+    -fx-text-fill: #92400E;
+    -fx-background-radius: 6;
+    -fx-padding: 2 8;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.distance {
+    -fx-font-family: "Manrope";
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-text-fill: -color-primary;
+}
+
+.icon-store .icon { -fx-stroke: -color-action; }
+.icon-workshop .icon { -fx-stroke: #B45309; }
+
+.whatsapp-button {
+    -fx-background-color: #DCFCE7;
+    -fx-text-fill: #166534;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-padding: 8 14;
+    -fx-cursor: hand;
+}
+
+.whatsapp-button:hover {
+    -fx-background-color: #BBF7D0;
 }
 
 /* ---------- Módulos ----------

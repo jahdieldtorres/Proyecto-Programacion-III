@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Carrito: repuestos agrupados por almacén a la izquierda y resumen del pedido a la derecha -->
+<HBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="autoparts.view.CartController" spacing="24">
+
+    <VBox spacing="14" HBox.hgrow="ALWAYS">
+        <VBox spacing="2">
+            <Label text="Tu carrito" styleClass="page-title"/>
+            <Label fx:id="lblCount" styleClass="secondary-text"/>
+        </VBox>
+
+        <StackPane VBox.vgrow="ALWAYS">
+            <ScrollPane fx:id="scroll" fitToWidth="true" styleClass="clear-scroll">
+                <VBox fx:id="groupsBox" spacing="14">
+                    <padding><Insets top="2" right="4" bottom="12" left="2"/></padding>
+                </VBox>
+            </ScrollPane>
+
+            <!-- Estado vacío -->
+            <VBox fx:id="emptyBox" alignment="CENTER" spacing="10" visible="false">
+                <Label text="Tu carrito está vacío" styleClass="section-title"/>
+                <Label text="Busca un repuesto, compara los almacenes y agrégalo desde su detalle."
+                       styleClass="secondary-text" wrapText="true"/>
+                <Button text="Ir al catálogo" onAction="#goToCatalog" styleClass="primary-button"/>
+            </VBox>
+        </StackPane>
+    </VBox>
+
+    <!-- Resumen -->
+    <VBox spacing="12" prefWidth="340" minWidth="320" maxHeight="-Infinity" styleClass="card">
+        <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+        <Label text="Resumen del pedido" styleClass="section-title"/>
+        <HBox>
+            <Label fx:id="lblUnits" styleClass="secondary-text"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="lblSubtotal"/>
+        </HBox>
+        <HBox>
+            <Label fx:id="lblStores" styleClass="secondary-text"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="lblShipping"/>
+        </HBox>
+        <Separator/>
+        <HBox alignment="BASELINE_LEFT">
+            <Label text="Total" styleClass="field-label"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="lblTotal" styleClass="total-price"/>
+        </HBox>
+        <Button fx:id="btnConfirm" text="Confirmar pedido" onAction="#confirm"
+                maxWidth="Infinity" styleClass="action-button"/>
+        <Label fx:id="lblMessage" wrapText="true"/>
+        <Label text="No pagas dentro de ORIGEN. Al confirmar, el pedido queda PENDIENTE y coordinas el pago y la entrega con cada almacén por WhatsApp."
+               wrapText="true" styleClass="notice"/>
+    </VBox>
+</HBox>
