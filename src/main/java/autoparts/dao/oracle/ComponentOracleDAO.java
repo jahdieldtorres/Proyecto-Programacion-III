@@ -52,9 +52,9 @@ public class ComponentOracleDAO implements ComponentDAO {
 
     // Componente: INSERT devuelve el ID nuevo; UPDATE y DEACTIVATE, las filas cambiadas
     private static final String CALL_INSERT_COMPONENT =
-            "{ ? = call PKG_COMPONENTS.INSERT_COMPONENT(?, ?, ?, ?, ?, ?, ?) }";
+            "{ ? = call PKG_COMPONENTS.INSERT_COMPONENT(?, ?, ?, ?, ?, ?, ?, ?) }";
     private static final String CALL_UPDATE_COMPONENT =
-            "{ ? = call PKG_COMPONENTS.UPDATE_COMPONENT(?, ?, ?, ?, ?, ?, ?, ?) }";
+            "{ ? = call PKG_COMPONENTS.UPDATE_COMPONENT(?, ?, ?, ?, ?, ?, ?, ?, ?) }";
 
     /** Los componentes no se borran (un disparador lo impide): se pasan a INACTIVO. */
     private static final String CALL_DEACTIVATE = "{ ? = call PKG_COMPONENTS.DEACTIVATE_COMPONENT(?) }";
@@ -192,7 +192,7 @@ public class ComponentOracleDAO implements ComponentDAO {
         try (CallableStatement call = connection.prepareCall(CALL_UPDATE_COMPONENT)) {
             call.registerOutParameter(1, Types.NUMERIC); // filas cambiadas
             bindComponent(call, component);
-            call.setInt(9, component.getId());
+            call.setInt(10, component.getId());
             call.execute();
             if (call.getInt(1) == 0) {
                 throw new PersistenceException("No existe el componente que se quiere actualizar.");
@@ -201,8 +201,8 @@ public class ComponentOracleDAO implements ComponentDAO {
     }
 
     /**
-     * Pone en la llamada los 7 datos comunes (parámetros 2 a 8; el 1 es lo que
-     * devuelve la función).
+     * Pone en la llamada los 8 datos comunes (parámetros 2 a 9; el 1 es lo que
+     * devuelve la función). La descripción puede ir vacía: se guarda como NULL.
      */
     private void bindComponent(CallableStatement call, Component component) throws SQLException {
         call.setString(2, component.getType().getFileValue());
@@ -211,7 +211,8 @@ public class ComponentOracleDAO implements ComponentDAO {
         call.setInt(5, component.getBrand().getId());
         call.setInt(6, component.getCategory().getId());
         call.setString(7, component.getOrigin());
-        call.setString(8, component.getStatus().name());
+        call.setString(8, component.getDescription());
+        call.setString(9, component.getStatus().name());
     }
 
     /**
@@ -301,7 +302,7 @@ public class ComponentOracleDAO implements ComponentDAO {
         String origin = result.getString("ORIGIN");
         Status status = Status.valueOf(result.getString("STATUS"));
 
-        return switch (type) {
+        Component component = switch (type) {
             case TIRE -> new Tire(id, name, reference, brand, category, origin, status,
                     result.getInt("WIDTH_MM"), result.getInt("ASPECT_RATIO"),
                     result.getInt("TIRE_DIAMETER"), result.getInt("LOAD_INDEX"),
@@ -317,5 +318,8 @@ public class ComponentOracleDAO implements ComponentDAO {
                     result.getInt("NUMBER_OF_SPEEDS"));
             default -> new Component(type, id, name, reference, brand, category, origin, status);
         };
+        // La descripción es común a todos los tipos: se asigna después de crear el objeto.
+        component.setDescription(result.getString("DESCRIPTION"));
+        return component;
     }
 }
