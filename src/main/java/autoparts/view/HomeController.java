@@ -3,16 +3,24 @@ package autoparts.view;
 import autoparts.AppServices;
 import autoparts.exception.PersistenceException;
 import autoparts.model.CatalogItem;
+import autoparts.model.Brand;
 import autoparts.model.Category;
+import autoparts.model.NearbyPartner;
+import autoparts.model.Status;
+import autoparts.model.Partner;
+import autoparts.model.Workshop;
 import autoparts.model.Vehicle;
 import autoparts.service.Session;
+import autoparts.service.UserLocationService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
 import javafx.animation.Animation;
 import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -22,7 +30,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
@@ -31,9 +41,11 @@ import javafx.util.Duration;
 /**
  * Controlador de Inicio (Home.fxml).
  *
- * Tiene cinco partes: el banner con imágenes que pasan solas, el selector de
- * vehículo (marca → modelo → año), la franja de confianza, las categorías y
- * los repuestos destacados. Los datos los pide a los servicios.
+ * Tiene estas partes, de arriba hacia abajo: el banner con imágenes que pasan
+ * solas, el selector de vehículo (marca → modelo → año), la franja de
+ * confianza, las categorías, los repuestos destacados, los talleres aliados,
+ * "Cerca de ti", las marcas que se desplazan y el pie de página. Los datos
+ * los pide a los servicios.
  *
  * @author Jahdiel Torres
  */
@@ -82,11 +94,22 @@ public class HomeController {
     private FlowPane featuredBox;
     @FXML
     private Label lblMessage;
+    @FXML
+    private VBox workshopsBox;
+    @FXML
+    private Label lblNearFrom;
+    @FXML
+    private VBox nearbyBox;
+    @FXML
+    private Pane brandsViewport;
+    @FXML
+    private HBox brandsRow;
 
     private final List<Image> bannerImages = new ArrayList<>();
     private final List<Button> dots = new ArrayList<>();
     private int slide;
     private Timeline autoplay;
+    private TranslateTransition brandsScroll;
     private List<Vehicle> vehicles = new ArrayList<>();
 
     /**
@@ -100,6 +123,8 @@ public class HomeController {
             loadVehicles();
             loadCategories();
             loadFeatured();
+            loadWorkshopsAndNearby();
+            loadBrands();
         } catch (PersistenceException e) {
             lblMessage.setText("No se pudieron leer los datos: " + e.getMessage());
         }
@@ -142,6 +167,9 @@ public class HomeController {
         bannerBox.sceneProperty().addListener((observable, oldScene, newScene) -> {
             if (newScene == null) {
                 autoplay.stop();
+                if (brandsScroll != null) {
+                    brandsScroll.stop();
+                }
             }
         });
     }
@@ -282,6 +310,97 @@ public class HomeController {
         for (CatalogItem item : AppServices.catalog().featured(FEATURED_COUNT)) {
             featuredBox.getChildren().add(new ComponentCard(item, () -> DashboardController.openDetail(item)));
         }
+    }
+
+    // ---------- 6. Talleres aliados y Cerca de ti ----------
+
+    /**
+     * Lee los socios una vez: los talleres van a la columna izquierda y los
+     * dos más cercanos (almacén o taller) a "Cerca de ti".
+     */
+    private void loadWorkshopsAndNearby() {
+        List<Workshop> workshops = AppServices.partners().findAllWorkshops();
+        for (Workshop workshop : workshops) {
+            if (workshop.getStatus() == Status.ACTIVO) {
+                workshopsBox.getChildren().add(miniRow(Icons.WRENCH, workshop.getCompanyName(),
+                        workshop.getSpecialty() + " · " + workshop.getAddress(),
+                        workshop.getBayCount() + " bahías", DashboardController::openServices));
+            }
+        }
+
+        List<Partner> partners = new ArrayList<>(AppServices.partners().findAllSuppliers());
+        partners.addAll(workshops);
+        List<NearbyPartner> nearby = AppServices.locations().sortByDistance(Session.getUser(), partners);
+        lblNearFrom.setText("Desde " + (AppServices.locations().hasChosen(Session.getUser())
+                ? "tu ubicación" : UserLocationService.DEFAULT_LOCATION_NAME));
+        for (NearbyPartner item : nearby.subList(0, Math.min(2, nearby.size()))) {
+            Partner partner = item.partner();
+            nearbyBox.getChildren().add(miniRow(item.isWorkshop() ? Icons.WRENCH : Icons.STORE,
+                    partner.getCompanyName(), (item.isWorkshop() ? "Taller · " : "Almacén · ") + partner.getAddress(),
+                    MapController.distanceText(item.distanceKm()), DashboardController::openMap));
+        }
+    }
+
+    /**
+     * Fila pequeña con ícono, título, detalle y un dato a la derecha.
+     */
+    private HBox miniRow(String icon, String title, String detail, String value, Runnable onClick) {
+        StackPane iconBox = new StackPane(Icons.create(icon));
+        iconBox.getStyleClass().add("category-icon");
+        Label titleLabel = new Label(title);
+        titleLabel.getStyleClass().add("offer-supplier");
+        Label detailLabel = new Label(detail);
+        detailLabel.getStyleClass().add("secondary-text");
+        Label valueLabel = new Label(value);
+        valueLabel.getStyleClass().add("distance");
+        Region space = new Region();
+        HBox.setHgrow(space, Priority.ALWAYS);
+        HBox row = new HBox(12, iconBox, new VBox(2, titleLabel, detailLabel), space, valueLabel);
+        row.setAlignment(Pos.CENTER_LEFT);
+        row.getStyleClass().addAll("card", "mini-row");
+        row.setOnMouseClicked(event -> onClick.run());
+        return row;
+    }
+
+    // ---------- 7. Marcas que se desplazan ----------
+
+    /**
+     * Pone las marcas dos veces seguidas y las mueve a la izquierda sin parar.
+     * Cuando la primera copia sale de la vista, la segunda está justo donde
+     * empezó, así que el movimiento parece infinito.
+     */
+    private void loadBrands() {
+        List<Brand> brands = AppServices.components().findBrands();
+        for (int copy = 0; copy < 2; copy++) {
+            for (Brand brand : brands) {
+                Label word = new Label(brand.getName().toUpperCase());
+                word.getStyleClass().add("brand-word");
+                word.setMinWidth(Region.USE_PREF_SIZE);
+                brandsRow.getChildren().add(word);
+            }
+        }
+        Rectangle clip = new Rectangle();
+        clip.widthProperty().bind(brandsViewport.widthProperty());
+        clip.heightProperty().bind(brandsViewport.heightProperty());
+        brandsViewport.setClip(clip);
+
+        // El ancho de la fila solo se conoce cuando JavaFX la dibuja por primera vez
+        brandsRow.widthProperty().addListener((observable, oldWidth, width) -> {
+            if (brandsScroll == null && width.doubleValue() > 0) {
+                double half = (width.doubleValue() + brandsRow.getSpacing()) / 2;
+                brandsScroll = new TranslateTransition(Duration.seconds(half / 40), brandsRow);
+                brandsScroll.setFromX(0);
+                brandsScroll.setToX(-half);
+                brandsScroll.setInterpolator(Interpolator.LINEAR);
+                brandsScroll.setCycleCount(Animation.INDEFINITE);
+                brandsScroll.play();
+            }
+        });
+    }
+
+    @FXML
+    private void goToMap() {
+        DashboardController.openMap();
     }
 
     @FXML

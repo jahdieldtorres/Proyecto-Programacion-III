@@ -8,6 +8,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -16,8 +17,9 @@
 <ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="autoparts.view.HomeController" fitToWidth="true" styleClass="clear-scroll">
 
+    <VBox>
     <VBox spacing="22">
-        <padding><Insets top="24" right="28" bottom="32" left="28"/></padding>
+        <padding><Insets top="24" right="28" bottom="28" left="28"/></padding>
 
         <!-- 1. Banner con imágenes que pasan solas + recuadro de talleres -->
         <HBox spacing="16" prefHeight="300" minHeight="300">
@@ -76,5 +78,50 @@
             <FlowPane fx:id="featuredBox" hgap="16" vgap="16"/>
             <Label fx:id="lblMessage" styleClass="error-message" wrapText="true"/>
         </VBox>
+
+        <!-- 6. Talleres aliados y Cerca de ti -->
+        <HBox spacing="24">
+            <VBox spacing="12" HBox.hgrow="ALWAYS" prefWidth="100">
+                <HBox alignment="BASELINE_LEFT">
+                    <Label text="Instálalo con un taller aliado" styleClass="section-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Ver servicios" onAction="#goToServices" styleClass="link-button"/>
+                </HBox>
+                <VBox fx:id="workshopsBox" spacing="10"/>
+            </VBox>
+            <VBox spacing="12" HBox.hgrow="ALWAYS" prefWidth="100">
+                <HBox alignment="BASELINE_LEFT">
+                    <Label text="Cerca de ti" styleClass="section-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Button text="Ver mapa" onAction="#goToMap" styleClass="link-button"/>
+                </HBox>
+                <Label fx:id="lblNearFrom" styleClass="secondary-text"/>
+                <VBox fx:id="nearbyBox" spacing="10"/>
+            </VBox>
+        </HBox>
+
+        <!-- 7. Marcas que se desplazan solas -->
+        <VBox spacing="12">
+            <Label text="MARCAS EN ORIGEN" styleClass="band-caption"/>
+            <Pane fx:id="brandsViewport" minHeight="44" prefHeight="44">
+                <HBox fx:id="brandsRow" spacing="64" alignment="CENTER_LEFT" prefHeight="44"/>
+            </Pane>
+        </VBox>
+    </VBox>
+
+    <!-- 8. Pie de página -->
+    <HBox alignment="TOP_LEFT" styleClass="footer">
+        <VBox spacing="6">
+            <Label text="ORIGEN" styleClass="footer-brand"/>
+            <Label text="Proyecto de Programación III · Universidad Popular del Cesar" styleClass="footer-text"/>
+            <Label text="Jahdiel Torres · Álvaro Aramendiz · Héctor Guevara" styleClass="footer-muted"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <HBox spacing="22">
+            <Button text="Servicios" onAction="#goToServices" styleClass="footer-link"/>
+            <Button text="Talleres cerca" onAction="#goToMap" styleClass="footer-link"/>
+            <Button text="Catálogo" onAction="#goToCatalog" styleClass="footer-link"/>
+        </HBox>
+    </HBox>
     </VBox>
 </ScrollPane>

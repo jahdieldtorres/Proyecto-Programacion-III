@@ -27,8 +27,8 @@ import javafx.scene.layout.VBox;
  *
  * Muestra los datos del repuesto y compara las ofertas de todos los
  * almacenes que lo tienen (usa ComparatorService). Cada oferta tiene su botón
- * para agregarla al carrito. La primera de la lista es la mejor según el
- * criterio elegido.
+ * para agregarla al carrito. Las ofertas se ordenan por el criterio que elige
+ * el cliente, sin marcar a ningún almacén como "el mejor": todos son aliados.
  *
  * @author Jahdiel Torres
  */
@@ -123,12 +123,12 @@ public class ComponentDetailController {
         offersBox.getChildren().clear();
         try {
             List<Offer> offers = AppServices.comparator().compare(item.getComponent().getId(), cmbCriterion.getValue());
-            for (int i = 0; i < offers.size(); i++) {
-                offersBox.getChildren().add(offerRow(offers.get(i), i == 0));
+            for (Offer offer : offers) {
+                offersBox.getChildren().add(offerRow(offer));
             }
             lblSummary.setText(offers.isEmpty()
                     ? "Ningún almacén tiene este repuesto con stock por ahora."
-                    : Formats.stores(offers.size()) + " lo tienen. La primera es la mejor opción por "
+                    : Formats.stores(offers.size()) + " lo tienen. Ordenadas por "
                     + cmbCriterion.getValue().getLabel().toLowerCase() + ".");
         } catch (InvalidDataException | PersistenceException e) {
             showMessage(e.getMessage(), true);
@@ -139,16 +139,11 @@ public class ComponentDetailController {
      * Fila de una oferta: almacén y condiciones a la izquierda; precio, cantidad
      * y botón para agregar al carrito a la derecha.
      */
-    private HBox offerRow(Offer offer, boolean best) {
+    private HBox offerRow(Offer offer) {
         Label supplier = new Label(offer.getSupplierName());
         supplier.getStyleClass().add("offer-supplier");
         HBox title = new HBox(8, supplier);
         title.setAlignment(Pos.CENTER_LEFT);
-        if (best) {
-            Label badge = new Label("Mejor opción");
-            badge.getStyleClass().add("badge-dark");
-            title.getChildren().add(badge);
-        }
         Label details = new Label(Formats.condition(offer.getCondition())
                 + " · Garantía " + offer.getWarrantyMonths() + " meses"
                 + " · Entrega en " + offer.getDeliveryDays() + " días"
@@ -174,9 +169,6 @@ public class ComponentDetailController {
         HBox row = new HBox(16, left, space, priceBox, quantity, add);
         row.setAlignment(Pos.CENTER_LEFT);
         row.getStyleClass().addAll("card", "offer-row");
-        if (best) {
-            row.getStyleClass().add("offer-best");
-        }
         return row;
     }
 
