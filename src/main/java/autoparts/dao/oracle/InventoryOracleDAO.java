@@ -6,21 +6,27 @@ import autoparts.model.Condition;
 import autoparts.model.Inventory;
 import autoparts.model.Status;
 import autoparts.util.DatabaseConnection;
+import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Guarda y consulta el inventario de los proveedores (sus ofertas) en la tabla
- * INVENTORY de la base de datos Oracle.
+ * Guarda y consulta el inventario de los proveedores (sus ofertas) llamando a
+ * las funciones del paquete PL/SQL PKG_INVENTORY
+ * (database/05b_paquetes_negocio.sql).
+ *
+ * Todo es una función y el resultado llega por el primer ? de la llamada: un
+ * cursor en las consultas, el ID nuevo en el INSERT y las filas cambiadas en
+ * el UPDATE.
  *
  * Implementa la misma interfaz {@link InventoryDAO} que InventoryFileDAO, por
  * eso InventoryService y ComparatorService no cambian: solo se cambia el DAO
- * en AppServices. Sigue el mismo patrón de UserOracleDAO.
+ * en AppServices. Sigue el patrón de {@link UserOracleDAO}.
  *
  * Este DAO no descuenta el stock de los pedidos: eso lo hace el disparador
  * TRG_ORDER_ITEMS_STOCK de la base (database/03_disparadores.sql). Tampoco
@@ -30,25 +36,12 @@ import java.util.Optional;
  */
 public class InventoryOracleDAO implements InventoryDAO {
 
-    private static final String SELECT_INVENTORY =
-            "SELECT ID, SUPPLIER_ID, COMPONENT_ID, PRICE, STOCK, SHIPPING_COST, "
-            + "WARRANTY_MONTHS, CONDITION, STATUS FROM INVENTORY";
-
-    private static final String FIND_ALL = SELECT_INVENTORY + " ORDER BY ID";
-
-    private static final String FIND_BY_ID = SELECT_INVENTORY + " WHERE ID = ?";
-
-    private static final String FIND_BY_SUPPLIER = SELECT_INVENTORY + " WHERE SUPPLIER_ID = ? ORDER BY ID";
-
-    private static final String FIND_BY_COMPONENT = SELECT_INVENTORY + " WHERE COMPONENT_ID = ? ORDER BY ID";
-
-    private static final String INSERT =
-            "INSERT INTO INVENTORY (SUPPLIER_ID, COMPONENT_ID, PRICE, STOCK, SHIPPING_COST, "
-            + "WARRANTY_MONTHS, CONDITION, STATUS) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-    private static final String UPDATE =
-            "UPDATE INVENTORY SET SUPPLIER_ID = ?, COMPONENT_ID = ?, PRICE = ?, STOCK = ?, "
-            + "SHIPPING_COST = ?, WARRANTY_MONTHS = ?, CONDITION = ?, STATUS = ? WHERE ID = ?";
+    private static final String CALL_LIST_ALL = "{ ? = call PKG_INVENTORY.LIST_ALL }";
+    private static final String CALL_FIND_BY_ID = "{ ? = call PKG_INVENTORY.FIND_BY_ID(?) }";
+    private static final String CALL_LIST_BY_SUPPLIER = "{ ? = call PKG_INVENTORY.LIST_BY_SUPPLIER(?) }";
+    private static final String CALL_LIST_BY_COMPONENT = "{ ? = call PKG_INVENTORY.LIST_BY_COMPONENT(?) }";
+    private static final String CALL_INSERT = "{ ? = call PKG_INVENTORY.INSERT_INVENTORY(?, ?, ?, ?, ?, ?, ?, ?) }";
+    private static final String CALL_UPDATE = "{ ? = call PKG_INVENTORY.UPDATE_INVENTORY(?, ?, ?, ?, ?, ?, ?, ?, ?) }";
 
     /**
      * Con Oracle el ID lo genera la base (columna IDENTITY) al guardar, así que
@@ -63,52 +56,54 @@ public class InventoryOracleDAO implements InventoryDAO {
     }
 
     /**
-     * Guarda una existencia nueva. Después de guardar, la existencia recibida
-     * queda con el ID que le asignó Oracle.
+     * Guarda una existencia nueva con PKG_INVENTORY.INSERT_INVENTORY. El ID lo
+     * genera Oracle (IDENTITY), la función lo devuelve y se le asigna al objeto
+     * recibido, igual que hace InventoryFileDAO.
      */
     @Override
     public void save(Inventory item) {
         try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(INSERT, new String[]{"ID"})) {
-            statement.setInt(1, item.getSupplierId());
-            statement.setInt(2, item.getComponentId());
-            statement.setInt(3, item.getPrice());
-            statement.setInt(4, item.getStock());
-            statement.setInt(5, item.getShippingCost());
-            statement.setInt(6, item.getWarrantyMonths());
-            statement.setString(7, item.getCondition().name());
-            statement.setString(8, item.getStatus().name());
-            statement.executeUpdate();
-
-            try (ResultSet keys = statement.getGeneratedKeys()) {
-                keys.next();
-                item.setId(keys.getInt(1));
-            }
+                CallableStatement call = connection.prepareCall(CALL_INSERT)) {
+            call.registerOutParameter(1, Types.NUMERIC); // ID nuevo
+            call.setInt(2, item.getSupplierId());
+            call.setInt(3, item.getComponentId());
+            call.setInt(4, item.getPrice());
+            call.setInt(5, item.getStock());
+            call.setInt(6, item.getShippingCost());
+            call.setInt(7, item.getWarrantyMonths());
+            call.setString(8, item.getCondition().name());
+            call.setString(9, item.getStatus().name());
+            call.execute();
+            item.setId(call.getInt(1));
         } catch (SQLException e) {
             throw new PersistenceException("No se pudo guardar la oferta del inventario.", e);
         }
     }
 
     /**
-     * Actualiza todos los datos de la existencia. Si el precio cambia, el
-     * disparador TRG_INVENTORY_PRICE guarda el precio viejo y el nuevo.
+     * Actualiza todos los datos de la existencia con PKG_INVENTORY.UPDATE_INVENTORY.
+     * La función devuelve cuántas filas cambió; si es 0, la existencia no existe.
+     * Si el precio cambia, el disparador TRG_INVENTORY_PRICE guarda el precio
+     * viejo y el nuevo.
      *
      * @return true si la existencia existía y se actualizó
      */
     @Override
     public boolean update(Inventory item) {
         try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(UPDATE)) {
-            statement.setInt(1, item.getSupplierId());
-            statement.setInt(2, item.getComponentId());
-            statement.setInt(3, item.getPrice());
-            statement.setInt(4, item.getStock());
-            statement.setInt(5, item.getShippingCost());
-            statement.setInt(6, item.getWarrantyMonths());
-            statement.setString(7, item.getCondition().name());
-            statement.setString(8, item.getStatus().name());
-            statement.setInt(9, item.getId());
-            return statement.executeUpdate() > 0;
+                CallableStatement call = connection.prepareCall(CALL_UPDATE)) {
+            call.registerOutParameter(1, Types.NUMERIC); // filas cambiadas
+            call.setInt(2, item.getId());
+            call.setInt(3, item.getSupplierId());
+            call.setInt(4, item.getComponentId());
+            call.setInt(5, item.getPrice());
+            call.setInt(6, item.getStock());
+            call.setInt(7, item.getShippingCost());
+            call.setInt(8, item.getWarrantyMonths());
+            call.setString(9, item.getCondition().name());
+            call.setString(10, item.getStatus().name());
+            call.execute();
+            return call.getInt(1) > 0;
         } catch (SQLException e) {
             throw new PersistenceException("No se pudo actualizar la oferta del inventario.", e);
         }
@@ -116,39 +111,59 @@ public class InventoryOracleDAO implements InventoryDAO {
 
     @Override
     public Optional<Inventory> findById(int id) {
-        List<Inventory> items = findList(FIND_BY_ID, id);
-        return items.isEmpty() ? Optional.empty() : Optional.of(items.get(0));
+        try (Connection connection = DatabaseConnection.getConnection();
+                CallableStatement call = connection.prepareCall(CALL_FIND_BY_ID)) {
+            call.registerOutParameter(1, Types.REF_CURSOR);
+            call.setInt(2, id);
+            call.execute();
+            try (ResultSet result = (ResultSet) call.getObject(1)) {
+                return result.next() ? Optional.of(mapRow(result)) : Optional.empty();
+            }
+        } catch (SQLException e) {
+            throw new PersistenceException("No se pudo leer el inventario.", e);
+        }
     }
 
     @Override
     public List<Inventory> findAll() {
-        return findList(FIND_ALL);
+        List<Inventory> items = new ArrayList<>();
+        try (Connection connection = DatabaseConnection.getConnection();
+                CallableStatement call = connection.prepareCall(CALL_LIST_ALL)) {
+            call.registerOutParameter(1, Types.REF_CURSOR);
+            call.execute();
+            try (ResultSet result = (ResultSet) call.getObject(1)) {
+                while (result.next()) {
+                    items.add(mapRow(result));
+                }
+            }
+        } catch (SQLException e) {
+            throw new PersistenceException("No se pudo leer el inventario.", e);
+        }
+        return items;
     }
 
     @Override
     public List<Inventory> findBySupplier(int supplierId) {
-        return findList(FIND_BY_SUPPLIER, supplierId);
+        return listBy(CALL_LIST_BY_SUPPLIER, supplierId);
     }
 
     @Override
     public List<Inventory> findByComponent(int componentId) {
-        return findList(FIND_BY_COMPONENT, componentId);
+        return listBy(CALL_LIST_BY_COMPONENT, componentId);
     }
 
     /**
-     * Ejecuta una consulta de inventario y devuelve todas las filas como objetos.
-     *
-     * @param sql    consulta con tantos ? como valores en params
-     * @param params valores de los parámetros, en orden (puede no haber ninguno)
+     * Llama una función de consulta con un solo parámetro numérico (el ID del
+     * proveedor o del componente) que devuelve un cursor de existencias.
      */
-    private List<Inventory> findList(String sql, Object... params) {
+    private List<Inventory> listBy(String function, int value) {
         List<Inventory> items = new ArrayList<>();
         try (Connection connection = DatabaseConnection.getConnection();
-                PreparedStatement statement = connection.prepareStatement(sql)) {
-            for (int i = 0; i < params.length; i++) {
-                statement.setObject(i + 1, params[i]);
-            }
-            try (ResultSet result = statement.executeQuery()) {
+                CallableStatement call = connection.prepareCall(function)) {
+            call.registerOutParameter(1, Types.REF_CURSOR);
+            call.setInt(2, value);
+            call.execute();
+            try (ResultSet result = (ResultSet) call.getObject(1)) {
                 while (result.next()) {
                     items.add(mapRow(result));
                 }
