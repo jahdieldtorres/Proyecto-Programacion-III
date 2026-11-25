@@ -8,11 +8,15 @@ import autoparts.model.Condition;
 import autoparts.model.Inventory;
 import autoparts.model.Status;
 import autoparts.model.Supplier;
+import autoparts.util.ImageStorage;
+import java.io.File;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
 
 /**
@@ -49,12 +53,19 @@ public class InventoryFormController {
     @FXML
     private ComboBox<Status> cmbStatus;
     @FXML
+    private TextArea txtDescription;
+    @FXML
+    private Label lblPhoto;
+    @FXML
     private Label lblMessage;
     @FXML
     private Button btnSave;
 
     /** Oferta que se está editando; null si se está creando una nueva. */
     private Inventory original;
+
+    /** Foto elegida con el botón "Elegir foto"; null si no se eligió ninguna. */
+    private File selectedPhoto;
 
     /**
      * JavaFX llama este método al cargar el formulario: llena los combos y deja
@@ -123,6 +134,8 @@ public class InventoryFormController {
         txtWarranty.setText(String.valueOf(item.getWarrantyMonths()));
         cmbCondition.setValue(item.getCondition());
         cmbStatus.setValue(item.getStatus());
+        txtDescription.setText(item.getDescription());
+        showCurrentPhoto(item.getId());
         // Al editar, el proveedor y el componente no se pueden cambiar.
         cmbSupplier.setDisable(true);
         cmbComponent.setDisable(true);
@@ -139,8 +152,16 @@ public class InventoryFormController {
             Inventory item = buildInventory();
             if (original == null) {
                 AppServices.inventory().register(item);
+                // Ya quedó guardada: si la foto falla, un nuevo clic en Guardar edita esta oferta.
+                original = item;
             } else {
                 AppServices.inventory().update(item);
+            }
+            try {
+                savePhoto(item.getId());
+            } catch (PersistenceException e) {
+                lblMessage.setText("La oferta se guardó, pero no se pudo guardar la foto. Elige la foto y guarda de nuevo.");
+                return;
             }
             Navigator.closeForm(btnSave);
         } catch (InvalidDataException e) {
@@ -151,11 +172,59 @@ public class InventoryFormController {
     }
 
     /**
+     * Se ejecuta con el botón "Elegir foto": abre el selector de archivos y
+     * deja elegida la foto (.jpg o .png). Solo se copia al guardar la oferta.
+     */
+    @FXML
+    private void choosePhoto() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Elegir la foto de la oferta");
+        chooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Fotos (*.jpg, *.jpeg, *.png)", "*.jpg", "*.jpeg", "*.png"));
+        File file = chooser.showOpenDialog(btnSave.getScene().getWindow());
+        if (file == null) {
+            return;
+        }
+        if (!ImageStorage.isSupported(file)) {
+            lblMessage.setText("La foto debe ser un archivo .jpg o .png.");
+            return;
+        }
+        lblMessage.setText("");
+        selectedPhoto = file;
+        lblPhoto.setText(file.getName());
+    }
+
+    /**
      * Se ejecuta con el botón Cancelar: cierra el formulario sin guardar.
      */
     @FXML
     private void cancel() {
         Navigator.closeForm(btnSave);
+    }
+
+    /**
+     * Guarda la foto elegida (si hay una) como la foto principal de la oferta.
+     *
+     * @param inventoryId identificador de la oferta ya guardada
+     */
+    private void savePhoto(int inventoryId) {
+        if (selectedPhoto == null) {
+            return;
+        }
+        AppServices.inventoryImages().saveMainImage(inventoryId, selectedPhoto);
+        selectedPhoto = null;
+    }
+
+    /**
+     * Al editar, muestra que la oferta ya tiene foto (o que no tiene).
+     */
+    private void showCurrentPhoto(int inventoryId) {
+        try {
+            boolean hasPhoto = AppServices.inventoryImages().findMainImageUrl(inventoryId) != null;
+            lblPhoto.setText(hasPhoto ? "Ya tiene foto (elige otra para cambiarla)" : "Sin foto");
+        } catch (PersistenceException e) {
+            lblPhoto.setText("Sin foto");
+        }
     }
 
     /**
@@ -175,6 +244,7 @@ public class InventoryFormController {
                 readNumber(txtShipping, "El costo de envío"),
                 readNumber(txtWarranty, "La garantía"),
                 cmbCondition.getValue(),
+                txtDescription.getText(),
                 cmbStatus.getValue());
     }
 
