@@ -17,6 +17,7 @@ public class Component {
     private Category category;
     private String origin;
     private Status status;
+    private String description;
 
     
     /**
@@ -121,5 +122,23 @@ public class Component {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    /**
+     * Devuelve la descripción del componente.
+     *
+     * @return descripción de hasta 300 caracteres, o null si no tiene
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Cambia la descripción del componente.
+     *
+     * @param description texto descriptivo del repuesto (máximo 300 caracteres) o null
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
