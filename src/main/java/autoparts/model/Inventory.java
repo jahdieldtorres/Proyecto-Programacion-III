@@ -25,6 +25,7 @@ public class Inventory {
     private int warrantyMonths;
     private Condition condition;                       
     private Status status;
+    private String description;
 
     /**
      * Crea una existencia de inventario.
@@ -50,6 +51,28 @@ public class Inventory {
         this.warrantyMonths = warrantyMonths;
         this.condition = condition;
         this.status = status;
+    }
+
+    /**
+     * Crea una existencia de inventario con la descripción que escribe la tienda.
+     *
+     * @param id             identificador de la fila
+     * @param supplierId     identificador del proveedor
+     * @param componentId    identificador del componente
+     * @param price          precio unitario en pesos
+     * @param stock          unidades disponibles
+     * @param shippingCost   costo del envío en pesos
+     * @param warrantyMonths meses de garantía
+     * @param condition      condición del componente: NUEVO, USADO o REACONDICIONADO
+     * @param description    descripción de la oferta (máximo 500 caracteres) o null
+     * @param status         estado de la fila
+     */
+    public Inventory(int id, int supplierId, int componentId, int price, int stock,
+            int shippingCost, int warrantyMonths, Condition condition, String description,
+            Status status) {
+        this(id, supplierId, componentId, price, stock, shippingCost, warrantyMonths,
+                condition, status);
+        this.description = description;
     }
 
     /**
@@ -110,4 +133,18 @@ public class Inventory {
     public void setCondition(Condition condition) { this.condition = condition; }          
     public Status getStatus() { return status; }
     public void setStatus(Status status) { this.status = status; }
+
+    /**
+     * Devuelve la descripción que la tienda escribió para esta oferta.
+     *
+     * @return descripción de hasta 500 caracteres, o null si no tiene
+     */
+    public String getDescription() { return description; }
+
+    /**
+     * Cambia la descripción de la oferta.
+     *
+     * @param description texto de la oferta (máximo 500 caracteres) o null
+     */
+    public void setDescription(String description) { this.description = description; }
 }
