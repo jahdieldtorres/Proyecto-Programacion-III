@@ -41,5 +41,6 @@ public class Offer {
     public int getWarrantyMonths() { return item.getWarrantyMonths(); }
     public int getDeliveryDays() { return supplier.getDeliveryDays(); }
     public int getStock() { return item.getStock(); }
-    public Condition getCondition() { return item.getCondition(); }                        
+    public Condition getCondition() { return item.getCondition(); }
+    public String getDescription() { return item.getDescription(); }                        
 }
