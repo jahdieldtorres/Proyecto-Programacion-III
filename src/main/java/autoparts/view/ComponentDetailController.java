@@ -20,6 +20,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 /**
@@ -49,6 +50,8 @@ public class ComponentDetailController {
     private Label lblReference;
     @FXML
     private Label lblCompatibility;
+    @FXML
+    private Label lblDescription;
     @FXML
     private Label lblCategory;
     @FXML
@@ -94,6 +97,13 @@ public class ComponentDetailController {
         lblReference.setText(component.getReference());
         lblCategory.setText("Categoría: " + component.getCategory().getName());
         lblOrigin.setText("Procedencia: " + component.getOrigin());
+
+        // La descripción es opcional: si el repuesto no tiene, se oculta el texto.
+        String description = component.getDescription();
+        boolean hasDescription = description != null && !description.isBlank();
+        lblDescription.setText(hasDescription ? description : "");
+        lblDescription.setVisible(hasDescription);
+        lblDescription.setManaged(hasDescription);
 
         if (item.getImageUrl() != null) {
             imgPhoto.setImage(new Image(item.getImageUrl(), true));
@@ -150,6 +160,13 @@ public class ComponentDetailController {
                 + " · " + offer.getStock() + " disponibles");
         details.getStyleClass().add("secondary-text");
         VBox left = new VBox(4, title, details);
+        String description = offer.getDescription();
+        if (description != null && !description.isBlank()) {
+            Label descriptionLabel = new Label(description);
+            descriptionLabel.setWrapText(true);
+            descriptionLabel.setMaxWidth(420);
+            left.getChildren().add(descriptionLabel);
+        }
 
         Label price = new Label(Formats.money(offer.getPrice()));
         price.getStyleClass().add("product-price");
@@ -166,10 +183,43 @@ public class ComponentDetailController {
 
         Region space = new Region();
         HBox.setHgrow(space, Priority.ALWAYS);
-        HBox row = new HBox(16, left, space, priceBox, quantity, add);
+        HBox row = new HBox(16, offerPhoto(offer), left, space, priceBox, quantity, add);
         row.setAlignment(Pos.CENTER_LEFT);
         row.getStyleClass().addAll("card", "offer-row");
         return row;
+    }
+
+    /**
+     * Foto pequeña de la oferta. Si la tienda no subió foto, se usa la del
+     * repuesto; si tampoco hay, queda el texto "Sin foto".
+     */
+    private StackPane offerPhoto(Offer offer) {
+        String url = null;
+        try {
+            url = AppServices.inventoryImages().findMainImageUrl(offer.getItem().getId());
+        } catch (PersistenceException e) {
+            // Si falla la consulta de la foto, se usa la del repuesto.
+        }
+        if (url == null) {
+            url = item.getImageUrl();
+        }
+        StackPane box = new StackPane();
+        box.setMinSize(84, 84);
+        box.setPrefSize(84, 84);
+        box.setMaxSize(84, 84);
+        box.getStyleClass().add("product-photo");
+        if (url == null) {
+            Label noPhoto = new Label("Sin foto");
+            noPhoto.getStyleClass().add("secondary-text");
+            box.getChildren().add(noPhoto);
+        } else {
+            ImageView view = new ImageView(new Image(url, 84, 84, true, true, true));
+            view.setFitWidth(84);
+            view.setFitHeight(84);
+            view.setPreserveRatio(true);
+            box.getChildren().add(view);
+        }
+        return box;
     }
 
     /**
