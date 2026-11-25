@@ -8,6 +8,7 @@
 
 
 -- ---------------------------------------------------------------------
+-- A1 · Descripción del repuesto
 -- COMPONENTS.DESCRIPTION ya existe (VARCHAR2(300)); el paquete PKG_COMPONENTS
 -- (05a) empieza a leerla y guardarla. Descripciones de los repuestos de prueba.
 -- ---------------------------------------------------------------------
@@ -67,3 +68,58 @@ COMMIT;
 
 -- Verificación: debe devolver 50 de 50
 SELECT COUNT(DESCRIPTION) AS CON_DESCRIPCION, COUNT(*) AS TOTAL FROM COMPONENTS;
+
+
+-- ---------------------------------------------------------------------
+-- A2 · Foto y descripción de cada oferta
+-- INVENTORY.DESCRIPTION (VARCHAR2(500)) e INVENTORY_IMAGES ya existen; el
+-- paquete PKG_INVENTORY (06b) empieza a leer y guardar la descripción.
+-- Las descripciones de las 96 ofertas de prueba ya las carga 02_datos.sql.
+--
+-- Fotos de prueba: los archivos están en images/inventory/ (en el
+-- repositorio). Cada foto se une a su oferta por proveedor y componente,
+-- así no depende de los ID. Se puede correr varias veces: no repite fotos.
+-- Estos archivos son imágenes de prueba; se pueden cambiar por fotos reales
+-- subiéndolas desde el formulario de inventario ("Elegir foto").
+-- ---------------------------------------------------------------------
+INSERT INTO INVENTORY_IMAGES (INVENTORY_ID, FILE_NAME, CAPTION, IS_MAIN, SORT_ORDER)
+    SELECT I.ID, 'automax-pf-1234.jpg', NULL, 'S', 0
+    FROM INVENTORY I JOIN COMPONENTS C ON C.ID = I.COMPONENT_ID
+    WHERE I.SUPPLIER_ID = 1 AND C.REFERENCE = 'PF-1234' AND I.STATUS = 'ACTIVO'
+      AND NOT EXISTS (SELECT 1 FROM INVENTORY_IMAGES X WHERE X.INVENTORY_ID = I.ID);
+
+INSERT INTO INVENTORY_IMAGES (INVENTORY_ID, FILE_NAME, CAPTION, IS_MAIN, SORT_ORDER)
+    SELECT I.ID, 'caribe-pf-1234.jpg', NULL, 'S', 0
+    FROM INVENTORY I JOIN COMPONENTS C ON C.ID = I.COMPONENT_ID
+    WHERE I.SUPPLIER_ID = 2 AND C.REFERENCE = 'PF-1234' AND I.STATUS = 'ACTIVO'
+      AND NOT EXISTS (SELECT 1 FROM INVENTORY_IMAGES X WHERE X.INVENTORY_ID = I.ID);
+
+INSERT INTO INVENTORY_IMAGES (INVENTORY_ID, FILE_NAME, CAPTION, IS_MAIN, SORT_ORDER)
+    SELECT I.ID, 'importadora-pf-1234.jpg', NULL, 'S', 0
+    FROM INVENTORY I JOIN COMPONENTS C ON C.ID = I.COMPONENT_ID
+    WHERE I.SUPPLIER_ID = 5 AND C.REFERENCE = 'PF-1234' AND I.STATUS = 'ACTIVO'
+      AND NOT EXISTS (SELECT 1 FROM INVENTORY_IMAGES X WHERE X.INVENTORY_ID = I.ID);
+
+INSERT INTO INVENTORY_IMAGES (INVENTORY_ID, FILE_NAME, CAPTION, IS_MAIN, SORT_ORDER)
+    SELECT I.ID, 'automax-fo-3301.jpg', NULL, 'S', 0
+    FROM INVENTORY I JOIN COMPONENTS C ON C.ID = I.COMPONENT_ID
+    WHERE I.SUPPLIER_ID = 1 AND C.REFERENCE = 'FO-3301' AND I.STATUS = 'ACTIVO'
+      AND NOT EXISTS (SELECT 1 FROM INVENTORY_IMAGES X WHERE X.INVENTORY_ID = I.ID);
+
+INSERT INTO INVENTORY_IMAGES (INVENTORY_ID, FILE_NAME, CAPTION, IS_MAIN, SORT_ORDER)
+    SELECT I.ID, 'caribe-fo-3301.jpg', NULL, 'S', 0
+    FROM INVENTORY I JOIN COMPONENTS C ON C.ID = I.COMPONENT_ID
+    WHERE I.SUPPLIER_ID = 2 AND C.REFERENCE = 'FO-3301' AND I.STATUS = 'ACTIVO'
+      AND NOT EXISTS (SELECT 1 FROM INVENTORY_IMAGES X WHERE X.INVENTORY_ID = I.ID);
+
+INSERT INTO INVENTORY_IMAGES (INVENTORY_ID, FILE_NAME, CAPTION, IS_MAIN, SORT_ORDER)
+    SELECT I.ID, 'automax-mp4-2055516.jpg', NULL, 'S', 0
+    FROM INVENTORY I JOIN COMPONENTS C ON C.ID = I.COMPONENT_ID
+    WHERE I.SUPPLIER_ID = 1 AND C.REFERENCE = 'MP4-2055516' AND I.STATUS = 'ACTIVO'
+      AND NOT EXISTS (SELECT 1 FROM INVENTORY_IMAGES X WHERE X.INVENTORY_ID = I.ID);
+
+COMMIT;
+
+-- Verificación: ofertas con foto (esperado: 6) y ofertas con descripción (esperado: 96 de 96)
+SELECT COUNT(*) AS OFERTAS_CON_FOTO FROM INVENTORY_IMAGES;
+SELECT COUNT(DESCRIPTION) AS CON_DESCRIPCION, COUNT(*) AS TOTAL FROM INVENTORY;
