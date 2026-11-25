@@ -40,8 +40,8 @@ public class InventoryOracleDAO implements InventoryDAO {
     private static final String CALL_FIND_BY_ID = "{ ? = call PKG_INVENTORY.FIND_BY_ID(?) }";
     private static final String CALL_LIST_BY_SUPPLIER = "{ ? = call PKG_INVENTORY.LIST_BY_SUPPLIER(?) }";
     private static final String CALL_LIST_BY_COMPONENT = "{ ? = call PKG_INVENTORY.LIST_BY_COMPONENT(?) }";
-    private static final String CALL_INSERT = "{ ? = call PKG_INVENTORY.INSERT_INVENTORY(?, ?, ?, ?, ?, ?, ?, ?) }";
-    private static final String CALL_UPDATE = "{ ? = call PKG_INVENTORY.UPDATE_INVENTORY(?, ?, ?, ?, ?, ?, ?, ?, ?) }";
+    private static final String CALL_INSERT = "{ ? = call PKG_INVENTORY.INSERT_INVENTORY(?, ?, ?, ?, ?, ?, ?, ?, ?) }";
+    private static final String CALL_UPDATE = "{ ? = call PKG_INVENTORY.UPDATE_INVENTORY(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) }";
 
     /**
      * Con Oracle el ID lo genera la base (columna IDENTITY) al guardar, así que
@@ -72,7 +72,8 @@ public class InventoryOracleDAO implements InventoryDAO {
             call.setInt(6, item.getShippingCost());
             call.setInt(7, item.getWarrantyMonths());
             call.setString(8, item.getCondition().name());
-            call.setString(9, item.getStatus().name());
+            call.setString(9, item.getDescription());
+            call.setString(10, item.getStatus().name());
             call.execute();
             item.setId(call.getInt(1));
         } catch (SQLException e) {
@@ -101,7 +102,8 @@ public class InventoryOracleDAO implements InventoryDAO {
             call.setInt(7, item.getShippingCost());
             call.setInt(8, item.getWarrantyMonths());
             call.setString(9, item.getCondition().name());
-            call.setString(10, item.getStatus().name());
+            call.setString(10, item.getDescription());
+            call.setString(11, item.getStatus().name());
             call.execute();
             return call.getInt(1) > 0;
         } catch (SQLException e) {
@@ -187,6 +189,7 @@ public class InventoryOracleDAO implements InventoryDAO {
                 result.getInt("SHIPPING_COST"),
                 result.getInt("WARRANTY_MONTHS"),
                 Condition.valueOf(result.getString("CONDITION")),
+                result.getString("DESCRIPTION"),
                 Status.valueOf(result.getString("STATUS")));
     }
 }
