@@ -26,9 +26,9 @@ import javafx.scene.layout.VBox;
  * Controlador del detalle de un repuesto (ComponentDetail.fxml).
  *
  * Muestra los datos del repuesto y compara las ofertas de todos los
- * almacenes que lo tienen (usa ComparatorService). Cada oferta tiene su bot¢n
+ * almacenes que lo tienen (usa ComparatorService). Cada oferta tiene su bot√≥n
  * para agregarla al carrito. Las ofertas se ordenan por el criterio que elige
- * el cliente, sin marcar a ning£n almacÇn como "el mejor": todos son aliados.
+ * el cliente, sin marcar a ning√∫n almac√©n como "el mejor": todos son aliados.
  *
  * Si quien mira es invitado, agregar al carrito abre la ventana GuestDialog.
  *
@@ -36,7 +36,7 @@ import javafx.scene.layout.VBox;
  */
 public class ComponentDetailController {
 
-    /** Repuesto que se va a mostrar. Lo deja listo el cat†logo o el Inicio antes de abrir la pantalla. */
+    /** Repuesto que se va a mostrar. Lo deja listo el cat√°logo o el Inicio antes de abrir la pantalla. */
     private static CatalogItem pendingItem;
 
     @FXML
@@ -71,7 +71,7 @@ public class ComponentDetailController {
     }
 
     /**
-     * JavaFX llama este mÇtodo autom†ticamente al cargar la pantalla.
+     * JavaFX llama este m√©todo autom√°ticamente al cargar la pantalla.
      */
     @FXML
     private void initialize() {
@@ -79,7 +79,7 @@ public class ComponentDetailController {
         cmbCriterion.getItems().setAll(ComparisonCriterion.values());
         cmbCriterion.setValue(ComparisonCriterion.PRICE);
         if (item == null) {
-            lblName.setText("Elige un repuesto en el cat†logo.");
+            lblName.setText("Elige un repuesto en el cat√°logo.");
             return;
         }
         showComponent();
@@ -94,7 +94,7 @@ public class ComponentDetailController {
         lblBrand.setText(component.getBrand().getName().toUpperCase());
         lblName.setText(component.getName());
         lblReference.setText(component.getReference());
-        lblCategory.setText("Categor°a: " + component.getCategory().getName());
+        lblCategory.setText("Categor√≠a: " + component.getCategory().getName());
         lblOrigin.setText("Procedencia: " + component.getOrigin());
 
         if (item.getImageUrl() != null) {
@@ -106,7 +106,7 @@ public class ComponentDetailController {
             lblCompatibility.setVisible(false);
             lblCompatibility.setManaged(false);
         } else if (item.isCompatible()) {
-            lblCompatibility.setText("? Compatible con tu " + Session.getVehicle().getModelName());
+            lblCompatibility.setText("‚úì Compatible con tu " + Session.getVehicle().getModelName());
             lblCompatibility.getStyleClass().add("badge-blue");
         } else {
             lblCompatibility.setText("Compatibilidad por confirmar");
@@ -129,7 +129,7 @@ public class ComponentDetailController {
                 offersBox.getChildren().add(offerRow(offer));
             }
             lblSummary.setText(offers.isEmpty()
-                    ? "Ning£n almacÇn tiene este repuesto con stock por ahora."
+                    ? "Ning√∫n almac√©n tiene este repuesto con stock por ahora."
                     : Formats.stores(offers.size()) + " lo tienen. Ordenadas por "
                     + cmbCriterion.getValue().getLabel().toLowerCase() + ".");
         } catch (InvalidDataException | PersistenceException e) {
@@ -138,8 +138,8 @@ public class ComponentDetailController {
     }
 
     /**
-     * Fila de una oferta: almacÇn y condiciones a la izquierda; precio, cantidad
-     * y bot¢n para agregar al carrito a la derecha.
+     * Fila de una oferta: almac√©n y condiciones a la izquierda; precio, cantidad
+     * y bot√≥n para agregar al carrito a la derecha.
      */
     private HBox offerRow(Offer offer) {
         Label supplier = new Label(offer.getSupplierName());
@@ -147,15 +147,15 @@ public class ComponentDetailController {
         HBox title = new HBox(8, supplier);
         title.setAlignment(Pos.CENTER_LEFT);
         Label details = new Label(Formats.condition(offer.getCondition())
-                + " ˙ Garant°a " + offer.getWarrantyMonths() + " meses"
-                + " ˙ Entrega en " + offer.getDeliveryDays() + " d°as"
-                + " ˙ " + offer.getStock() + " disponibles");
+                + " ¬∑ Garant√≠a " + offer.getWarrantyMonths() + " meses"
+                + " ¬∑ Entrega en " + offer.getDeliveryDays() + " d√≠as"
+                + " ¬∑ " + offer.getStock() + " disponibles");
         details.getStyleClass().add("secondary-text");
         VBox left = new VBox(4, title, details);
 
         Label price = new Label(Formats.money(offer.getPrice()));
         price.getStyleClass().add("product-price");
-        Label shipping = new Label("+ env°o " + Formats.money(offer.getShippingCost()));
+        Label shipping = new Label("+ env√≠o " + Formats.money(offer.getShippingCost()));
         shipping.getStyleClass().add("secondary-text");
         VBox priceBox = new VBox(2, price, shipping);
         priceBox.setAlignment(Pos.CENTER_RIGHT);
@@ -175,8 +175,8 @@ public class ComponentDetailController {
     }
 
     /**
-     * Agrega la oferta al carrito de la sesi¢n y actualiza el n£mero de la barra.
-     * Si quien mira es invitado, abre la ventana "Reg°strate para comprar".
+     * Agrega la oferta al carrito de la sesi√≥n y actualiza el n√∫mero de la barra.
+     * Si quien mira es invitado, abre la ventana "Reg√≠strate para comprar".
      */
     private void addToCart(Offer offer, int quantity) {
         if (!Session.requireAccount()) {
@@ -185,7 +185,7 @@ public class ComponentDetailController {
         }
         Session.getCart().add(offer, quantity);
         DashboardController.refreshCartCount();
-        showMessage("Agregado al carrito: " + quantity + " û " + item.getComponent().getName()
+        showMessage("Agregado al carrito: " + quantity + " √ó " + item.getComponent().getName()
                 + " de " + offer.getSupplierName() + ".", false);
     }
 

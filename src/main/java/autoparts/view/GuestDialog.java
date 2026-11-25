@@ -13,13 +13,13 @@ import javafx.stage.Stage;
 import javafx.stage.Window;
 
 /**
- * Ventana "Reg°strate para comprar" que se abre cuando un invitado intenta
+ * Ventana "Reg√≠strate para comprar" que se abre cuando un invitado intenta
  * hacer algo que necesita cuenta, como agregar un repuesto al carrito.
  *
- * Tiene dos botones: Registrarme (cierra la sesi¢n de invitado y abre el
+ * Tiene dos botones: Registrarme (cierra la sesi√≥n de invitado y abre el
  * registro) y Seguir explorando (solo cierra la ventana).
  *
- * @author HÇctor Guevara
+ * @author H√©ctor Guevara
  */
 public class GuestDialog {
 
@@ -28,15 +28,15 @@ public class GuestDialog {
 
     /**
      * Abre la ventana encima de la pantalla actual y espera a que se cierre.
-     * Si el invitado elige Registrarme, despuÇs de cerrar abre el registro.
+     * Si el invitado elige Registrarme, despu√©s de cerrar abre el registro.
      *
      * @param anyNode cualquier componente de la pantalla que la abre; sirve
-     *                para saber cu†l es la ventana de atr†s
+     *                para saber cu√°l es la ventana de atr√°s
      */
     public static void show(Node anyNode) {
-        Label title = new Label("Reg°strate para comprar");
+        Label title = new Label("Reg√≠strate para comprar");
         title.getStyleClass().add("card-title");
-        Label message = new Label("Est†s explorando como invitado. Crea tu cuenta gratis "
+        Label message = new Label("Est√°s explorando como invitado. Crea tu cuenta gratis "
                 + "para agregar repuestos al carrito y hacer pedidos.");
         message.getStyleClass().add("secondary-text");
         message.setWrapText(true);
@@ -54,7 +54,7 @@ public class GuestDialog {
 
         Button keepExploring = new Button("Seguir explorando");
         keepExploring.getStyleClass().add("secondary-button");
-        keepExploring.setCancelButton(true); // Esc tambiÇn la cierra
+        keepExploring.setCancelButton(true); // Esc tambi√©n la cierra
         keepExploring.setOnAction(event -> dialog.close());
 
         HBox buttons = new HBox(10, keepExploring, register);
@@ -70,8 +70,8 @@ public class GuestDialog {
 
         Window owner = anyNode.getScene().getWindow();
         dialog.initOwner(owner);
-        dialog.initModality(Modality.WINDOW_MODAL); // bloquea la ventana de atr†s
-        dialog.setTitle("Reg°strate para comprar");
+        dialog.initModality(Modality.WINDOW_MODAL); // bloquea la ventana de atr√°s
+        dialog.setTitle("Reg√≠strate para comprar");
         dialog.setResizable(false);
         dialog.setScene(scene);
         dialog.showAndWait();

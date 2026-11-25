@@ -14,16 +14,16 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 /**
- * Controlador de la pantalla de inicio de sesi¢n (Login.fxml).
+ * Controlador de la pantalla de inicio de sesi√≥n (Login.fxml).
  *
- * Env°a el correo y la contrase§a a UserService. Si los datos no son v†lidos
- * muestra el error y sacude el formulario. TambiÇn deja mostrar u ocultar la
- * contrase§a. El logo animado de la izquierda es el componente LogoTree.
+ * Env√≠a el correo y la contrase√±a a UserService. Si los datos no son v√°lidos
+ * muestra el error y sacude el formulario. Tambi√©n deja mostrar u ocultar la
+ * contrase√±a. El logo animado de la izquierda es el componente LogoTree.
  *
- * El bot¢n "Explorar como invitado" entra a la app sin cuenta, solo para mirar.
+ * El bot√≥n "Explorar como invitado" entra a la app sin cuenta, solo para mirar.
  *
  * @author Jahdiel Torres
- * @author HÇctor Guevara (modo invitado)
+ * @author H√©ctor Guevara (modo invitado)
  */
 public class LoginController {
 
@@ -41,11 +41,11 @@ public class LoginController {
     private VBox formBox;
 
     /**
-     * JavaFX llama este mÇtodo autom†ticamente al cargar la pantalla.
+     * JavaFX llama este m√©todo autom√°ticamente al cargar la pantalla.
      */
     @FXML
     private void initialize() {
-        // Los dos campos de contrase§a comparten el mismo texto
+        // Los dos campos de contrase√±a comparten el mismo texto
         txtPasswordVisible.textProperty().bindBidirectional(txtPassword.textProperty());
     }
 
@@ -57,12 +57,12 @@ public class LoginController {
         } catch (InvalidDataException e) {
             showError(e.getMessage());
         } catch (PersistenceException e) {
-            showError("No se pudieron leer los usuarios. Revisa tu conexi¢n e intenta de nuevo.");
+            showError("No se pudieron leer los usuarios. Revisa tu conexi√≥n e intenta de nuevo.");
         }
     }
 
     /**
-     * Cambia entre ver la contrase§a escrita y ocultarla con puntos.
+     * Cambia entre ver la contrase√±a escrita y ocultarla con puntos.
      */
     @FXML
     private void togglePassword() {
@@ -73,7 +73,7 @@ public class LoginController {
     }
 
     /**
-     * Bot¢n "Explorar como invitado": abre la app sin cuenta. La sesi¢n de
+     * Bot√≥n "Explorar como invitado": abre la app sin cuenta. La sesi√≥n de
      * invitado vive en memoria; no se crea nada en Oracle.
      */
     @FXML

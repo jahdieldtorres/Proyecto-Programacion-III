@@ -50,7 +50,6 @@ public class DashboardController {
     public static final String AFFILIATIONS = "Affiliations.fxml";
     public static final String USERS = "Users.fxml";
     public static final String MY_ACCOUNT = "MyAccount.fxml";
-    public static final String APPOINTMENTS = "Appointments.fxml";
 
     /** Margen de las pantallas normales. El Inicio ocupa todo el ancho, sin margen. */
     private static final Insets PAGE_PADDING = new Insets(24, 28, 24, 28);
@@ -80,8 +79,6 @@ public class DashboardController {
     private MenuItem itemMyAccount;
     @FXML
     private MenuItem itemRegister;
-    @FXML
-    private MenuItem itemAppointments;
     @FXML
     private Label lblCartCount;
 
@@ -142,15 +139,6 @@ public class DashboardController {
     }
 
     /**
-     * Abre Mis citas. La usa Servicios después de agendar una cita.
-     */
-    public static void openAppointments() {
-        if (current != null) {
-            current.goToAppointments();
-        }
-    }
-
-    /**
      * Actualiza el número del carrito en la barra. Lo llaman las pantallas
      * que agregan o quitan repuestos del carrito.
      */
@@ -189,7 +177,6 @@ public class DashboardController {
     private void showGuest() {
         menuUser.setText("Invitado");
         itemMyAccount.setVisible(false);
-        itemAppointments.setVisible(false);
         itemRegister.setVisible(true);
         menuAdmin.setVisible(false);
         menuAdmin.setManaged(false);
@@ -277,14 +264,6 @@ public class DashboardController {
     @FXML
     private void goToUsers() {
         show(USERS, menuAdmin);
-    }
-
-    @FXML
-    private void goToAppointments() {
-        if (Session.isGuest()) {
-            return; // el invitado no tiene citas
-        }
-        show(APPOINTMENTS, menuUser);
     }
 
     @FXML
