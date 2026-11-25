@@ -18,7 +18,12 @@ import java.util.List;
  * Si el cliente nunca eligió su ubicación en el mapa, se usa la Universidad
  * Popular del Cesar como punto de referencia.
  *
+ * El invitado no tiene usuario (llega null): su ubicación se guarda solo en
+ * memoria y se olvida al terminar la sesión, sin tocar el archivo de
+ * preferencias del computador.
+ *
  * @author Jahdiel Torres
+ * @author Héctor Guevara (soporte para invitados)
  */
 public class UserLocationService {
 
@@ -31,6 +36,9 @@ public class UserLocationService {
 
     private final UserLocationDAO locationDAO;
 
+    /** Ubicación que eligió el invitado en el mapa. Solo vive en memoria. */
+    private GeoPoint guestLocation;
+
     /**
      * @param locationDAO dónde se guardan las ubicaciones
      */
@@ -41,10 +49,13 @@ public class UserLocationService {
     /**
      * Ubicación del usuario: la que eligió o, si no eligió, la de la universidad.
      *
-     * @param user usuario de la sesión
+     * @param user usuario de la sesión, o null si es invitado
      * @return el punto desde el que se miden las distancias
      */
     public GeoPoint locationOf(User user) {
+        if (user == null) {
+            return guestLocation != null ? guestLocation : DEFAULT_LOCATION;
+        }
         return locationDAO.find(user.getId()).orElse(DEFAULT_LOCATION);
     }
 
@@ -52,24 +63,41 @@ public class UserLocationService {
      * Indica si el usuario ya eligió su ubicación en el mapa.
      */
     public boolean hasChosen(User user) {
+        if (user == null) {
+            return guestLocation != null;
+        }
         return locationDAO.find(user.getId()).isPresent();
     }
 
     /**
      * Guarda la ubicación que el usuario eligió en el mapa.
      *
-     * @param user     usuario de la sesión
+     * Si es invitado (user es null), solo se recuerda mientras dure la sesión.
+     *
+     * @param user     usuario de la sesión, o null si es invitado
      * @param location punto elegido
      */
     public void choose(User user, GeoPoint location) {
+        if (user == null) {
+            guestLocation = location;
+            return;
+        }
         locationDAO.save(user.getId(), location);
+    }
+
+    /**
+     * Olvida la ubicación del invitado anterior. Se llama al entrar como
+     * invitado, para que cada visita empiece desde la universidad.
+     */
+    public void forgetGuestLocation() {
+        guestLocation = null;
     }
 
     /**
      * Ordena los socios activos del más cercano al más lejano respecto a la
      * ubicación del usuario.
      *
-     * @param user     usuario de la sesión
+     * @param user     usuario de la sesión, o null si es invitado
      * @param partners almacenes y talleres
      * @return cada socio con su distancia, ordenados por cercanía
      */

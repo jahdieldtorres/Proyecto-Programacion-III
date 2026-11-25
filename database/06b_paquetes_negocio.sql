@@ -507,6 +507,7 @@ CREATE OR REPLACE PACKAGE PKG_INVENTORY AS
         p_shipping_cost   IN NUMBER,
         p_warranty_months IN NUMBER,
         p_condition       IN VARCHAR2,
+        p_description     IN VARCHAR2,
         p_status          IN VARCHAR2
     ) RETURN NUMBER;
 
@@ -521,6 +522,7 @@ CREATE OR REPLACE PACKAGE PKG_INVENTORY AS
         p_shipping_cost   IN NUMBER,
         p_warranty_months IN NUMBER,
         p_condition       IN VARCHAR2,
+        p_description     IN VARCHAR2,
         p_status          IN VARCHAR2
     ) RETURN NUMBER;
 
@@ -534,7 +536,7 @@ CREATE OR REPLACE PACKAGE BODY PKG_INVENTORY AS
     BEGIN
         OPEN c_items FOR
             SELECT ID, SUPPLIER_ID, COMPONENT_ID, PRICE, STOCK, SHIPPING_COST,
-                   WARRANTY_MONTHS, CONDITION, STATUS
+                   WARRANTY_MONTHS, CONDITION, DESCRIPTION, STATUS
             FROM INVENTORY
             ORDER BY ID;
         RETURN c_items;
@@ -545,7 +547,7 @@ CREATE OR REPLACE PACKAGE BODY PKG_INVENTORY AS
     BEGIN
         OPEN c_item FOR
             SELECT ID, SUPPLIER_ID, COMPONENT_ID, PRICE, STOCK, SHIPPING_COST,
-                   WARRANTY_MONTHS, CONDITION, STATUS
+                   WARRANTY_MONTHS, CONDITION, DESCRIPTION, STATUS
             FROM INVENTORY
             WHERE ID = p_id;
         RETURN c_item;
@@ -556,7 +558,7 @@ CREATE OR REPLACE PACKAGE BODY PKG_INVENTORY AS
     BEGIN
         OPEN c_items FOR
             SELECT ID, SUPPLIER_ID, COMPONENT_ID, PRICE, STOCK, SHIPPING_COST,
-                   WARRANTY_MONTHS, CONDITION, STATUS
+                   WARRANTY_MONTHS, CONDITION, DESCRIPTION, STATUS
             FROM INVENTORY
             WHERE SUPPLIER_ID = p_supplier_id
             ORDER BY ID;
@@ -568,7 +570,7 @@ CREATE OR REPLACE PACKAGE BODY PKG_INVENTORY AS
     BEGIN
         OPEN c_items FOR
             SELECT ID, SUPPLIER_ID, COMPONENT_ID, PRICE, STOCK, SHIPPING_COST,
-                   WARRANTY_MONTHS, CONDITION, STATUS
+                   WARRANTY_MONTHS, CONDITION, DESCRIPTION, STATUS
             FROM INVENTORY
             WHERE COMPONENT_ID = p_component_id
             ORDER BY ID;
@@ -583,14 +585,15 @@ CREATE OR REPLACE PACKAGE BODY PKG_INVENTORY AS
         p_shipping_cost   IN NUMBER,
         p_warranty_months IN NUMBER,
         p_condition       IN VARCHAR2,
+        p_description     IN VARCHAR2,
         p_status          IN VARCHAR2
     ) RETURN NUMBER IS
         v_id NUMBER;
     BEGIN
         INSERT INTO INVENTORY (SUPPLIER_ID, COMPONENT_ID, PRICE, STOCK, SHIPPING_COST,
-                               WARRANTY_MONTHS, CONDITION, STATUS)
+                               WARRANTY_MONTHS, CONDITION, DESCRIPTION, STATUS)
         VALUES (p_supplier_id, p_component_id, p_price, p_stock, p_shipping_cost,
-                p_warranty_months, p_condition, p_status)
+                p_warranty_months, p_condition, p_description, p_status)
         RETURNING ID INTO v_id;
         RETURN v_id;
     END INSERT_INVENTORY;
@@ -604,6 +607,7 @@ CREATE OR REPLACE PACKAGE BODY PKG_INVENTORY AS
         p_shipping_cost   IN NUMBER,
         p_warranty_months IN NUMBER,
         p_condition       IN VARCHAR2,
+        p_description     IN VARCHAR2,
         p_status          IN VARCHAR2
     ) RETURN NUMBER IS
     BEGIN
@@ -615,6 +619,7 @@ CREATE OR REPLACE PACKAGE BODY PKG_INVENTORY AS
             SHIPPING_COST = p_shipping_cost,
             WARRANTY_MONTHS = p_warranty_months,
             CONDITION = p_condition,
+            DESCRIPTION = p_description,
             STATUS = p_status
         WHERE ID = p_id;
         RETURN SQL%ROWCOUNT;

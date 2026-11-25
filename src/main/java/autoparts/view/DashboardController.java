@@ -12,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -26,7 +27,11 @@ import javafx.util.Duration;
  * vehículos, socios, inventario, tarifas, afiliaciones y usuarios) solo lo ve
  * el admin.
  *
+ * Si la sesión es de invitado, el menú del usuario dice "Invitado" y ofrece
+ * Registrarme en vez de Mi cuenta, y el carrito no se muestra.
+ *
  * @author Jahdiel Torres
+ * @author Héctor Guevara (modo invitado)
  */
 public class DashboardController {
 
@@ -70,6 +75,10 @@ public class DashboardController {
     private MenuButton menuAdmin;
     @FXML
     private MenuButton menuUser;
+    @FXML
+    private MenuItem itemMyAccount;
+    @FXML
+    private MenuItem itemRegister;
     @FXML
     private Label lblCartCount;
 
@@ -141,18 +150,38 @@ public class DashboardController {
 
     /**
      * Muestra el nombre de quien inició sesión y oculta el menú Administrar
-     * si no es administrador.
+     * si no es administrador. Si es invitado, muestra "Invitado", ofrece
+     * Registrarme y oculta el carrito.
      */
     private void showUser() {
+        if (Session.isGuest()) {
+            showGuest();
+            return;
+        }
         User user = Session.getUser();
         if (user == null) {
             return;
         }
+        itemRegister.setVisible(false);
         menuUser.setText(firstName(user.getName()));
         boolean admin = Session.isAdmin();
         menuAdmin.setVisible(admin);
         menuAdmin.setManaged(admin); // setManaged(false) también quita el espacio que ocupa
         refreshCartCount();
+    }
+
+    /**
+     * Barra para el invitado: sin Administrar ni carrito, y con Registrarme
+     * en lugar de Mi cuenta.
+     */
+    private void showGuest() {
+        menuUser.setText("Invitado");
+        itemMyAccount.setVisible(false);
+        itemRegister.setVisible(true);
+        menuAdmin.setVisible(false);
+        menuAdmin.setManaged(false);
+        btnCart.setVisible(false);
+        btnCart.setManaged(false);
     }
 
     /**
@@ -206,6 +235,9 @@ public class DashboardController {
 
     @FXML
     private void goToCart() {
+        if (Session.isGuest()) {
+            return; // el invitado no tiene carrito
+        }
         show(CART, btnCart);
     }
 
@@ -236,7 +268,28 @@ public class DashboardController {
 
     @FXML
     private void goToMyAccount() {
+        if (Session.isGuest()) {
+            return; // el invitado no tiene cuenta
+        }
         show(MY_ACCOUNT, menuUser);
+    }
+
+    /**
+     * Opción Registrarme del invitado: cierra la sesión de invitado y abre el registro.
+     */
+    @FXML
+    private void goToRegister() {
+        openRegister();
+    }
+
+    /**
+     * Cierra la sesión de invitado y lleva a la pantalla de registro. También
+     * la usa la ventana "Regístrate para comprar" (GuestDialog).
+     */
+    public static void openRegister() {
+        Session.close();
+        current = null;
+        Navigator.goTo(Navigator.REGISTER);
     }
 
     @FXML

@@ -3,6 +3,7 @@ package autoparts.view;
 import autoparts.AppServices;
 import autoparts.exception.InvalidDataException;
 import autoparts.exception.PersistenceException;
+import autoparts.service.Session;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -19,7 +20,10 @@ import javafx.util.Duration;
  * muestra el error y sacude el formulario. También deja mostrar u ocultar la
  * contraseña. El logo animado de la izquierda es el componente LogoTree.
  *
+ * El botón "Explorar como invitado" entra a la app sin cuenta, solo para mirar.
+ *
  * @author Jahdiel Torres
+ * @author Héctor Guevara (modo invitado)
  */
 public class LoginController {
 
@@ -66,6 +70,17 @@ public class LoginController {
         txtPasswordVisible.setVisible(show);
         txtPassword.setVisible(!show);
         btnShowPassword.setText(show ? "Ocultar" : "Mostrar");
+    }
+
+    /**
+     * Botón "Explorar como invitado": abre la app sin cuenta. La sesión de
+     * invitado vive en memoria; no se crea nada en Oracle.
+     */
+    @FXML
+    private void exploreAsGuest() {
+        Session.startGuest();
+        AppServices.locations().forgetGuestLocation();
+        Navigator.goTo(Navigator.DASHBOARD);
     }
 
     @FXML

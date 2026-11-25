@@ -61,9 +61,11 @@
 
                 <MenuButton fx:id="menuUser" styleClass="user-menu">
                     <items>
-                        <MenuItem text="Mi cuenta" onAction="#goToMyAccount"/>
+                        <MenuItem fx:id="itemMyAccount" text="Mi cuenta" onAction="#goToMyAccount"/>
+                        <MenuItem fx:id="itemAppointments" text="Mis citas" onAction="#goToAppointments"/>
+                        <MenuItem fx:id="itemRegister" text="Registrarme" onAction="#goToRegister"/>
                         <SeparatorMenuItem/>
-                        <MenuItem text="Cerrar sesión" onAction="#logout"/>
+                        <MenuItem fx:id="itemLogout" text="Cerrar sesión" onAction="#logout"/>
                     </items>
                 </MenuButton>
             </HBox>

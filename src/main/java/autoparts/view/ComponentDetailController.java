@@ -30,6 +30,8 @@ import javafx.scene.layout.VBox;
  * para agregarla al carrito. Las ofertas se ordenan por el criterio que elige
  * el cliente, sin marcar a ningún almacén como "el mejor": todos son aliados.
  *
+ * Si quien mira es invitado, agregar al carrito abre la ventana GuestDialog.
+ *
  * @author Jahdiel Torres
  */
 public class ComponentDetailController {
@@ -174,8 +176,13 @@ public class ComponentDetailController {
 
     /**
      * Agrega la oferta al carrito de la sesión y actualiza el número de la barra.
+     * Si quien mira es invitado, abre la ventana "Regístrate para comprar".
      */
     private void addToCart(Offer offer, int quantity) {
+        if (!Session.requireAccount()) {
+            GuestDialog.show(lblMessage);
+            return;
+        }
         Session.getCart().add(offer, quantity);
         DashboardController.refreshCartCount();
         showMessage("Agregado al carrito: " + quantity + " × " + item.getComponent().getName()

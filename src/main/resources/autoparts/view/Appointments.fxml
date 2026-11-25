@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- Mis citas: las citas que el cliente agendó con los talleres -->
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="autoparts.view.AppointmentsController" fitToWidth="true" styleClass="clear-scroll">
+    <VBox spacing="18">
+        <VBox spacing="2">
+            <Label text="Mis citas" styleClass="page-title"/>
+            <Label fx:id="lblCount" styleClass="secondary-text"/>
+        </VBox>
+
+        <Label fx:id="lblMessage" styleClass="error-message" wrapText="true"/>
+        <VBox fx:id="listBox" spacing="12" maxWidth="760"/>
+
+        <!-- Estado vacío -->
+        <VBox fx:id="emptyBox" spacing="10" visible="false" managed="false" maxWidth="760" styleClass="card">
+            <Label text="Todavía no tienes citas" styleClass="section-title"/>
+            <Label text="Elige un servicio de un taller aliado y agenda tu cita desde Servicios."
+                   styleClass="secondary-text" wrapText="true"/>
+            <Button text="Ver servicios" onAction="#goToServices" styleClass="primary-button"/>
+        </VBox>
+    </VBox>
+</ScrollPane>
