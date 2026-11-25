@@ -6,6 +6,7 @@ import autoparts.model.Fee;
 import autoparts.model.Status;
 import autoparts.model.Workshop;
 import autoparts.model.WorkshopService;
+import autoparts.service.Session;
 import java.util.List;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -23,7 +24,9 @@ import javafx.scene.layout.VBox;
  *
  * Muestra los talleres aliados activos con sus servicios y la tarifa vigente
  * de cada uno. Cada taller tiene el botón "Escribir por WhatsApp", igual que
- * en el mapa. Solo llama a servicios a través de AppServices.
+ * en el mapa, y cada servicio el botón "Agendar" para pedir una cita (si es
+ * invitado, se abre la ventana "Regístrate"). Solo llama a servicios a través
+ * de AppServices.
  *
  * @author Jahdiel Torres
  * @author Héctor Guevara (servicios y tarifas)
@@ -93,7 +96,7 @@ public class ServicesController {
         try {
             List<WorkshopService> services = AppServices.serviceCatalog().findActiveByWorkshop(workshop.getId());
             for (WorkshopService service : services) {
-                servicesBox.getChildren().add(serviceRow(service));
+                servicesBox.getChildren().add(serviceRow(workshop, service));
             }
             if (services.isEmpty()) {
                 Label empty = new Label("Este taller todavía no tiene servicios publicados.");
@@ -106,9 +109,10 @@ public class ServicesController {
     }
 
     /**
-     * Fila de un servicio: nombre y descripción a la izquierda, tarifa vigente a la derecha.
+     * Fila de un servicio: nombre y descripción a la izquierda; tarifa vigente
+     * y botón Agendar a la derecha.
      */
-    private HBox serviceRow(WorkshopService service) {
+    private HBox serviceRow(Workshop workshop, WorkshopService service) {
         Label name = new Label(service.getName());
         name.setWrapText(true);
         VBox left = new VBox(2, name);
@@ -122,11 +126,31 @@ public class ServicesController {
         Label price = new Label(priceText(service));
         price.getStyleClass().add("product-price");
 
+        Button schedule = new Button("Agendar");
+        schedule.getStyleClass().add("secondary-button");
+        schedule.setOnAction(event -> schedule(workshop, service, schedule));
+        VBox right = new VBox(4, price, schedule);
+        right.setAlignment(Pos.CENTER_RIGHT);
+
         Region space = new Region();
         HBox.setHgrow(space, Priority.ALWAYS);
-        HBox row = new HBox(10, left, space, price);
+        HBox row = new HBox(10, left, space, right);
         row.setAlignment(Pos.CENTER_LEFT);
         return row;
+    }
+
+    /**
+     * Botón Agendar: abre el formulario de la cita. Si es invitado, abre la
+     * ventana "Regístrate para comprar". Al agendar, lleva a Mis citas.
+     */
+    private void schedule(Workshop workshop, WorkshopService service, Button source) {
+        if (!Session.requireAccount()) {
+            GuestDialog.show(source);
+            return;
+        }
+        Navigator.openForm("AppointmentForm.fxml", "Agendar cita",
+                (AppointmentFormController form) -> form.setup(service, workshop.getCompanyName(),
+                        DashboardController::openAppointments));
     }
 
     /**

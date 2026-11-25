@@ -4,10 +4,9 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.FlowPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<!-- Servicios de talleres: sección en construcción que ya muestra los talleres aliados -->
+<!-- Servicios de talleres: cada taller aliado con sus servicios y la tarifa vigente -->
 <ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="autoparts.view.ServicesController" fitToWidth="true" styleClass="clear-scroll">
     <VBox spacing="18">
@@ -16,13 +15,7 @@
             <Label text="Instalación y mantenimiento con talleres aliados de Valledupar." styleClass="secondary-text"/>
         </VBox>
 
-        <HBox fx:id="noticeBox" spacing="12" alignment="CENTER_LEFT" styleClass="construction-notice">
-            <Label text="Sección en construcción." styleClass="construction-title"/>
-            <Label text="Ya puedes ver los talleres aliados; agendar una cita llega en la próxima versión."
-                   styleClass="construction-text" wrapText="true"/>
-        </HBox>
-
-        <Label text="Talleres aliados" styleClass="section-title"/>
+        <Label text="Talleres aliados y sus servicios" styleClass="section-title"/>
         <FlowPane fx:id="workshopsBox" hgap="16" vgap="16"/>
         <Label fx:id="lblMessage" styleClass="error-message" wrapText="true"/>
 
@@ -31,7 +24,7 @@
             <Label text="Así va a funcionar" styleClass="field-label"/>
             <Label text="1. Eliges el servicio y ves la tarifa del taller." wrapText="true"/>
             <Label text="2. Escoges el taller más cercano en el mapa." wrapText="true"/>
-            <Label text="3. Agendas la cita y la confirmas por WhatsApp (próximamente)." wrapText="true"/>
+            <Label text="3. Agendas la cita desde la app y la ves en Mis citas; también puedes escribirle por WhatsApp." wrapText="true"/>
         </VBox>
     </VBox>
 </ScrollPane>

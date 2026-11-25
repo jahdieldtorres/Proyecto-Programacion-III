@@ -62,6 +62,7 @@
                 <MenuButton fx:id="menuUser" styleClass="user-menu">
                     <items>
                         <MenuItem fx:id="itemMyAccount" text="Mi cuenta" onAction="#goToMyAccount"/>
+                        <MenuItem fx:id="itemAppointments" text="Mis citas" onAction="#goToAppointments"/>
                         <MenuItem fx:id="itemRegister" text="Registrarme" onAction="#goToRegister"/>
                         <SeparatorMenuItem/>
                         <MenuItem fx:id="itemLogout" text="Cerrar sesión" onAction="#logout"/>

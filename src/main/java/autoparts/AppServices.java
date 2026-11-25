@@ -2,6 +2,7 @@ package autoparts;
 
 import autoparts.dao.local.UserLocationPreferencesDAO;
 import autoparts.dao.oracle.AffiliationOracleDAO;
+import autoparts.dao.oracle.AppointmentOracleDAO;
 import autoparts.dao.oracle.BrandOracleDAO;
 import autoparts.dao.oracle.CategoryOracleDAO;
 import autoparts.dao.oracle.CompatibilityOracleDAO;
@@ -14,6 +15,7 @@ import autoparts.dao.oracle.UserOracleDAO;
 import autoparts.dao.oracle.VehicleOracleDAO;
 import autoparts.dao.oracle.WorkshopServiceOracleDAO;
 import autoparts.service.AffiliationService;
+import autoparts.service.AppointmentService;
 import autoparts.service.CatalogService;
 import autoparts.service.ComparatorService;
 import autoparts.service.ComponentImageService;
@@ -62,6 +64,8 @@ public class AppServices {
             new UserLocationService(new UserLocationPreferencesDAO());
     private static final ServiceCatalogService SERVICE_CATALOG_SERVICE =
             new ServiceCatalogService(new WorkshopServiceOracleDAO());
+    private static final AppointmentService APPOINTMENT_SERVICE =
+            new AppointmentService(new AppointmentOracleDAO(), new WorkshopServiceOracleDAO());
 
     public static UserService users() {
         return USER_SERVICE;
@@ -109,5 +113,9 @@ public class AppServices {
 
     public static ServiceCatalogService serviceCatalog() {
         return SERVICE_CATALOG_SERVICE;
+    }
+
+    public static AppointmentService appointments() {
+        return APPOINTMENT_SERVICE;
     }
 }

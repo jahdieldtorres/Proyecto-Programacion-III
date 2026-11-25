@@ -21,17 +21,17 @@ import javafx.util.Duration;
 /**
  * Controlador de la ventana principal (Dashboard.fxml): barra superior y contenido.
  *
- * Cada m¢dulo se conecta por el nombre de su archivo FXML (constantes de abajo).
- * Mientras el archivo no exista, se muestra "Secci¢n en construcci¢n". La barra
- * se ajusta al rol de quien inici¢ sesi¢n: el men£ Administrar (repuestos,
- * veh°culos, socios, inventario, tarifas, afiliaciones y usuarios) solo lo ve
+ * Cada m√≥dulo se conecta por el nombre de su archivo FXML (constantes de abajo).
+ * Mientras el archivo no exista, se muestra "Secci√≥n en construcci√≥n". La barra
+ * se ajusta al rol de quien inici√≥ sesi√≥n: el men√∫ Administrar (repuestos,
+ * veh√≠culos, socios, inventario, tarifas, afiliaciones y usuarios) solo lo ve
  * el admin.
  *
- * Si la sesi¢n es de invitado, el men£ del usuario dice "Invitado" y ofrece
+ * Si la sesi√≥n es de invitado, el men√∫ del usuario dice "Invitado" y ofrece
  * Registrarme en vez de Mi cuenta, y el carrito no se muestra.
  *
  * @author Jahdiel Torres
- * @author HÇctor Guevara (modo invitado)
+ * @author H√©ctor Guevara (modo invitado)
  */
 public class DashboardController {
 
@@ -50,11 +50,12 @@ public class DashboardController {
     public static final String AFFILIATIONS = "Affiliations.fxml";
     public static final String USERS = "Users.fxml";
     public static final String MY_ACCOUNT = "MyAccount.fxml";
+    public static final String APPOINTMENTS = "Appointments.fxml";
 
     /** Margen de las pantallas normales. El Inicio ocupa todo el ancho, sin margen. */
     private static final Insets PAGE_PADDING = new Insets(24, 28, 24, 28);
 
-    /** Ventana principal abierta, para que otras pantallas puedan pedirle cambiar de secci¢n. */
+    /** Ventana principal abierta, para que otras pantallas puedan pedirle cambiar de secci√≥n. */
     private static DashboardController current;
 
     @FXML
@@ -80,13 +81,15 @@ public class DashboardController {
     @FXML
     private MenuItem itemRegister;
     @FXML
+    private MenuItem itemAppointments;
+    @FXML
     private Label lblCartCount;
 
-    /** Opci¢n de la barra que est† resaltada (la secci¢n abierta). */
+    /** Opci√≥n de la barra que est√° resaltada (la secci√≥n abierta). */
     private Node activeItem;
 
     /**
-     * JavaFX llama este mÇtodo autom†ticamente al cargar la pantalla.
+     * JavaFX llama este m√©todo autom√°ticamente al cargar la pantalla.
      */
     @FXML
     private void initialize() {
@@ -96,10 +99,10 @@ public class DashboardController {
     }
 
     /**
-     * Abre el cat†logo con un texto ya buscado (vac°o = todo el cat†logo).
+     * Abre el cat√°logo con un texto ya buscado (vac√≠o = todo el cat√°logo).
      * Lo usan el buscador de la barra, Inicio y los botones "Volver".
      *
-     * @param text lo que el usuario escribi¢
+     * @param text lo que el usuario escribi√≥
      */
     public static void openCatalogWith(String text) {
         ShopController.setPendingSearch(text);
@@ -109,9 +112,9 @@ public class DashboardController {
     }
 
     /**
-     * Abre el detalle de un repuesto con la comparaci¢n entre almacenes.
+     * Abre el detalle de un repuesto con la comparaci√≥n entre almacenes.
      *
-     * @param item el repuesto elegido en el cat†logo o en Inicio
+     * @param item el repuesto elegido en el cat√°logo o en Inicio
      */
     public static void openDetail(CatalogItem item) {
         ComponentDetailController.setItem(item);
@@ -121,7 +124,7 @@ public class DashboardController {
     }
 
     /**
-     * Abre "Talleres cerca" con el mapa. La usa la secci¢n "Cerca de ti" de Inicio.
+     * Abre "Talleres cerca" con el mapa. La usa la secci√≥n "Cerca de ti" de Inicio.
      */
     public static void openMap() {
         if (current != null) {
@@ -139,7 +142,16 @@ public class DashboardController {
     }
 
     /**
-     * Actualiza el n£mero del carrito en la barra. Lo llaman las pantallas
+     * Abre Mis citas. La usa Servicios despu√©s de agendar una cita.
+     */
+    public static void openAppointments() {
+        if (current != null) {
+            current.goToAppointments();
+        }
+    }
+
+    /**
+     * Actualiza el n√∫mero del carrito en la barra. Lo llaman las pantallas
      * que agregan o quitan repuestos del carrito.
      */
     public static void refreshCartCount() {
@@ -149,7 +161,7 @@ public class DashboardController {
     }
 
     /**
-     * Muestra el nombre de quien inici¢ sesi¢n y oculta el men£ Administrar
+     * Muestra el nombre de quien inici√≥ sesi√≥n y oculta el men√∫ Administrar
      * si no es administrador. Si es invitado, muestra "Invitado", ofrece
      * Registrarme y oculta el carrito.
      */
@@ -166,7 +178,7 @@ public class DashboardController {
         menuUser.setText(firstName(user.getName()));
         boolean admin = Session.isAdmin();
         menuAdmin.setVisible(admin);
-        menuAdmin.setManaged(admin); // setManaged(false) tambiÇn quita el espacio que ocupa
+        menuAdmin.setManaged(admin); // setManaged(false) tambi√©n quita el espacio que ocupa
         refreshCartCount();
     }
 
@@ -177,6 +189,7 @@ public class DashboardController {
     private void showGuest() {
         menuUser.setText("Invitado");
         itemMyAccount.setVisible(false);
+        itemAppointments.setVisible(false);
         itemRegister.setVisible(true);
         menuAdmin.setVisible(false);
         menuAdmin.setManaged(false);
@@ -267,6 +280,14 @@ public class DashboardController {
     }
 
     @FXML
+    private void goToAppointments() {
+        if (Session.isGuest()) {
+            return; // el invitado no tiene citas
+        }
+        show(APPOINTMENTS, menuUser);
+    }
+
+    @FXML
     private void goToMyAccount() {
         if (Session.isGuest()) {
             return; // el invitado no tiene cuenta
@@ -275,7 +296,7 @@ public class DashboardController {
     }
 
     /**
-     * Opci¢n Registrarme del invitado: cierra la sesi¢n de invitado y abre el registro.
+     * Opci√≥n Registrarme del invitado: cierra la sesi√≥n de invitado y abre el registro.
      */
     @FXML
     private void goToRegister() {
@@ -283,8 +304,8 @@ public class DashboardController {
     }
 
     /**
-     * Cierra la sesi¢n de invitado y lleva a la pantalla de registro. TambiÇn
-     * la usa la ventana "Reg°strate para comprar" (GuestDialog).
+     * Cierra la sesi√≥n de invitado y lleva a la pantalla de registro. Tambi√©n
+     * la usa la ventana "Reg√≠strate para comprar" (GuestDialog).
      */
     public static void openRegister() {
         Session.close();
@@ -300,11 +321,11 @@ public class DashboardController {
     }
 
     /**
-     * Muestra una vista en el centro de la ventana, resalta su opci¢n de la
+     * Muestra una vista en el centro de la ventana, resalta su opci√≥n de la
      * barra y la hace aparecer con un desvanecido corto.
      *
      * @param view     nombre del archivo FXML
-     * @param navItem  bot¢n o men£ de la barra que corresponde a esa vista
+     * @param navItem  bot√≥n o men√∫ de la barra que corresponde a esa vista
      */
     private void show(String view, Node navItem) {
         markActive(navItem);
@@ -317,7 +338,7 @@ public class DashboardController {
     }
 
     /**
-     * Quita el resaltado de la opci¢n anterior y lo pone en la nueva.
+     * Quita el resaltado de la opci√≥n anterior y lo pone en la nueva.
      */
     private void markActive(Node navItem) {
         if (activeItem != null) {
@@ -328,7 +349,7 @@ public class DashboardController {
     }
 
     /**
-     * Animaci¢n de entrada: la pantalla pasa de transparente a visible.
+     * Animaci√≥n de entrada: la pantalla pasa de transparente a visible.
      */
     private void fadeIn(Node screen) {
         FadeTransition fade = new FadeTransition(Duration.millis(220), screen);
@@ -338,12 +359,12 @@ public class DashboardController {
     }
 
     /**
-     * Crea el aviso que se muestra cuando una pantalla todav°a no existe.
+     * Crea el aviso que se muestra cuando una pantalla todav√≠a no existe.
      */
     private VBox underConstruction(String view) {
-        Label title = new Label("Secci¢n en construcci¢n");
+        Label title = new Label("Secci√≥n en construcci√≥n");
         title.getStyleClass().add("section-title");
-        Label detail = new Label("Esta pantalla aparecer† cuando se agregue " + view + ".");
+        Label detail = new Label("Esta pantalla aparecer√° cuando se agregue " + view + ".");
         detail.getStyleClass().add("secondary-text");
         VBox box = new VBox(8, title, detail);
         box.setAlignment(Pos.CENTER);
