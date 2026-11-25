@@ -2,31 +2,34 @@ package autoparts.view;
 
 import autoparts.AppServices;
 import autoparts.exception.PersistenceException;
+import autoparts.model.Fee;
 import autoparts.model.Status;
 import autoparts.model.Workshop;
-import javafx.animation.FadeTransition;
-import javafx.animation.Animation;
+import autoparts.model.WorkshopService;
+import java.util.List;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.util.Duration;
 
 /**
  * Controlador de Servicios (Services.fxml).
  *
- * La sección está en construcción: por ahora muestra los talleres aliados
- * activos con su especialidad y dirección, para que se vea lo que viene.
+ * Muestra los talleres aliados activos con sus servicios y la tarifa vigente
+ * de cada uno. Cada taller tiene el botón "Escribir por WhatsApp", igual que
+ * en el mapa. Solo llama a servicios a través de AppServices.
  *
  * @author Jahdiel Torres
+ * @author Héctor Guevara (servicios y tarifas)
  */
 public class ServicesController {
 
-    @FXML
-    private HBox noticeBox;
     @FXML
     private FlowPane workshopsBox;
     @FXML
@@ -37,7 +40,6 @@ public class ServicesController {
      */
     @FXML
     private void initialize() {
-        pulseNotice();
         try {
             for (Workshop workshop : AppServices.partners().findAllWorkshops()) {
                 if (workshop.getStatus() == Status.ACTIVO) {
@@ -47,22 +49,14 @@ public class ServicesController {
         } catch (PersistenceException e) {
             lblMessage.setText(e.getMessage());
         }
+        if (workshopsBox.getChildren().isEmpty() && lblMessage.getText().isEmpty()) {
+            lblMessage.setText("Todavía no hay talleres aliados con servicios.");
+        }
     }
 
     /**
-     * El aviso de "en construcción" late suavemente para llamar la atención.
-     */
-    private void pulseNotice() {
-        FadeTransition pulse = new FadeTransition(Duration.seconds(1.2), noticeBox);
-        pulse.setFromValue(1);
-        pulse.setToValue(0.75);
-        pulse.setAutoReverse(true);
-        pulse.setCycleCount(Animation.INDEFINITE);
-        pulse.play();
-    }
-
-    /**
-     * Tarjeta de un taller: nombre, especialidad, bahías, dirección y teléfono.
+     * Tarjeta de un taller: nombre, especialidad, dirección, teléfono, la lista
+     * de sus servicios con tarifa y el botón de WhatsApp.
      */
     private VBox workshopCard(Workshop workshop) {
         StackPane icon = new StackPane(Icons.create(Icons.WRENCH));
@@ -76,13 +70,85 @@ public class ServicesController {
         address.setWrapText(true);
         Label phone = new Label("Tel. " + workshop.getPhone());
         phone.getStyleClass().add("secondary-text");
-        Button schedule = new Button("Agendar · próximamente");
-        schedule.setDisable(true);
-        schedule.getStyleClass().add("secondary-button");
 
-        VBox card = new VBox(8, icon, name, specialty, address, phone, schedule);
+        Label servicesTitle = new Label("Servicios");
+        servicesTitle.getStyleClass().add("field-label");
+        VBox servicesBox = new VBox(8);
+        loadServices(workshop, servicesBox);
+
+        Button whatsapp = new Button("Escribir por WhatsApp");
+        whatsapp.getStyleClass().add("whatsapp-button");
+        whatsapp.setOnAction(event -> openWhatsApp(workshop));
+
+        VBox card = new VBox(8, icon, name, specialty, address, phone, servicesTitle, servicesBox, whatsapp);
         card.getStyleClass().addAll("card", "workshop-card");
-        card.setPrefWidth(300);
+        card.setPrefWidth(340);
         return card;
+    }
+
+    /**
+     * Agrega una fila por cada servicio activo del taller. Si no tiene, avisa.
+     */
+    private void loadServices(Workshop workshop, VBox servicesBox) {
+        try {
+            List<WorkshopService> services = AppServices.serviceCatalog().findActiveByWorkshop(workshop.getId());
+            for (WorkshopService service : services) {
+                servicesBox.getChildren().add(serviceRow(service));
+            }
+            if (services.isEmpty()) {
+                Label empty = new Label("Este taller todavía no tiene servicios publicados.");
+                empty.getStyleClass().add("secondary-text");
+                servicesBox.getChildren().add(empty);
+            }
+        } catch (PersistenceException e) {
+            lblMessage.setText(e.getMessage());
+        }
+    }
+
+    /**
+     * Fila de un servicio: nombre y descripción a la izquierda, tarifa vigente a la derecha.
+     */
+    private HBox serviceRow(WorkshopService service) {
+        Label name = new Label(service.getName());
+        name.setWrapText(true);
+        VBox left = new VBox(2, name);
+        if (service.getDescription() != null && !service.getDescription().isBlank()) {
+            Label description = new Label(service.getDescription());
+            description.getStyleClass().add("secondary-text");
+            description.setWrapText(true);
+            left.getChildren().add(description);
+        }
+
+        Label price = new Label(priceText(service));
+        price.getStyleClass().add("product-price");
+
+        Region space = new Region();
+        HBox.setHgrow(space, Priority.ALWAYS);
+        HBox row = new HBox(10, left, space, price);
+        row.setAlignment(Pos.CENTER_LEFT);
+        return row;
+    }
+
+    /**
+     * Texto de la tarifa vigente del servicio, o "Consultar" si no tiene.
+     */
+    private String priceText(WorkshopService service) {
+        try {
+            return AppServices.fees().findCurrentByService(service.getId())
+                    .map(Fee::getAmount)
+                    .map(Formats::money)
+                    .orElse("Consultar");
+        } catch (PersistenceException e) {
+            lblMessage.setText(e.getMessage());
+            return "Consultar";
+        }
+    }
+
+    private void openWhatsApp(Workshop workshop) {
+        String text = "Hola " + workshop.getCompanyName()
+                + ", te escribo desde ORIGEN. Quiero consultar por sus servicios.";
+        if (!WhatsApp.open(workshop, text)) {
+            lblMessage.setText("No se pudo abrir WhatsApp. Escribe al " + workshop.getPhone() + ".");
+        }
     }
 }
