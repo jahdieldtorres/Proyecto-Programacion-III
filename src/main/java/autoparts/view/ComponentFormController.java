@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 /**
@@ -45,6 +46,8 @@ public class ComponentFormController {
     private ComboBox<Category> cmbCategory;
     @FXML
     private ComboBox<String> cmbOrigin;
+    @FXML
+    private TextArea txtDescription;
     @FXML
     private Label lblMessage;
     @FXML
@@ -86,6 +89,7 @@ public class ComponentFormController {
         cmbBrand.setValue(findBrand(component.getBrand()));
         cmbCategory.setValue(findCategory(component.getCategory()));
         cmbOrigin.setValue(component.getOrigin());
+        txtDescription.setText(component.getDescription());
     }
 
     /**
@@ -98,15 +102,18 @@ public class ComponentFormController {
         lblMessage.setText("");
         try {
             if (original == null) {
-                AppServices.components().register(new Component(ComponentType.GENERAL, 0,
+                Component component = new Component(ComponentType.GENERAL, 0,
                         txtName.getText(), txtReference.getText(), cmbBrand.getValue(),
-                        cmbCategory.getValue(), cmbOrigin.getValue(), Status.ACTIVO));
+                        cmbCategory.getValue(), cmbOrigin.getValue(), Status.ACTIVO);
+                component.setDescription(txtDescription.getText());
+                AppServices.components().register(component);
             } else {
                 original.setName(txtName.getText());
                 original.setReference(txtReference.getText());
                 original.setBrand(cmbBrand.getValue());
                 original.setCategory(cmbCategory.getValue());
                 original.setOrigin(cmbOrigin.getValue());
+                original.setDescription(txtDescription.getText());
                 AppServices.components().update(original);
             }
             Navigator.closeForm(btnSave);

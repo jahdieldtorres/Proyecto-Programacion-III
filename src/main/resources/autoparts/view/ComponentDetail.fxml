@@ -29,6 +29,7 @@
             <Label fx:id="lblName" styleClass="section-title" wrapText="true"/>
             <Label fx:id="lblReference" styleClass="reference-chip"/>
             <Label fx:id="lblCompatibility"/>
+            <Label fx:id="lblDescription" styleClass="secondary-text" wrapText="true"/>
             <Region prefHeight="4"/>
             <Label fx:id="lblCategory" styleClass="secondary-text"/>
             <Label fx:id="lblOrigin" styleClass="secondary-text"/>
