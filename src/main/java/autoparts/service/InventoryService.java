@@ -22,6 +22,9 @@ import java.util.OptionalInt;
  */
 public class InventoryService {
 
+    /** Longitud máxima de la descripción (igual que INVENTORY.DESCRIPTION en Oracle). */
+    private static final int MAX_DESCRIPTION_LENGTH = 500;
+
     private final InventoryDAO inventoryDAO;
     private final PartnerDAO partnerDAO;
 
@@ -169,9 +172,32 @@ public class InventoryService {
         if (item.getStatus() == null) {
             throw new InvalidDataException("El estado es obligatorio.");
         }
+        validateDescription(item);
         if (item.isActive()) {
             checkNoDuplicate(item);
         }
+    }
+
+    /**
+     * Valida la descripción de la oferta: es opcional, pero no puede pasar de
+     * 500 caracteres. Si viene vacía se guarda como null y si trae espacios
+     * sobrantes se recortan.
+     *
+     * @param item oferta cuya descripción se revisa
+     * @throws InvalidDataException si la descripción supera el máximo permitido
+     */
+    private void validateDescription(Inventory item) {
+        String description = item.getDescription();
+        if (description == null || description.isBlank()) {
+            item.setDescription(null);
+            return;
+        }
+        description = description.trim();
+        if (description.length() > MAX_DESCRIPTION_LENGTH) {
+            throw new InvalidDataException("La descripción no puede pasar de "
+                    + MAX_DESCRIPTION_LENGTH + " caracteres (tiene " + description.length() + ").");
+        }
+        item.setDescription(description);
     }
 
     /**
