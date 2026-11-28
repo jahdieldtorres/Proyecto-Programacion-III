@@ -11,6 +11,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -55,6 +56,20 @@
             <TextField fx:id="txtLongitude" promptText="Ej.: -73.2532"/>
         </VBox>
     </HBox>
+
+    <!-- Descripción y foto del socio -->
+    <VBox spacing="4">
+        <Label text="Descripción (opcional, máximo 300 caracteres)" styleClass="field-label"/>
+        <TextArea fx:id="txtDescription" prefRowCount="3" wrapText="true"
+                  promptText="Ej.: Almacén con más de 10 años vendiendo repuestos para carro y moto."/>
+    </VBox>
+    <VBox spacing="4">
+        <Label text="Foto del socio (opcional)" styleClass="field-label"/>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Button text="Elegir foto" onAction="#choosePhoto" styleClass="secondary-button"/>
+            <Label fx:id="lblPhoto" text="Sin foto" styleClass="secondary-text" wrapText="true"/>
+        </HBox>
+    </VBox>
 
     <!-- Solo proveedor -->
     <VBox fx:id="boxSupplier" spacing="4">
