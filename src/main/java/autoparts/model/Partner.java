@@ -35,6 +35,8 @@ public abstract class Partner {
     private String address;
     private double latitude;
     private double longitude;
+    private String description;
+    private String imageFile;
 
     /**
      * Crea un socio con sus campos comunes.
@@ -129,4 +131,20 @@ public abstract class Partner {
     public void setLatitude(double latitude) { this.latitude = latitude; }
     public double getLongitude() { return longitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
+
+    /**
+     * Descripción corta del socio (máximo 300 caracteres).
+     *
+     * @return la descripción, o null si no tiene
+     */
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    /**
+     * Nombre del archivo de la foto del socio dentro de {@code images/partners/}.
+     *
+     * @return el nombre del archivo, o null si no tiene foto
+     */
+    public String getImageFile() { return imageFile; }
+    public void setImageFile(String imageFile) { this.imageFile = imageFile; }
 }

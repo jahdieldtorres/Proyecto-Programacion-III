@@ -6,17 +6,22 @@ import autoparts.model.Partner;
 import autoparts.model.Status;
 import autoparts.model.Supplier;
 import autoparts.model.Workshop;
+import autoparts.util.ImageStorage;
 
+import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * Reglas de negocio de los socios (proveedores y talleres): validación de los
- * datos (incluida su ubicación), NIT único y borrado lógico. Solo depende de la interfaz {@link PartnerDAO}.
+ * datos (incluida su ubicación y su descripción), NIT único, foto del socio y borrado lógico. Solo depende de la interfaz {@link PartnerDAO}.
  *
  * @author Héctor Guevara
  */
 public class PartnerService {
+
+    /** Máximo de caracteres de la descripción de un socio (VARCHAR2(300) en Oracle). */
+    public static final int MAX_DESCRIPTION_LENGTH = 300;
 
     private final PartnerDAO partnerDAO;
 
@@ -63,6 +68,52 @@ public class PartnerService {
             throw new InvalidDataException("Ese NIT pertenece a otro socio.");
         }
         partnerDAO.update(partner);
+    }
+
+    /**
+     * Cambia la foto de un socio ya guardado. Copia el archivo a
+     * {@code images/partners/}, guarda su nombre en el socio y borra la foto
+     * anterior (si tenía).
+     *
+     * @param partnerId identificador del socio
+     * @param photo     archivo de la foto elegida (.jpg, .jpeg o .png)
+     * @throws InvalidDataException si el socio no existe o el archivo no es una foto válida
+     */
+    public void changePhoto(int partnerId, File photo) {
+        if (!ImageStorage.isSupported(photo)) {
+            throw new InvalidDataException("La foto debe ser un archivo .jpg o .png que exista.");
+        }
+        Partner partner = partnerDAO.findById(partnerId)
+                .orElseThrow(() -> new InvalidDataException("El socio no existe."));
+        String oldFile = partner.getImageFile();
+        partner.setImageFile(ImageStorage.store(photo, ImageStorage.PARTNERS_DIR));
+        try {
+            partnerDAO.update(partner);
+        } catch (RuntimeException e) {
+            ImageStorage.delete(ImageStorage.PARTNERS_DIR, partner.getImageFile());
+            throw e;
+        }
+        if (oldFile != null && !oldFile.equals(partner.getImageFile())) {
+            try {
+                ImageStorage.delete(ImageStorage.PARTNERS_DIR, oldFile);
+            } catch (RuntimeException ignored) {
+                // La foto nueva ya quedó guardada; un archivo viejo que sobra no es grave.
+            }
+        }
+    }
+
+    /**
+     * Devuelve la ruta de la foto de un socio, lista para mostrarla en pantalla.
+     *
+     * @param partner socio del que se quiere la foto
+     * @return dirección del archivo (file:/...), o null si no tiene foto o el archivo no existe
+     */
+    public String findPhotoUrl(Partner partner) {
+        if (partner == null || !ImageStorage.exists(ImageStorage.PARTNERS_DIR, partner.getImageFile())) {
+            return null;
+        }
+        return ImageStorage.resolve(ImageStorage.PARTNERS_DIR, partner.getImageFile())
+                .toAbsolutePath().toUri().toString();
     }
 
     /**
@@ -145,6 +196,7 @@ public class PartnerService {
         if (Double.isNaN(partner.getLongitude()) || partner.getLongitude() < -180 || partner.getLongitude() > 180) {
             throw new InvalidDataException("La longitud debe estar entre -180 y 180.");
         }
+        validateDescription(partner);
         if (partner.getStatus() == null) {
             throw new InvalidDataException("El estado es obligatorio.");
         }
@@ -163,6 +215,24 @@ public class PartnerService {
         } else {
             throw new InvalidDataException("Tipo de socio no soportado.");
         }
+    }
+
+    /**
+     * La descripción es opcional: si viene vacía queda en null; si no, se recorta
+     * y no puede pasar de {@link #MAX_DESCRIPTION_LENGTH} caracteres.
+     */
+    private void validateDescription(Partner partner) {
+        String description = partner.getDescription();
+        if (description == null || description.isBlank()) {
+            partner.setDescription(null);
+            return;
+        }
+        description = description.trim();
+        if (description.length() > MAX_DESCRIPTION_LENGTH) {
+            throw new InvalidDataException("La descripción no puede pasar de " + MAX_DESCRIPTION_LENGTH
+                    + " caracteres (tiene " + description.length() + ").");
+        }
+        partner.setDescription(description);
     }
 
     private String cleanText(String value, String field) {
