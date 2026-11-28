@@ -20,7 +20,7 @@ import java.util.Optional;
 /**
  * Guarda y consulta los socios (proveedores y talleres) llamando a las
  * funciones del paquete PL/SQL PKG_PARTNERS
- * (database/05b_paquetes_negocio.sql).
+ * (database/06b_paquetes_negocio.sql, actualizado por database/11_paquete_socios.sql).
  *
  * Todo es una función y el resultado llega por el primer ? de la llamada: un
  * cursor en las consultas, el ID nuevo en INSERT_PARTNER y las filas afectadas
@@ -53,9 +53,9 @@ public class PartnerOracleDAO implements PartnerDAO {
 
     // Socio: INSERT devuelve el ID nuevo; UPDATE, las filas cambiadas
     private static final String CALL_INSERT_PARTNER =
-            "{ ? = call PKG_PARTNERS.INSERT_PARTNER(?, ?, ?, ?, ?, ?, ?, ?, ?) }";
+            "{ ? = call PKG_PARTNERS.INSERT_PARTNER(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) }";
     private static final String CALL_UPDATE_PARTNER =
-            "{ ? = call PKG_PARTNERS.UPDATE_PARTNER(?, ?, ?, ?, ?, ?, ?, ?, ?) }";
+            "{ ? = call PKG_PARTNERS.UPDATE_PARTNER(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) }";
 
     // Subtipos: devuelven las filas afectadas. El ID del socio va de último,
     // así INSERT y UPDATE de cada subtipo usan los mismos parámetros.
@@ -193,6 +193,8 @@ public class PartnerOracleDAO implements PartnerDAO {
             call.setString(8, partner.getAddress());
             call.setDouble(9, partner.getLatitude());
             call.setDouble(10, partner.getLongitude());
+            call.setString(11, partner.getDescription());
+            call.setString(12, partner.getImageFile());
             call.execute();
             return call.getInt(1);
         }
@@ -214,7 +216,9 @@ public class PartnerOracleDAO implements PartnerDAO {
             call.setString(7, partner.getAddress());
             call.setDouble(8, partner.getLatitude());
             call.setDouble(9, partner.getLongitude());
-            call.setInt(10, partner.getId());
+            call.setString(10, partner.getDescription());
+            call.setString(11, partner.getImageFile());
+            call.setInt(12, partner.getId());
             call.execute();
             return call.getInt(1) > 0;
         }
@@ -291,7 +295,7 @@ public class PartnerOracleDAO implements PartnerDAO {
         double latitude = result.getDouble("LATITUDE");
         double longitude = result.getDouble("LONGITUDE");
 
-        return switch (type) {
+        Partner partner = switch (type) {
             case Partner.TYPE_SUPPLIER -> new Supplier(id, companyName, taxId, phone, status,
                     registrationDate, address, latitude, longitude,
                     result.getInt("DELIVERY_DAYS"));
@@ -300,5 +304,8 @@ public class PartnerOracleDAO implements PartnerDAO {
                     result.getString("SPECIALTY"), result.getInt("BAY_COUNT"));
             default -> throw new SQLException("Tipo de socio desconocido: " + type);
         };
+        partner.setDescription(result.getString("DESCRIPTION"));
+        partner.setImageFile(result.getString("IMAGE_FILE"));
+        return partner;
     }
 }
