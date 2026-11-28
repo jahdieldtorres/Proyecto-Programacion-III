@@ -7,13 +7,17 @@ import autoparts.model.Partner;
 import autoparts.model.Status;
 import autoparts.model.Supplier;
 import autoparts.model.Workshop;
+import autoparts.util.ImageStorage;
+import java.io.File;
 import java.time.LocalDate;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 
 /**
  * Controlador del formulario de socios (PartnerForm.fxml): crea o edita un
@@ -63,6 +67,10 @@ public class PartnerFormController {
     @FXML
     private TextField txtLongitude;
     @FXML
+    private TextArea txtDescription;
+    @FXML
+    private Label lblPhoto;
+    @FXML
     private VBox boxSupplier;
     @FXML
     private TextField txtDeliveryDays;
@@ -79,6 +87,9 @@ public class PartnerFormController {
 
     /** Socio que se está editando; null si se está creando uno nuevo. */
     private Partner original;
+
+    /** Foto elegida con el botón "Elegir foto"; null si no se eligió ninguna. */
+    private File selectedPhoto;
 
     /**
      * JavaFX llama este método al cargar el formulario: llena el selector de
@@ -109,6 +120,9 @@ public class PartnerFormController {
         txtAddress.setText(partner.getAddress());
         txtLatitude.setText(String.valueOf(partner.getLatitude()));
         txtLongitude.setText(String.valueOf(partner.getLongitude()));
+        txtDescription.setText(partner.getDescription());
+        lblPhoto.setText(partner.getImageFile() == null
+                ? "Sin foto" : "Ya tiene foto (elige otra para cambiarla)");
         if (partner instanceof Supplier supplier) {
             cmbType.setValue(PartnerType.SUPPLIER);
             txtDeliveryDays.setText(String.valueOf(supplier.getDeliveryDays()));
@@ -141,8 +155,16 @@ public class PartnerFormController {
             Partner partner = buildPartner();
             if (original == null) {
                 AppServices.partners().register(partner);
+                // Ya quedó guardado: si la foto falla, un nuevo clic en Guardar lo edita.
+                original = partner;
             } else {
                 AppServices.partners().update(partner);
+            }
+            try {
+                savePhoto(partner.getId());
+            } catch (PersistenceException e) {
+                lblMessage.setText("El socio se guardó, pero no se pudo guardar la foto. Elige la foto y guarda de nuevo.");
+                return;
             }
             Navigator.closeForm(btnSave);
         } catch (InvalidDataException e) {
@@ -150,6 +172,42 @@ public class PartnerFormController {
         } catch (PersistenceException e) {
             lblMessage.setText("No se pudo guardar el socio. Intenta de nuevo.");
         }
+    }
+
+    /**
+     * Se ejecuta con el botón "Elegir foto": abre el selector de archivos y
+     * deja elegida la foto (.jpg o .png). Solo se copia al guardar el socio.
+     */
+    @FXML
+    private void choosePhoto() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Elegir la foto del socio");
+        chooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Fotos (*.jpg, *.jpeg, *.png)", "*.jpg", "*.jpeg", "*.png"));
+        File file = chooser.showOpenDialog(btnSave.getScene().getWindow());
+        if (file == null) {
+            return;
+        }
+        if (!ImageStorage.isSupported(file)) {
+            lblMessage.setText("La foto debe ser un archivo .jpg o .png.");
+            return;
+        }
+        lblMessage.setText("");
+        selectedPhoto = file;
+        lblPhoto.setText(file.getName());
+    }
+
+    /**
+     * Guarda la foto elegida (si hay una) en el socio ya guardado.
+     *
+     * @param partnerId identificador del socio ya guardado
+     */
+    private void savePhoto(int partnerId) {
+        if (selectedPhoto == null) {
+            return;
+        }
+        AppServices.partners().changePhoto(partnerId, selectedPhoto);
+        selectedPhoto = null;
     }
 
     /**
@@ -162,7 +220,7 @@ public class PartnerFormController {
 
     /**
      * Crea el objeto según el tipo elegido. Al crear usa id 0, estado ACTIVO y
-     * la fecha de hoy; al editar conserva el id, el estado y la fecha del original.
+     * la fecha de hoy; al editar conserva el id, el estado, la fecha y la foto del original.
      */
     private Partner buildPartner() {
         int id = original == null ? 0 : original.getId();
@@ -175,7 +233,7 @@ public class PartnerFormController {
         double latitude = readDecimal(txtLatitude, "La latitud");
         double longitude = readDecimal(txtLongitude, "La longitud");
 
-        return switch (cmbType.getValue()) {
+        Partner partner = switch (cmbType.getValue()) {
             case SUPPLIER -> new Supplier(id, name, taxId, phone, status, date,
                     address, latitude, longitude,
                     readNumber(txtDeliveryDays, "Los días de entrega"));
@@ -183,6 +241,10 @@ public class PartnerFormController {
                     address, latitude, longitude,
                     txtSpecialty.getText(), readNumber(txtBayCount, "Las bahías"));
         };
+        partner.setDescription(txtDescription.getText());
+        // La foto actual se conserva; si se eligió otra, la cambia savePhoto() después de guardar.
+        partner.setImageFile(original == null ? null : original.getImageFile());
+        return partner;
     }
 
     /**
