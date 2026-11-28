@@ -16,13 +16,15 @@ import java.util.UUID;
  *       (tabla COMPONENT_IMAGES).</li>
  *   <li>{@code images/inventory/}: fotos de cada oferta de una tienda
  *       (tabla INVENTORY_IMAGES).</li>
+ *   <li>{@code images/partners/}: foto de cada socio, almacén o taller
+ *       (columna PARTNERS.IMAGE_FILE).</li>
  * </ul>
  * En la base de datos solo se guarda el nombre del archivo; con ese nombre,
  * {@link #resolve(String)} devuelve la ruta de la foto para mostrarla.
  *
  * Los métodos sin carpeta trabajan con {@link #IMAGES_DIR} (componentes). Los
- * que reciben la carpeta sirven para las fotos de inventario: se les pasa
- * {@link #INVENTORY_DIR}.
+ * que reciben la carpeta sirven para las fotos de inventario y de socios: se les pasa
+ * {@link #INVENTORY_DIR} o {@link #PARTNERS_DIR}.
  *
  * Para que dos fotos nunca se pisen, al copiar se le agrega al nombre original
  * un código corto al azar.
@@ -36,6 +38,9 @@ public final class ImageStorage {
 
     /** Carpeta de las fotos de las ofertas de inventario, relativa a la raíz del proyecto. */
     public static final String INVENTORY_DIR = "images/inventory";
+
+    /** Carpeta de las fotos de los socios (almacenes y talleres), relativa a la raíz del proyecto. */
+    public static final String PARTNERS_DIR = "images/partners";
 
     private static final String[] EXTENSIONS = {"jpg", "jpeg", "png"};
 
